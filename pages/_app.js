@@ -26,7 +26,7 @@ const { SubMenu } = Menu;
 const animationZoomHover = "transition duration-500 ease-in-out transform  hover:scale-120"
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(!isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState("home")
   const [title, setTitle] = useState('เว็บไซค์ [ ชื่อโปรเจค ]')
   const nameUrl = [
@@ -62,7 +62,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   ]
   const toggle = () => { setCollapsed(!collapsed) }
   useEffect(() => {
-// 
     const { asPath, pathname } = router
     let { name, categories } = router.query
     const asPathSplit = asPath.split("/")
@@ -109,10 +108,12 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       } catch (e) { }
     }
 
-    if (isMobile) setCollapsed(true)
 
     router.events.on('routeChangeStart', handleRouteChange)
-
+    
+    fetch(process.env.NEXT_PUBLIC_PREDICT,{method:"POST"}).then(res=>res.json()).then(res=>console.log("send req to machine learning",res))
+    // setCollapsed(isMobile)
+    
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
@@ -181,7 +182,7 @@ const NavBar = ({ handleMenu, handleSubMenuClick, collapsed, setCollapsed, defau
           icon={<LogoutOutlined style={{ width: "18px", height: "18px" }}/>}
           onClick={() => signOut({ redirect: true, callbackUrl: '/admin' })}>ออกจากระบบ</Button>
       </div>}
-    {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width="13em" collapsedWidth="45" defaultCollapsed={isMobile} collapsed={collapsed}>
+    {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width="13em" collapsedWidth="45" defaultCollapsed={collapsed} collapsed={collapsed}>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >
         {status === "unauthenticated" ? <>
           <Menu.Item key="home" icon={<HomeIcon style={{ width: "18px", height: "18px" }} />}

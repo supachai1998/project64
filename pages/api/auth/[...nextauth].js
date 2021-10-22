@@ -1,7 +1,6 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
 
 import { prisma } from '/prisma/client';
 export default NextAuth({
@@ -23,28 +22,20 @@ export default NextAuth({
                         email: credentials.email,
                         password: credentials.password
                     }
-                }) || await prisma.user.findFirst({
+                }) 
+                || await prisma.user.findFirst({
                     where: {
                         name: credentials.email,
                         password: credentials.password
                     }
                 })
-                if ( user !== null){
-                    return user;
-                }
-                else {
-                    return null;
-                }
+                || null
+                return user
             },
             callbacks: {
                 async signIn({ user, account, profile, email, credentials }) {
                     if (typeof user.userId !== typeof undefined){
-                        if (user.role === 'ADMIN'){
-                            return user;
-                        }
-                        else{
-                            return false;
-                        }
+                        if (user.role === 'ADMIN') return user; else return false;
                     }
                     else{
                         return false;
