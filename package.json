@@ -1,0 +1,45 @@
+{
+  "name": "project64-1",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "server": "next build&&next start",
+    "lint": "next lint",
+    "localssl": "local-ssl-proxy --source 3001 --target 3000"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.3",
+    "@mui/material": "^5.0.3",
+    "@next-auth/prisma-adapter": "^0.5.2-next.15",
+    "@prisma/client": "^3.2.1",
+    "antd": "^4.16.13",
+    "form-data": "^4.0.0",
+    "formidable": "^1.2.2",
+    "framer-motion": "^4.1.17",
+    "fs": "^0.0.1-security",
+    "next": "11.1.2",
+    "next-auth": "^4.0.0-beta.4",
+    "nprogress": "^0.2.0",
+    "react": "17.0.2",
+    "react-device-detect": "^1.17.0",
+    "react-dom": "17.0.2",
+    "react-image-file-resizer": "^0.4.7",
+    "react-player": "^2.9.0",
+    "react-webcam": "^6.0.0",
+    "sharp": "^0.29.1",
+    "tailwindcss": "^2.2.9",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.3.4",
+    "eslint": "7.32.0",
+    "eslint-config-next": "11.1.2",
+    "postcss": "^8.3.6",
+    "prisma": "^3.2.1"
+  }
+}
