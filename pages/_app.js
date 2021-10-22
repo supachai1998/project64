@@ -62,7 +62,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   ]
   const toggle = () => { setCollapsed(!collapsed) }
   useEffect(() => {
-
+// 
     const { asPath, pathname } = router
     let { name, categories } = router.query
     const asPathSplit = asPath.split("/")
