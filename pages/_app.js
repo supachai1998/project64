@@ -111,7 +111,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
     router.events.on('routeChangeStart', handleRouteChange)
     
-    fetch(process.env.NEXT_PUBLIC_PREDICT,{method:"POST"}).then(res=>res.json()).then(res=>console.log("send req to machine learning",res))
+    fetch("/api/predict",{method:"POST"}).then(res=>res.json()).then(res=>console.log("send req to machine learning",res))
     // setCollapsed(isMobile)
     
     return () => {
