@@ -111,7 +111,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
     router.events.on('routeChangeStart', handleRouteChange)
     
-    fetch("/api/predict",{method:"POST"}).then(res=>res.json()).then(res=>console.log("send req to machine learning",res))
+    // call api machine learning 
+    // set up heroku
+    fetch("/api/predict",{method:"POST"})
     // setCollapsed(isMobile)
     
     return () => {

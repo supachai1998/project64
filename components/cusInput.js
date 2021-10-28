@@ -19,7 +19,6 @@ export default function CusInput({ data, setData ,originData}) {
   const [input, setInput] = useState(null)
   const handleSearch = () =>{
     const val = refSearchInput.current?.state?.value || input
-    console.log(val)
     if(!!val && val.length > 2) {
         setLoading(true)
         const timer  =setTimeout(()=>{
@@ -46,7 +45,7 @@ export default function CusInput({ data, setData ,originData}) {
     <div className="flex flex-col w-full max-h-full gap-3 p-3 min-h-30 rounded-xl">
       {statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
         : <div className="flex flex-col justify-center w-2/3 gap-3 mx-auto">
-          <Search className="z-0 w-full input search loading with enterButton"  disabled={loading} onChange={onChange} onSearch={handleSearch}  maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search" 
+          <Search className="z-0 w-full input search loading with enterButton"  disabled={loading && true} onChange={onChange} onSearch={handleSearch}  maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search" 
           placeholder={"ชื่ออาหาร , ชื่อโรค , ชื่อบทความ"} ref={refSearchInput}/>
           <div className="flex flex-col w-full h-full gap-3 sm:justify-center sm:flex-row">
             <Tooltip title="ถ่ายภาพ">
