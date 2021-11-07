@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
 import { useRouter, } from 'next/router'
 import Head from 'next/head'
-import { Layout, Menu, message, Tooltip,Button } from 'antd';
+import { Layout, Menu, message, Tooltip, Button } from 'antd';
 import {
   MenuOutlined,
   AppleOutlined,
@@ -18,17 +18,25 @@ import { AnimatePresence } from 'framer-motion';
 import HomeIcon from '@mui/icons-material/Home';
 import dynamic from 'next/dynamic'
 import { LogoutOutlined } from '@mui/icons-material';
-
+import { Hydrate, QueryClient, QueryClientProvider,useQuery } from 'react-query'
+import { serverip } from '../config/serverip';
 const { Header, Sider, Content } = Layout;
 React.useLayoutEffect = React.useEffect
 const { SubMenu } = Menu;
 
 const animationZoomHover = "transition duration-500 ease-in-out transform  hover:scale-120"
-function MyApp({ Component, pageProps: { session, ...pageProps } }) {
+
+
+
+function MyApp({ Component, pageProps: { session, ...pageProps }}) {
+  const [queryClient] = React.useState(() => new QueryClient())
   const router = useRouter()
-  const [collapsed, setCollapsed] = useState(!isMobile)
+  const [collapsed, setCollapsed] = useState(isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState("home")
   const [title, setTitle] = useState('เว็บไซค์ [ ชื่อโปรเจค ]')
+  const [ncds,setNCDS] = useState(null)
+  const [blogs,setBlogs] = useState(null)
+
   const nameUrl = [
     { url: "/fried", key: "fried", name: "อาหารทอด" },
     { url: "/soup", key: "soup", name: "อาหารต้ม" },
@@ -62,6 +70,17 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   ]
   const toggle = () => { setCollapsed(!collapsed) }
   useEffect(() => {
+
+    // fetch data
+    (async()=>{
+      const resNCDS = await fetch(`${serverip}/api/getNCDS`).then(res=>res.json())
+      setNCDS(resNCDS)
+      console.log(resNCDS)
+      const resBlogs = await fetch(`${serverip}/api/getBlogs`,{body:"type",method:"POST"}).then(res=>res.json())
+      setBlogs(resBlogs)
+      console.log(resBlogs)
+    })()
+
     const { asPath, pathname } = router
     let { name, categories } = router.query
     const asPathSplit = asPath.split("/")
@@ -104,25 +123,26 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             setDefaultSelectedKeys(match.key || categories)
           }
         }
-        if (isMobile) setCollapsed(true)
+        // if (isMobile) setCollapsed(true)
       } catch (e) { }
     }
 
 
+
     router.events.on('routeChangeStart', handleRouteChange)
-    
+
     // call api machine learning 
     // set up heroku
-    fetch("/api/predict",{method:"POST"})
+    fetch(`${serverip}/api/predict`, { method: "GET" })
     // setCollapsed(isMobile)
-    
+
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
   }, [])
 
   const handleMenuClick = ({ keyPath }) => {
-    console.log(keyPath)
+    // console.log(keyPath)
     // Array(3) [ "report_blogs_food", "report", "admin" ]
 
     if (keyPath.length >= 2) router.push(`/${keyPath.at(1)}/${keyPath.at(0)}`)
@@ -136,67 +156,73 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }
 
   return (
-    <SessionProvider session={session}>
-      <Layout className="h-full min-h-screen">
-        <TopProgressBar />
-        <Head>
-          <title >{title}</title>
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        </Head>
+    <QueryClientProvider client={queryClient}>
 
-        <NavBar handleMenuClick={handleMenuClick} handleMenu={handleMenu} handleSubMenuClick={handleSubMenuClick} collapsed={collapsed} setCollapsed={setCollapsed} defaultSelectedKeys={defaultSelectedKeys} />
+      <Hydrate state={pageProps.dehydratedState}>
+        <SessionProvider session={session}>
+          <Layout className="h-full min-h-screen">
+            <TopProgressBar />
+            <Head>
+              <title >{title}</title>
+              <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+            </Head>
 
-        <Layout className="site-layout">
-          <Header className="flex justify-start space-x-6 item-center site-layout-background" style={{ margin: 0, padding: 0 }} >
-            {collapsed !== null && <Tooltip title="เมนู">
-              <div className='px-3 my-auto text-lg text-white trigger hover:border-gray-50 hover:scale-110' onClick={toggle}>
-                {collapsed
-                  ? <MenuOutlined className={animationZoomHover} />
-                  : <MenuOutlined className={animationZoomHover} />}
-              </div>
-            </Tooltip>}
-            <p className="my-auto ml-2 text-2xl text-white">{title}</p>
-          </Header>
-          <Content
-            className="p-2 site-layout-background"
-          >
-            <AnimatePresence exitBeforeEnter>
-              <Component onClick={() => setCollapsed(true)} {...pageProps} />
-            </AnimatePresence>
-          </Content>
-          <Navigator />
-        </Layout>
+            <NavBar blogs={blogs} ncds={ncds} handleMenuClick={handleMenuClick} handleMenu={handleMenu} handleSubMenuClick={handleSubMenuClick} collapsed={collapsed} setCollapsed={setCollapsed} defaultSelectedKeys={defaultSelectedKeys} />
 
-      </Layout>
-    </SessionProvider>
+            <Layout className="site-layout">
+              <Header className="flex justify-start space-x-6 item-center site-layout-background" style={{ margin: 0, padding: 0 }} >
+                <Tooltip title="เมนู">
+                  <div className='px-3 my-auto text-lg text-white trigger hover:border-gray-50 hover:scale-110' onClick={toggle}>
+                    {collapsed === null ? <></>
+                      : collapsed === true ? <MenuOutlined className={animationZoomHover} />
+                        : <MenuOutlined className={animationZoomHover} />}
+                  </div>
+                </Tooltip>
+                <p className="my-auto ml-2 text-2xl text-white">{title}</p>
+              </Header>
+              <Content
+                className="p-2 site-layout-background"
+              >
+                <AnimatePresence exitBeforeEnter>
+                  <Component onClick={() => setCollapsed(true)} {...pageProps} />
+                </AnimatePresence>
+              </Content>
+              <Navigator />
+            </Layout>
+
+          </Layout>
+        </SessionProvider>
+      </Hydrate>
+
+    </QueryClientProvider>
   )
 }
 export default MyApp
 
-const NavBar = ({ handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
+const NavBar = ({blogs,ncds ,handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
   const { status } = useSession()
-  if (status !== "unauthenticated") {
+  if (status === "authenticated") {
     setCollapsed(null)
   }
   return <>
     {status === "authenticated" && <div className="absolute right-0 h-full top-3 ">
-        <Button 
-          icon={<LogoutOutlined style={{ width: "18px", height: "18px" }}/>}
-          onClick={() => signOut({ redirect: true, callbackUrl: '/admin' })}>ออกจากระบบ</Button>
-      </div>}
+      <Button
+        icon={<LogoutOutlined style={{ width: "18px", height: "18px" }} />}
+        onClick={() => signOut({ redirect: false })}>ออกจากระบบ</Button>
+    </div>}
     {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width="13em" collapsedWidth="45" defaultCollapsed={collapsed} collapsed={collapsed}>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >
         {status === "unauthenticated" ? <>
           <Menu.Item key="home" icon={<HomeIcon style={{ width: "18px", height: "18px" }} />}
             onClick={() => { handleMenu('', 'หน้าหลัก') }}>หน้าหลัก</Menu.Item>
           <SubMenu key="ncds" icon={<MedicineBoxOutlined />} title="โรคไม่ติดต่อเรื้อรัง">
-            {typeNcds.map(({ name, key }) =>
-              <Menu.Item key={key} onClick={() => handleSubMenuClick(name)}>{name}</Menu.Item>
+            {!!ncds && ncds.map(({ name_en, name_th }) =>
+              <Menu.Item key={name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="form" icon={<MedicineBoxOutlined />} title="แบบประเมินโรค">
-            {typeForm.map(({ name, key }) =>
-              <Menu.Item key={key} onClick={() => handleSubMenuClick(name)}>{name}</Menu.Item>
+            {!!ncds && ncds.map(({ name_en, name_th }) =>
+              <Menu.Item key={name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="foods" icon={<AppleOutlined />} title="ประเภทอาหาร" >
@@ -205,13 +231,13 @@ const NavBar = ({ handleMenu, handleSubMenuClick, collapsed, setCollapsed, defau
             )}
           </SubMenu>
           <SubMenu key="blogs" icon={<FormOutlined />} title="บทความ">
-            {typeBlogs.map(({ name, key }) =>
-              <Menu.Item key={key} onClick={() => handleSubMenuClick(name)}>{name}</Menu.Item>
+            {!!blogs && blogs.map(({ name_en, name_th }) =>
+              <Menu.Item key={name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
         </>
           : <>
-            {typeAdmin.map(({ name, key }) =>
+            {/* {typeAdmin.map(({ name, key }) =>
               <Menu.Item key={key} onClick={() => handleMenu(`admin/${key}`, name)}>{name}</Menu.Item>
             )}
             <SubMenu key="report" icon={<PieChartOutlined />} title="รายงาน">
@@ -220,7 +246,7 @@ const NavBar = ({ handleMenu, handleSubMenuClick, collapsed, setCollapsed, defau
               )}
             </SubMenu>
             <Menu.Item key="logout" icon={<LogoutOutlined style={{ width: "18px", height: "18px" }} />}
-              onClick={() => signOut({ redirect: true, callbackUrl: '/admin' })}>ออกจากระบบ</Menu.Item>
+              onClick={() => signOut()}>ออกจากระบบ</Menu.Item> */}
           </>
         }
       </Menu>
@@ -239,6 +265,7 @@ const Navigator = dynamic(
   },
   { ssr: false },
 );
+
 
 const typeFood = [
   { key: "fried", name: "ทอด" },
@@ -285,3 +312,5 @@ const typeBlogs = [
   { key: "blogs_food", name: "อาหาร" },
   { key: "blogs_ncds", name: "โรคไม่ติดต่อเรื้อรัง" }
 ]
+
+

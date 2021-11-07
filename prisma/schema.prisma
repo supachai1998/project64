@@ -2,59 +2,62 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
 }
 
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
 }
 
-model Account {  
-  id String  @id @default(cuid())  
-  userId             String  
-  type               String  
-  provider           String  
-  providerAccountId  String  
-  refresh_token      String?  
-  access_token       String?  
-  expires_at         Int?  
-  token_type         String?  
-  scope              String?  
-  id_token           String?  
-  session_state      String?  
-  oauth_token_secret String?  
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
   oauth_token        String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
-model Session {  
-  id           String   @id @default(cuid())  
-  sessionToken String   @unique  
-  userId       String  
-  expires      DateTime  
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
-model User {  
-  id            String    @id @default(cuid())  
-  name          String?  
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
   password      String?
-  email         String?   @unique  
-  emailVerified DateTime?  
-  image         String?  
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
   role          Role      @default(USER)
-  accounts      Account[]  
+  accounts      Account[]
   sessions      Session[]
 
 }
-model VerificationToken {  
-  identifier String  
-  token      String   @unique  
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
   expires    DateTime
+
   @@unique([identifier, token])
 }
 
@@ -77,18 +80,29 @@ model Ncds {
 }
 
 model Food {
-  id        Int         @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
+  name_th    String
+  name_en    String
+  proceduce  String      @db.Text
+  calories   Float
+  nutrition  String
+  video      String?
+  views      Int
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  typeFoodId Int
+  TypeFood   TypeFood    @relation(fields: [typeFoodId], references: [id])
+  FoodNcds   FoodNcds[]
+  image      ImageFood[]
+}
+
+model TypeFood {
+  id        Int      @id @default(autoincrement())
   name_th   String
   name_en   String
-  proceduce String      @db.Text
-  calories  Float
-  nutrition String      
-  video     String?
-  views     Int
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  FoodNcds  FoodNcds[]
-  image     ImageFood[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Food      Food[]
 }
 
 model FoodNcds {
@@ -147,10 +161,10 @@ model Blogs {
 }
 
 model subBlog {
-  id        String   @id @default(uuid())
-  name      String
-  detail    String   @db.Text
-  image     String?
+  id     String  @id @default(uuid())
+  name   String
+  detail String  @db.Text
+  image  String?
 }
 
 enum Role {
