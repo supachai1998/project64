@@ -75,7 +75,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
 
     // fetch data
     (async()=>{
-      const resNCDS = await fetch(`${serverip}/api/getNCDS`,{headers: {'Content-Type': 'application/json',},})
+      const resNCDS = await fetch(`/api/getNCDS`,{headers: {'Content-Type': 'application/json',},})
       if(resNCDS.status === 200 ){
         setNCDS(resNCDS.json())
       }
@@ -133,7 +133,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
 
     // call api machine learning 
     // set up heroku
-    fetch(`${serverip}/api/predict`, { method: "GET" ,headers: {'Content-Type': 'application/json',}})
+    fetch(`/api/predict`, { method: "GET" ,headers: {'Content-Type': 'application/json',}})
     // setCollapsed(isMobile)
 
     return () => {
