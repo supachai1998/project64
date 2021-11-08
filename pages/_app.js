@@ -33,9 +33,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState("home")
-  const [title, setTitle] = useState('เว็บไซค์ [ ชื่อโปรเจค ]')
-  const [ncds,setNCDS] = useState(null)
-  const [blogs,setBlogs] = useState(null)
+  const [title, setTitle] = useState('NCDs & Food')
+  const [ncds,setNCDS] = useState([])
+  const [blogs,setBlogs] = useState([
+    {name_th: "โรคไม่ติดต่อเรื้อรัง",name_en:"NCDS"},{name_en:"FOOD", name_th:"อาหาร"},{name_en:"ALL" ,name_th: "ทั้งหมด"}
+  ])
 
   const nameUrl = [
     { url: "/fried", key: "fried", name: "อาหารทอด" },
@@ -73,12 +75,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
 
     // fetch data
     (async()=>{
-      const resNCDS = await fetch(`${serverip}/api/getNCDS`).then(res=>res.json())
-      setNCDS(resNCDS)
-      console.log(resNCDS)
-      const resBlogs = await fetch(`${serverip}/api/getBlogs`,{body:"type",method:"POST"}).then(res=>res.json())
-      setBlogs(resBlogs)
-      console.log(resBlogs)
+      const resNCDS = await fetch(`${serverip}/api/getNCDS`,{headers: {'Content-Type': 'application/json',},})
+      if(resNCDS.status === 200 ){
+        setNCDS(resNCDS.json())
+      }
     })()
 
     const { asPath, pathname } = router
@@ -133,7 +133,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
 
     // call api machine learning 
     // set up heroku
-    fetch(`${serverip}/api/predict`, { method: "GET" })
+    fetch(`${serverip}/api/predict`, { method: "GET" ,headers: {'Content-Type': 'application/json',}})
     // setCollapsed(isMobile)
 
     return () => {
@@ -222,7 +222,7 @@ const NavBar = ({blogs,ncds ,handleMenu, handleSubMenuClick, collapsed, setColla
           </SubMenu>
           <SubMenu key="form" icon={<MedicineBoxOutlined />} title="แบบประเมินโรค">
             {!!ncds && ncds.map(({ name_en, name_th }) =>
-              <Menu.Item key={name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+              <Menu.Item key={"form_"+name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="foods" icon={<AppleOutlined />} title="ประเภทอาหาร" >

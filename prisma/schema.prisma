@@ -2,9 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider             = "mysql"
-  url                  = env("DATABASE_URL")
-  referentialIntegrity = "prisma"
+  provider              = "mysql"
+  url                   = env("DATABASE_URL")
+  referentialIntegrity  = "prisma"
+  planetScaleMode       = true
 }
 
 generator client {
@@ -47,6 +48,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  apporve       Boolean?  @default(false)
+  delete        Boolean?  @default(false)
   role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
