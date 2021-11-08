@@ -14,7 +14,7 @@ export default async function handler(req, res) {
                         "email": email
                     }
                 })
-
+                res.status(200).json({status:true})
             } catch (e) { res.status(500).json({ msg: "ไม่สามารถเพิ่มข้อมูลได้", error: e }) }
             break;
         case "DELETE":
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
                         id: id,
                     }
                 })
-
+                res.status(200).json({status:true})
             } catch (e) { res.status(500).json({ msg: "ไม่สามารถลบข้อมูลได้", error: e }) }
             break;
 

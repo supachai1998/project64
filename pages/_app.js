@@ -208,7 +208,7 @@ const NavBar = ({blogs,ncds ,handleMenu, handleSubMenuClick, collapsed, setColla
     {status === "authenticated" && <div className="absolute right-0 h-full top-3 ">
       <Button
         icon={<LogoutOutlined style={{ width: "18px", height: "18px" }} />}
-        onClick={() => signOut({ redirect: false })}>ออกจากระบบ</Button>
+        onClick={() => signOut()}>ออกจากระบบ</Button>
     </div>}
     {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width="13em" collapsedWidth="45" defaultCollapsed={collapsed} collapsed={collapsed}>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >

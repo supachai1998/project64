@@ -5,15 +5,15 @@ import LibraryAddCheckIcon from '@mui/icons-material/LibraryAddCheck';
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
 import { Autorenew } from "@mui/icons-material";
 const Index = ({ dataAdmin }) => {
-    const [admin, setAdmin] = useState(dataAdmin)
+    const [admin, setAdmin] = useState(dataAdmin || [])
     const reload = async () => {
         const res = await fetch(`/api/admin`, {
             headers: { 'Content-Type': 'application/json', },
         })
         if (res.status === 200 || res.status === 304) {
-            const data = await res.json()
-            console.log(data)
-            setAdmin(data)
+                const data = await res.json()
+                if(Array.isArray(data))setAdmin(data)
+            
         }
 
     }
