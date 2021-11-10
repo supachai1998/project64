@@ -2,39 +2,47 @@ import { prisma } from "/prisma/client";
 
 export default async function handler(req, res) {
     const { body, method } = req;
-
-    switch (method) {
-        case "POST":
-            try {
-                const { name, password, email } = body
-                const data = await prisma.user.create({
+    const { id, name, password, email } = body
+    try {
+        switch (method) {
+            case "POST":
+                await prisma.user.create({
                     data: {
                         "name": name,
                         "password": password,
                         "email": email
                     }
                 })
-                res.status(200).json({status:true})
-            } catch (e) { res.status(500).json({ msg: "ไม่สามารถเพิ่มข้อมูลได้", error: e }) }
-            break;
-        case "DELETE":
-            try {
-                const { id, } = body
-                const data = await prisma.user.delete({
+                res.status(200).json({ status: true })
+                break;
+            case "DELETE":
+
+                await prisma.user.delete({
                     where: {
                         id: id,
                     }
                 })
-                res.status(200).json({status:true})
-            } catch (e) { res.status(500).json({ msg: "ไม่สามารถลบข้อมูลได้", error: e }) }
-            break;
+                res.status(200).json({ status: true })
+                break;
+            case "PATCH":
 
-        default:
-            let data = await prisma.user.findMany()
+                await prisma.user.update({
+                    where: {
+                        id: id,
+                    },
+                    data: body
+                })
+                res.status(200).json({ status: true })
 
-            !!data && data.length > 0 ? res.status(200).json(data) : res.status(200).json({})
-            break;
-    }
+                break;
+
+            default:
+                const data = await prisma.user.findMany()
+
+                !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).json({})
+                break;
+        }
+    } catch (e) { res.status(400).json({ message: "bad request", error: e.message }) }
 
 
 

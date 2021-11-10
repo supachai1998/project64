@@ -10,7 +10,10 @@
 * {
     font-family: "Poppins","Prompt" !important;
 }
-
+.ease-div {
+  transition: 'all  ease-in-out';
+  @apply transform duration-500 transition-all ease-in-out;
+}
 /* custom curve ant design input */
 .ant-input,
 .ant-input-affix-wrapper,

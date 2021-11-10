@@ -20,13 +20,17 @@ export default NextAuth({
                 const user = await prisma.user.findFirst({
                     where: {
                         email: credentials.email,
-                        password: credentials.password
+                        password: credentials.password,
+                        delete : false,
+                        role :"ADMIN"
                     }
                 }) 
                 || await prisma.user.findFirst({
                     where: {
                         name: credentials.email,
-                        password: credentials.password
+                        password: credentials.password,
+                        delete : false,
+                        role :"ADMIN"
                     }
                 })
                 || null

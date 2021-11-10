@@ -105,7 +105,7 @@ const HeaderAdmin = ({ title, onSelectPage }) => {
     return (
         <div className="relative flex flex-col w-full  gap-4 m-2">
             <span className="text-xl duration-500 transform md:text-2xl">{title}</span>
-            <Divider />
+            
             <div className="flex w-full h-full gap-2 flex-warp">
                 <Button onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button>
                 <Button onClick={() => onSelectPage("บทความ")}>บทความ</Button>
@@ -119,6 +119,7 @@ const HeaderAdmin = ({ title, onSelectPage }) => {
                     <Option key="รายงานบทความ" >บทความ</Option>
                 </Select>
             </div>
+            <Divider />
         </div>
     )
 }
