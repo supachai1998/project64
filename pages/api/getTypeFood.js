@@ -2,22 +2,18 @@ import { prisma } from "/prisma/client";
 
 export default async function handler(req, res) {
     const { body, method } = req;
-    const { id, name, password, email } = body
+    const { id } = body
     try {
         switch (method) {
             case "POST":
-                await prisma.user.create({
-                    data: {
-                        "name": name,
-                        "password": password,
-                        "email": email
-                    }
+                await prisma.foodType.create({
+                    data: body
                 })
                 res.status(200).json({ status: true })
                 break;
             case "DELETE":
 
-                await prisma.user.delete({
+                await prisma.foodType.delete({
                     where: {
                         id: id,
                     }
@@ -26,7 +22,7 @@ export default async function handler(req, res) {
                 break;
             case "PATCH":
 
-                await prisma.user.update({
+                await prisma.foodType.update({
                     where: {
                         id: id,
                     },
@@ -37,13 +33,11 @@ export default async function handler(req, res) {
                 break;
 
             default:
-                const data = await prisma.user.findMany()
+                const data = await prisma.foodType.findMany()
 
                 !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")
                 break;
         }
     } catch (e) { res.status(400).json({ message: "bad request", error: e.message }) }
-
-
-
-}
+  }
+  

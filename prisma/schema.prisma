@@ -2,10 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider              = "mysql"
-  url                   = env("DATABASE_URL")
-  referentialIntegrity  = "prisma"
-  planetScaleMode       = true
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+  planetScaleMode      = true
 }
 
 generator client {
@@ -84,6 +84,8 @@ model Ncds {
 
 model Food {
   id         Int         @id @default(autoincrement())
+  foodTypeId Int
+  FoodType   FoodType    @relation(fields: [foodTypeId], references: [id])
   name_th    String
   name_en    String
   proceduce  String      @db.Text
@@ -93,16 +95,14 @@ model Food {
   views      Int
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-  typeFoodId Int
-  TypeFood   TypeFood    @relation(fields: [typeFoodId], references: [id])
   FoodNcds   FoodNcds[]
   image      ImageFood[]
 }
 
-model TypeFood {
+model FoodType {
   id        Int      @id @default(autoincrement())
-  name_th   String
-  name_en   String
+  name_th   String   @unique
+  name_en   String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Food      Food[]

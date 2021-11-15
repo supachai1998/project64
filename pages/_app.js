@@ -1,6 +1,8 @@
 import '../styles/globals.css'
 import 'antd/dist/antd.css';
 import "nprogress/nprogress.css";
+import { ConfigProvider } from 'antd';
+import thTh from 'antd/lib/locale/th_TH';
 import React, { useState, useEffect } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
 import { useRouter, } from 'next/router'
@@ -18,7 +20,7 @@ import { AnimatePresence } from 'framer-motion';
 import HomeIcon from '@mui/icons-material/Home';
 import dynamic from 'next/dynamic'
 import { LogoutOutlined } from '@mui/icons-material';
-import { Hydrate, QueryClient, QueryClientProvider,useQuery } from 'react-query'
+import { Hydrate, QueryClient, QueryClientProvider, useQuery } from 'react-query'
 import { serverip } from '../config/serverip';
 const { Header, Sider, Content } = Layout;
 React.useLayoutEffect = React.useEffect
@@ -28,15 +30,15 @@ const animationZoomHover = "transition duration-500 ease-in-out transform  hover
 
 
 
-function MyApp({ Component, pageProps: { session, ...pageProps }}) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [queryClient] = React.useState(() => new QueryClient())
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState("home")
   const [title, setTitle] = useState('NCDs & Food')
-  const [ncds,setNCDS] = useState([])
-  const [blogs,setBlogs] = useState([
-    {name_th: "โรคไม่ติดต่อเรื้อรัง",name_en:"NCDS"},{name_en:"FOOD", name_th:"อาหาร"},{name_en:"ALL" ,name_th: "ทั้งหมด"}
+  const [ncds, setNCDS] = useState([])
+  const [blogs, setBlogs] = useState([
+    { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
   ])
 
   const nameUrl = [
@@ -74,9 +76,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
   useEffect(() => {
 
     // fetch data
-    (async()=>{
-      const resNCDS = await fetch(`/api/getNCDS`,{headers: {'Content-Type': 'application/json',},})
-      if(resNCDS.status === 200 ){
+    (async () => {
+      const resNCDS = await fetch(`/api/getNCDS`, { headers: { 'Content-Type': 'application/json', }, })
+      if (resNCDS.status === 200) {
         setNCDS(resNCDS.json())
       }
     })()
@@ -133,7 +135,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
 
     // call api machine learning 
     // set up heroku
-    fetch(`/api/predict`, { method: "GET" ,headers: {'Content-Type': 'application/json',}})
+    fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
     // setCollapsed(isMobile)
 
     return () => {
@@ -184,7 +186,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
                 className="p-2 site-layout-background"
               >
                 <AnimatePresence exitBeforeEnter>
-                  <Component onClick={() => setCollapsed(true)} {...pageProps} />
+                  <ConfigProvider locale={thTh}>
+                    <Component onClick={() => setCollapsed(true)} {...pageProps} />
+                  </ConfigProvider>
                 </AnimatePresence>
               </Content>
               <Navigator />
@@ -199,16 +203,23 @@ function MyApp({ Component, pageProps: { session, ...pageProps }}) {
 }
 export default MyApp
 
-const NavBar = ({blogs,ncds ,handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
+const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
+  const [foodType, setFoodType] = useState(null)
   const { status } = useSession()
   if (status === "authenticated") {
     setCollapsed(null)
   }
+  useEffect(() => {
+    (async () => {
+      const fetchTypeFood = await FetchTypeFood() 
+      Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
+    })()
+  }, [])
   return <>
     {status === "authenticated" && <div className="absolute right-0 h-full top-3 ">
       <Button
         icon={<LogoutOutlined style={{ width: "18px", height: "18px" }} />}
-        onClick={() => signOut()}>ออกจากระบบ</Button>
+        onClick={() => signOut({ redirect: false })}>ออกจากระบบ</Button>
     </div>}
     {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width="13em" collapsedWidth="45" defaultCollapsed={collapsed} collapsed={collapsed}>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >
@@ -222,12 +233,12 @@ const NavBar = ({blogs,ncds ,handleMenu, handleSubMenuClick, collapsed, setColla
           </SubMenu>
           <SubMenu key="form" icon={<MedicineBoxOutlined />} title="แบบประเมินโรค">
             {!!ncds && ncds.map(({ name_en, name_th }) =>
-              <Menu.Item key={"form_"+name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+              <Menu.Item key={"form_" + name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="foods" icon={<AppleOutlined />} title="ประเภทอาหาร" >
-            {typeFood.map(({ name, key }) =>
-              <Menu.Item key={key} onClick={() => handleSubMenuClick(name)}>{name}</Menu.Item>
+            {!!foodType && foodType?.map(({ name_en, name_th }) =>
+              <Menu.Item key={name_en} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="blogs" icon={<FormOutlined />} title="บทความ">
@@ -267,15 +278,15 @@ const Navigator = dynamic(
 );
 
 
-const typeFood = [
-  { key: "fried", name: "ทอด" },
-  { key: "soup", name: "ต้ม" },
-  { key: "steam", name: "นึ่ง" },
-  { key: "sweets", name: "ขนมหวาน" },
-  { key: "grilled", name: "ย่าง" },
-  { key: "fry", name: "ผัด" },
-  { key: "mix", name: "ยำ" }
-]
+// const typeFood = [
+//   { key: "fried", name: "ทอด" },
+//   { key: "soup", name: "ต้ม" },
+//   { key: "steam", name: "นึ่ง" },
+//   { key: "sweets", name: "ขนมหวาน" },
+//   { key: "grilled", name: "ย่าง" },
+//   { key: "fry", name: "ผัด" },
+//   { key: "mix", name: "ยำ" }
+// ]
 const typeNcds = [
   { key: "diabetes", name: "โรคเบาหวาน" },
   { key: "pressure", name: "โรคความดันโลหิตสูง" },
@@ -314,3 +325,8 @@ const typeBlogs = [
 ]
 
 
+const FetchTypeFood = async () => {
+  const req = await fetch("/api/getTypeFood")
+  const data = await req.json()
+  return data
+}

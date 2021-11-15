@@ -11,7 +11,9 @@ const { confirm } = Modal;
 const { Option } = Select
 const Index = ({ dataAdmin }) => {
     const [admin, setAdmin] = useState(dataAdmin || [])
+    const [reloading, setReLoading] = useState(false);
     const reload = async () => {
+        setReLoading(true)
         const res = await fetch(`/api/admin`, {
             headers: { 'Content-Type': 'application/json', },
         })
@@ -20,7 +22,7 @@ const Index = ({ dataAdmin }) => {
             if (Array.isArray(data)) setAdmin(data)
 
         }
-
+        setReLoading(false)
     }
     const onFinish = async (values) => {
         const res = await fetch(`/api/admin`, {
@@ -93,7 +95,7 @@ const Index = ({ dataAdmin }) => {
             </div>
             {!!admin && <>
                 <Divider />
-                <TableAdmin admin={admin} reload={reload} />
+                <TableAdmin admin={admin} reload={reload} reloading={reloading} />
             </>}
         </div>
     );
@@ -102,7 +104,7 @@ const Index = ({ dataAdmin }) => {
 export default Index;
 
 export const getServerSideProps = async (ctx) => {
-    const dataAdmin = await prisma.user.findMany()
+    const dataAdmin = await prisma.user.findMany() || null
     return {
         props: {
             dataAdmin
@@ -111,9 +113,8 @@ export const getServerSideProps = async (ctx) => {
 }
 
 
-const TableAdmin = ({ admin, reload }) => {
+const TableAdmin = ({ admin, reload ,reloading}) => {
     const [valUser, setValUser] = useState(null);
-
 
     const handleOk =async (val) => {
         const sendData = JSON.stringify({...valUser,...val})
@@ -146,7 +147,7 @@ const TableAdmin = ({ admin, reload }) => {
             title: `คุณต้องการจะลบผู้ใช้ ${val.name}`,
             // icon: <DeleteIcon color="warning"/>,
             content: <div>
-                <h1>ข้อมูลผู้ใช้</h1>
+                {/* <h1>ข้อมูลผู้ใช้</h1> */}
                 <p>อีเมล : {val.email}</p>
                 <p>ชื่อ : {val.name}</p>
                 <p>สิทธิ์ : {val.role}</p>
@@ -236,7 +237,7 @@ const TableAdmin = ({ admin, reload }) => {
         <div>
             <div className="flex gap-3 items-center my-3">
                 <span>ตารางจัดการข้อมูลผู้ใช้</span>
-                <Button onClick={reload} icon={<Autorenew className="text-blue-700 text-xs" />} />
+                <Button onClick={reload} icon={<Autorenew className={`text-blue-700 text-xs ${reloading && "animate-spin"}`} />} />
             </div>
             <Table dataSource={admin} columns={columns} />
             <Modal title="แก้ไขข้อมูลผู้ใช้" visible={!!valUser && true} onOk={handleOk} onCancel={handleCancel} footer={null}>
@@ -300,9 +301,4 @@ const TableAdmin = ({ admin, reload }) => {
                 </Form>
             </Modal>
         </div>)
-}
-
-
-const ModalEditForm = async ({ }) => {
-    return
 }

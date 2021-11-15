@@ -1,14 +1,17 @@
 import {useState} from 'react';
-import {Button, Table,Divider} from 'antd'
+import {Button, Table,Divider,Modal} from 'antd'
 export default function Index(){
+    const [modalAdd,setModalAdd] = useState(false)
+
     return (
         <div 
             className="ease-div flex flex-col gap-4">
             <Board/>
             <div className="flex justify-between mt-4">
                  <div className="text-xl">ตารางแบบประเมินโรค</div>
-                 <Button>เพิ่มข้อมูล</Button>
+                 <Button onClick={()=>setModalAdd(true)}>เพิ่มข้อมูล</Button>
             </div>
+            <ModalAdd setModalAdd={setModalAdd} modalAdd={modalAdd}/>
             <TableForm/>
         </div>
     )
@@ -44,4 +47,22 @@ const TableForm = () =>{
     return <div>
         <Table/>
     </div>
+}
+
+const ModalAdd = ({modalAdd , setModalAdd}) =>{
+    const onOk = () =>{
+        setModalAdd(false)
+    }
+    const onCancel = () =>{
+        setModalAdd(false)
+    }
+    return <Modal title={"เพิ่มข้อมูลแบบประเมิน"} 
+        visible={modalAdd}
+        okText={<>ตกลง</>}
+        cancelText={<>ยกเลิก</>}
+        onOk={onOk}
+        onCancel={onCancel}
+        width="100%">
+
+    </Modal>
 }

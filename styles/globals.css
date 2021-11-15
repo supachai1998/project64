@@ -10,7 +10,7 @@
 * {
     font-family: "Poppins","Prompt" !important;
 }
-.ease-div {
+.ease-anima {
   transition: 'all  ease-in-out';
   @apply transform duration-500 transition-all ease-in-out;
 }
@@ -20,8 +20,12 @@
 .ant-input-password,
 .ant-select-selector,
 .ant-picker,
-.ant-upload {
+.ant-upload,
+.ant-input-number {
   border-radius: 10px !important;
+}
+.ant-input-number{
+  @apply w-full !important
 }
 
 /* custom curve ant design button */
@@ -49,12 +53,9 @@
   text-align: left !important;
 }
 
-html {
-  scroll-behavior: smooth;
-}
 html,
 body {
-
+  scroll-behavior: smooth;
   padding: 0;
   margin: 0;
   font-family: 'Poppins', sans-serif;
@@ -71,11 +72,24 @@ a {
   box-sizing: border-box;
 }
 
-.ant-upload ,.ant-upload-select, .ant-upload-select-text {
-  width: "100%"!important;
+.ant-upload ,.ant-upload-select, .ant-upload-select-text,.upload-list-inline,.ant-upload-list-item {
+  @apply w-full !important;
+}
+.upload-list-inline .ant-upload-list-item {
+  float: left;
+  width: '100%';
+  margin-right: 8px;
 }
 
-
+.upload-list-inline [class*='-upload-list-rtl'] .ant-upload-list-item {
+  float: right;
+}
+.ant-form-item-label > label{
+  @apply md:text-lg sm:text-base !important;
+}
+.ant-modal-title {
+  @apply md:text-lg sm:text-base font-bold
+}
 /* width */
 ::-webkit-scrollbar {
   width: 4px;
@@ -115,3 +129,4 @@ a {
 ::-webkit-resizer {
   background: #000; 
 }
+

@@ -12,8 +12,8 @@ export default async function handler(req, res) {
 
     default:
       data = await prisma.blogs.findMany()
+      !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")
       break;
   }
 
-  !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).json(null)
 }
