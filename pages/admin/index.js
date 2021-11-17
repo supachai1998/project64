@@ -48,15 +48,17 @@ export default function Index() {
             range: '${label} ต้องอยู่ระหว่าง ${min} และ ${max}',
         },
     };
-    if (isMobile) {
-        return (
-            <div className="w-full h-full min-h-screen">
-                <div className="w-full h-auto mx-auto duration-300 transform lg:w-1/2 bg-red-50">
-                    <p className="p-6 text-xl font-bold text-center text-red-800">ไม่รองรับมือถือ</p>
-                </div>
-            </div>
-        )
-    } else if (status === "loading") {
+
+    // if (isMobile ) {
+    //     return (
+    //         <div className="w-full h-full min-h-screen">
+    //             <div className="w-full h-auto mx-auto duration-300 transform lg:w-1/2 bg-red-50">
+    //                 <p className="p-6 text-xl font-bold text-center text-red-800">ไม่รองรับการใช้งานในมือถือ</p>
+    //             </div>
+    //         </div>
+    //     )
+    // } 
+     if (status === "loading") {
         return (
             <div className="min-h-screen">
                 <LinearProgress />
@@ -65,7 +67,7 @@ export default function Index() {
     }
     else if (status === "authenticated") {
         return (
-            <div className="w-full h-full min-h-screen">
+            <div className="w-full h-full min-h-screen flex flex-col">
                 <HeaderAdmin title={title} onSelectPage={onSelectPage} />
                 {title === "โรคไม่ติดต่อเรื้อรัง" ? <_Ncds />
                     : title === "บทความ" ? <_Blogs /> 
@@ -103,10 +105,9 @@ export default function Index() {
 const { Option } = Select
 const HeaderAdmin = ({ title, onSelectPage }) => {
     return (
-        <div className="relative flex flex-col w-full  gap-4 m-2">
+        <div className=" flex flex-col w-full  gap-4 m-2">
             <span className="text-xl duration-500 transform md:text-2xl">{title}</span>
-            
-            <div className="flex w-full h-full gap-2 flex-warp">
+            <div className="flex   gap-2 flex-warp">
                 <Button onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button>
                 <Button onClick={() => onSelectPage("บทความ")}>บทความ</Button>
                 <Button onClick={() => onSelectPage("อาหาร")}>อาหาร</Button>

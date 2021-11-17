@@ -1,17 +1,13 @@
 import { prisma } from "/prisma/client";
-
 export default async function handler(req, res) {
     const { body, method } = req;
-    const { id, name, password, email } = body
+    const { id, } = body
+    
     try {
         switch (method) {
             case "POST":
                 await prisma.user.create({
-                    data: {
-                        "name": name,
-                        "password": password,
-                        "email": email
-                    }
+                    data: body
                 })
                 res.status(200).json({ status: true })
                 break;
@@ -38,11 +34,12 @@ export default async function handler(req, res) {
 
             default:
                 const data = await prisma.user.findMany()
-
                 !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")
                 break;
         }
-    } catch (e) { res.status(400).json({ message: "bad request", error: e.message }) }
+    } catch (error) { 
+        res.status(400).send(error.message)
+    }
 
 
 

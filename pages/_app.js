@@ -21,7 +21,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import dynamic from 'next/dynamic'
 import { LogoutOutlined } from '@mui/icons-material';
 import { Hydrate, QueryClient, QueryClientProvider, useQuery } from 'react-query'
-import { serverip } from '../config/serverip';
 const { Header, Sider, Content } = Layout;
 React.useLayoutEffect = React.useEffect
 const { SubMenu } = Menu;

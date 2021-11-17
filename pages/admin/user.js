@@ -19,8 +19,12 @@ const Index = ({ dataAdmin }) => {
         })
         if (res.status === 200 || res.status === 304) {
             const data = await res.json()
-            if (Array.isArray(data)) setAdmin(data)
-
+            if (Array.isArray(data)) {
+                setAdmin(data)
+            }
+        }else{
+            notification.warning({message:"ไม่พบข้อมูลผู้ใช้"})
+            setAdmin([])
         }
         setReLoading(false)
     }
@@ -39,7 +43,7 @@ const Index = ({ dataAdmin }) => {
             reload()
         } else notification.error({
             message: 'ไม่สามารถเพิ่มข้อมูลได้',
-            description: 'email ซ้ำ หรือไม่สามารถติดต่อ server ',
+            description: res.message,
         })
 
     };
@@ -133,7 +137,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
         } else {
             notification.error({
                 message: 'ไม่สามารถแก้ไขข้อมูลได้',
-                description: 'ไม่สามารถติดต่อ server หรือ email ซ้ำ ',
+                description: res.message,
             })
         }
     };
@@ -168,7 +172,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
                 } else {
                     notification.error({
                         message: 'ไม่สามารถลบข้อมูลได้',
-                        description: 'ไม่สามารถติดต่อ server ',
+                        description: res.message,
                     })
                 }
             },
@@ -183,7 +187,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
             title: 'รหัส',
             dataIndex: 'id',
             key: 'id',
-            render: text => <div className="text-gray-900">{text.substring(0, 3)}..{text.substring(text.length / 1.2, text.length - 1)}</div>,
+            render: text => <Tooltip title={text}><div className="text-gray-900">{text.substring(0, 3)}..{text.substring(text.length / 1.2, text.length - 1)}</div></Tooltip>,
         },
         {
             title: 'อีเมล',
@@ -199,13 +203,6 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
             title: 'ชื่อผู้ใช้',
             dataIndex: 'name',
             key: 'name',
-        },
-
-        {
-            title: 'รหัสผ่าน',
-            dataIndex: 'password',
-            key: 'password',
-            render: text => <div className="text-gray-200">**{text.substring(text.length / 2)}</div>,
         },
         {
             title: 'สถานะ',
@@ -253,7 +250,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
                         label="ชื่อผู้ใช้"
                         rules={[{ required: true, message: 'ใส่ชื่อของคุณ!' }]}
                     >
-                        <Input />
+                        <Input disabled/>
                     </Form.Item>
                     <Form.Item
                         name='email'
@@ -264,14 +261,6 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
                         ]}>
                         <Input disabled/>
                     </Form.Item>
-                    <Form.Item
-                        name="password"
-                        label="พาสเวิร์ด"
-                        rules={[{ required: true, message: 'ใส่พาสของคุณ!' }]}
-                    >
-                        <Input disabled/>
-                    </Form.Item>
-                    
                     <Form.Item
                         name="role"
                         label="สิทธิ์"

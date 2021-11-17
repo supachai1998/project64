@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Table, Divider, Select, Modal, Form, Input, Upload, notification ,InputNumber } from 'antd'
+import { Button, Table, Divider, Select, Modal, Form, Input, Upload, notification, InputNumber } from 'antd'
 import { UploadOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -93,6 +93,9 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
         setFileList(newFileList);
         console.log(fileList)
     }
+    const onReset=()=>{
+        setFileList(null)
+    }
     return <Modal title={"เพิ่มข้อมูลอาหาร"}
         visible={modalAddFood}
         okText={<>ตกลง</>}
@@ -108,8 +111,9 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 18 }}
             onFinish={onOk}
-            // onFinishFailed={onCancel}
-            >
+            onReset={onReset}
+        // onFinishFailed={onCancel}
+        >
 
             <Form.Item
                 name="TypeFood"
@@ -131,7 +135,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                     pattern: /^[\u0E00-\u0E7F]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
-                <Input placeholder="ภาษาไทย"/>
+                <Input placeholder="ภาษาไทย" />
             </Form.Item>
             <Form.Item
                 name="name_en"
@@ -140,7 +144,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                     pattern: /^[a-zA-Z0-9]+$/,
                     message: 'กรอกภาษาอังกฤษ',
                 }]}>
-                <Input placeholder="ภาษาอังกฤษ"/>
+                <Input placeholder="ภาษาอังกฤษ" />
             </Form.Item>
             <Form.Item
                 name="proceduce"
@@ -163,7 +167,10 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
             <Form.Item
                 name="video"
                 label="ที่อยู่วิดีโอ"
-                rules={[{ required: true },]}>
+                rules={[{ required: true },{
+                    pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
+                    message: 'ป้อน url ให้ถูกต้อง',
+                }]}>
                 <Input placeholder="https://youtube.com/watch?" />
             </Form.Item>
 
@@ -183,7 +190,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป</Button>
+                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList.length : 0 }/1)</Button>
                 </Upload>
             </Form.Item>
             <div className="flex justify-end gap-2">
@@ -195,7 +202,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
 }
 const ModalManageType = ({ modalAddType, setModalAddType }) => {
     const [foodType, setType] = useState(null)
-    const [foodTypeEdit, setTypeEdit] = useState(null)
+    const [foodTypeEdit, setFoodTypeEdit] = useState(null)
     const reload = async () => {
         const fetchTypeFood = await FetchTypeFood()
         Array.isArray(fetchTypeFood) && setType(fetchTypeFood)
@@ -208,20 +215,38 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
 
     useEffect(() => {
         form.setFieldsValue(foodTypeEdit);
-    }, [form, modalAddType,foodTypeEdit]);
+    }, [form, modalAddType, foodTypeEdit]);
 
     const onSubmit = async (val) => {
-        const req = await fetch('/api/getTypeFood', {
-            headers: { 'Content-Type': 'application/json', },
-            method: "POST",
-            body: JSON.stringify(val)
-        })
-        const data = await req.json()
-        if (!data.message) {
-            notification.success({ message: "เพิ่มข้อมูลสำเร็จ" })
-            reload()
+        if (foodTypeEdit) {
+            const send = {...foodTypeEdit,...val}
+            const req = await fetch('/api/getTypeFood', {
+                headers: { 'Content-Type': 'application/json', },
+                method: "PATCH",
+                body: JSON.stringify(send)
+            })
+            const data = await req.json()
+            if (!data.message) {
+                notification.success({ message: "แก้ไขข้อมูลสำเร็จ" })
+                reload()
+                setFoodTypeEdit(null)
+            } else {
+                notification.error({ message: "ไม่สามารถแก้ไขข้อมูลได้" })
+            }
         } else {
-            notification.error({ message: "ไม่สามารถเพิ่มข้อมูลได้" })
+            const req = await fetch('/api/getTypeFood', {
+                headers: { 'Content-Type': 'application/json', },
+                method: "POST",
+                body: JSON.stringify(val)
+            })
+            const data = await req.json()
+            if (!data.message) {
+                notification.success({ message: "เพิ่มข้อมูลสำเร็จ" })
+                reload()
+            } else {
+                notification.error({ message: "ไม่สามารถเพิ่มข้อมูลได้" })
+            }
+
         }
     }
     const onFinishFailed = (e) => {
@@ -279,61 +304,61 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
             key: '',
             render: val => <div>
                 {/* <Button type="text" className="bg-yellow-300" onClick={() => console.log(val)}>ดู</Button> */}
-                <Button type="text" className="bg-yellow-300" disabled={foodTypeEdit?.id !== val?.id || false} onClick={() => foodTypeEdit?.id === val?.id ? setTypeEdit(null) : setTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</Button>
+                <Button type="text" className="bg-yellow-300" disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</Button>
                 <Button type="danger" onClick={() => showConfirmDel(val)}>ลบ</Button>
             </div>,
         },
 
     ];
-    return<> 
-    <Modal title={"จัดการประเภทอาหาร"}
-        visible={modalAddType}
-        okText={<>ตกลง</>}
-        cancelText={<>ยกเลิก</>}
-        footer={<></>}
-        // onOk={onOk}
-        onCancel={onCancel}
-        width={640}
-    >
-        <Form
-            form={form}
-            // initialValues={{}}
-            destroyOnClose={true}
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            onFinish={onSubmit}
-            onFinishFailed={onFinishFailed}>
+    return <>
+        <Modal title={"จัดการประเภทอาหาร"}
+            visible={modalAddType}
+            okText={<>ตกลง</>}
+            cancelText={<>ยกเลิก</>}
+            footer={<></>}
+            // onOk={onOk}
+            onCancel={onCancel}
+            width={640}
+        >
+            <Form
+                form={form}
+                // initialValues={{}}
+                destroyOnClose={true}
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                onFinish={onSubmit}
+                onFinishFailed={onFinishFailed}>
 
-            <Form.Item
-                name="name_th"
-                label="ชื่อภาษาไทย"
-                rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F]+$/,
-                    message: 'กรอกภาษาไทย',
-                }]}>
-                <Input />
-            </Form.Item>
+                <Form.Item
+                    name="name_th"
+                    label="ชื่อภาษาไทย"
+                    rules={[{ required: true }, {
+                        pattern: /^[\u0E00-\u0E7F]+$/,
+                        message: 'กรอกภาษาไทย',
+                    }]}>
+                    <Input />
+                </Form.Item>
 
-            <Form.Item
-                name="name_en"
-                label="ชื่อภาษาอังกฤษ"
-                rules={[{ required: true }, {
-                    pattern: /^[a-zA-Z0-9]+$/,
-                    message: 'กรอกภาษาอังกฤษ',
-                }]}>
-                <Input />
-            </Form.Item>
+                <Form.Item
+                    name="name_en"
+                    label="ชื่อภาษาอังกฤษ"
+                    rules={[{ required: true }, {
+                        pattern: /^[a-zA-Z0-9]+$/,
+                        message: 'กรอกภาษาอังกฤษ',
+                    }]}>
+                    <Input />
+                </Form.Item>
 
 
-            <div className="flex justify-end gap-2">
-                <Button htmlType="reset">ล้างค่า</Button>
-                <Button type="primary" htmlType="submit">{!!foodTypeEdit ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}</Button>
-            </div>
-        </Form>
-        <Divider />
-        {!!foodType && <Table dataSource={foodType} columns={columns} />}
-    </Modal>
-    
+                <div className="flex justify-end gap-2">
+                    <Button htmlType="reset">ล้างค่า</Button>
+                    <Button type="primary" htmlType="submit">{!!foodTypeEdit ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}</Button>
+                </div>
+            </Form>
+            <Divider />
+            {!!foodType && <Table dataSource={foodType} columns={columns} />}
+        </Modal>
+
     </>
 }
 
