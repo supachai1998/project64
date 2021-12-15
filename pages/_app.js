@@ -78,7 +78,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     (async () => {
       const resNCDS = await fetch(`/api/getNCDS`, { headers: { 'Content-Type': 'application/json', }, })
       if (resNCDS.status === 200) {
-        setNCDS(resNCDS.json())
+        const data = await resNCDS.json()
+        setNCDS(data)
       }
     })()
 

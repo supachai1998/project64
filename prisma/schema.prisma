@@ -10,7 +10,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity"]
+  previewFeatures = ["referentialIntegrity","createMany"]
 }
 
 model Account {
@@ -122,16 +122,15 @@ model FoodNcds {
 }
 
 model ImageNCDS {
-  id  String @id @default(uuid())
-  url String
-
-  Ncds   Ncds? @relation(fields: [ncdsId], references: [id])
-  ncdsId Int?
+  id           String @id @default(uuid())
+  name         String
+  Ncds         Ncds?  @relation(fields: [ncdsId], references: [id])
+  ncdsId       Int?
 }
 
 model ImageFood {
   id  String @id @default(uuid())
-  url String
+  name String
 
   Food   Food? @relation(fields: [foodId], references: [id])
   foodId Int?
@@ -139,35 +138,38 @@ model ImageFood {
 
 model ImageBlog {
   id  String @id @default(uuid())
-  url String
+  name String
 
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
   blogsId String?
 }
 
 model Blogs {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   type      Type
   name      String
   imply     String
+  approve   Int?         @default(0)
   video     String?
   vote_1    Int?
   vote_2    Int?
   vote_3    Int?
   vote_4    Int?
   vote_5    Int?
-  views     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  image ImageBlog[]
+  views     Int?
+  createdAt DateTime?    @default(now())
+  updatedAt DateTime?    @updatedAt
+  subBlog   subBlog[]
+  image     ImageBlog[]
 }
 
 model subBlog {
-  id     String  @id @default(uuid())
-  name   String
-  detail String  @db.Text
-  image  String?
+  id      String  @id @default(uuid())
+  name    String
+  detail  String  @db.Text
+  image   String?
+  Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
+  blogsId String?
 }
 
 enum Role {
