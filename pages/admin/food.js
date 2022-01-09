@@ -132,7 +132,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                 name="name_th"
                 label="ชื่ออาหารไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F]+$/,
+                    pattern: /^[\u0E00-\u0E7F ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ภาษาไทย" />
@@ -141,7 +141,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                 name="name_en"
                 label="ชื่ออาหารอังกฤษ"
                 rules={[{ required: true }, {
-                    pattern: /^[a-zA-Z0-9]+$/,
+                    pattern: /^[a-zA-Z0-9 ]+$/,
                     message: 'กรอกภาษาอังกฤษ',
                 }]}>
                 <Input placeholder="ภาษาอังกฤษ" />
@@ -155,7 +155,10 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
             <Form.Item
                 name="calories"
                 label="ปริมาณพลังงาน"
-                rules={[{ required: true },]}>
+                rules={[{ required: true },{
+                    pattern: /^[0-9.]+$/,
+                    message: 'ป้อนตัวเลข',
+                }]}>
                 <InputNumber min="0" max="10000" step="0.01" stringMode placeholder="ปริมาณพลังงาน (Kilo Calories)" />
             </Form.Item>
             <Form.Item
@@ -302,10 +305,10 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
             title: 'การจัดการ',
             dataIndex: '',
             key: '',
-            render: val => <div>
+            render: val => <div className="flex flex-wrap gap-2">
                 {/* <Button type="text" className="bg-yellow-300" onClick={() => console.log(val)}>ดู</Button> */}
-                <Button type="text" className="bg-yellow-300" disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</Button>
-                <Button type="danger" onClick={() => showConfirmDel(val)}>ลบ</Button>
+                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
+                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val)}>ลบ</button>
             </div>,
         },
 
@@ -333,7 +336,7 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
                     name="name_th"
                     label="ชื่อภาษาไทย"
                     rules={[{ required: true }, {
-                        pattern: /^[\u0E00-\u0E7F]+$/,
+                        pattern: /^[\u0E00-\u0E7F ]+$/,
                         message: 'กรอกภาษาไทย',
                     }]}>
                     <Input />
@@ -343,7 +346,7 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
                     name="name_en"
                     label="ชื่อภาษาอังกฤษ"
                     rules={[{ required: true }, {
-                        pattern: /^[a-zA-Z0-9]+$/,
+                        pattern: /^[a-zA-Z0-9 ]+$/,
                         message: 'กรอกภาษาอังกฤษ',
                     }]}>
                     <Input />

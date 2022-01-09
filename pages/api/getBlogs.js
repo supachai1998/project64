@@ -23,7 +23,6 @@ export default async function handler(req, res) {
         res.status(200).json({ status: true })
         break;
       case "PATCH":
-
         await prisma.blogs.update({
           where: {
             id: id,
