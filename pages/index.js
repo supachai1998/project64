@@ -6,7 +6,9 @@ import dynamic from 'next/dynamic'
 import { noti } from '/components/noti.js';
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const CusInput = dynamic(() => import("/components/cusInput"))
+
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore"))
+const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"))
 
 
 
@@ -32,13 +34,13 @@ export default function Index() {
     <motion.div className="flex flex-col w-full h-full min-h-screen gap-3 "
       initial="hidden"
       animate="visible">
-      <Carousel autoplay className="z-0" autoplaySpeed={15000} dotPosition="center">
+      {/* <Carousel autoplay className="z-0" autoplaySpeed={15000} dotPosition="center">
         {dataBanner.map(({ id, title, detail, ref, imgUrl, categories, title_th, type, intro }, ind) => (
           <div key={ind} className="relative flex w-full bg-purple-200 h-96 rounded-xl font-Poppins">
             <CustImage src={imgUrl} alt={title} className="rounded-xl" width="100%" height="100%" preview={false} />
           </div>
         ))}
-      </Carousel>
+      </Carousel> */}
       <div className="relative">
         <div className="flex flex-col gap-3 p-3 ">
           <CusInput data={data} setData={setData} originData={onSearchTomyum} />
@@ -50,8 +52,8 @@ export default function Index() {
         {loading && input.length > 2 && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>}
       </div>
 
-
-      <DisplayFoodReadMore data={blogTrends} title={"บทความยอดนิยม"} />
+      <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} />
+      <DisplayBlogReadMore data={blogTrends} title={"บทความยอดนิยม"} />
     </motion.div>
   )
 }
@@ -81,6 +83,28 @@ const dataBanner = [
   },
   {
     id: 2,
+    type: "blogs",
+    categories: "blogs_food",
+    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
+    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+  {
+    id: 3,
+    type: "blogs",
+    categories: "blogs_food",
+    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
+    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+  {
+    id: 4,
     type: "blogs",
     categories: "blogs_food",
     title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
@@ -217,6 +241,39 @@ const blogTrends = [
   },
   {
     id: 1,
+    type: "blogs",
+    categories: "blogs_food",
+    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
+    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+  {
+    id: 2,
+    type: "blogs",
+    categories: "blogs_food",
+    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
+    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+  {
+    id: 3,
+    type: "blogs",
+    categories: "blogs_food",
+    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
+    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+  {
+    id: 4,
     type: "blogs",
     categories: "blogs_food",
     title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
