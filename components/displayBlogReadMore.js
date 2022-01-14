@@ -63,7 +63,6 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
       className='m-10 mt-0'
     >
 
-        <Divider/>
       <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl">
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
         <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
