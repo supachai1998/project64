@@ -12,7 +12,9 @@
   }
   /* ... */
 }
-
+.ant-image-preview-img{
+  display: inline-flex !important;
+}
 @media only screen and (max-width: 1256px){
   .ant-steps{
     display:flex !important;

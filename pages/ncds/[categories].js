@@ -11,7 +11,8 @@ const Topic = dynamic(() => import("/components/ncds/topic.js"),
 const Content = dynamic(() => import("/components/ncds/content.js"))
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
 { ssr: false })
-
+const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
+{ ssr: false })
 
 export default function Index() {
     const router = useRouter()
@@ -21,15 +22,16 @@ export default function Index() {
         <>
             {name ?
                 <div className="flex flex-col w-full h-auto min-h-screen gap-4 my-auto">
-                    <div className="relative mx-auto h-1/2">
-                        <CustImage className="w-1/2 mx-auto bg-cover h-1/2"  src={"https://siph-space.sgp1.digitaloceanspaces.com/media/upload/diabeteshowtoeat_og_1200.jpg"} alt={"0"} width="100%" height="100%" preview={false} />
-                    </div>
+                    
                     <div className="flex flex-col bg-gray-50 ipad:flex-row gap-y-1">
                         <Content className="w-full " bodyContent={bodyContent} />
                     </div>
-                    <DisplayFoodReadMore data={blogTrends} title={`บทความยอดนิยม`}  />
+                    <div className='mx-10'>
+                    <Topic raw={data} categories={categories} placeholder={"ชื่อโรค , อาการ , สาเหตุ "} />
+                    {/* <DisplayFoodReadMore data={blogTrends} title={`อาหาร`}  /> */}
+                    <DisplayBlogReadMore data={blogTrends} title={`บทความยอดนิยม`} />
+                    </div>
                     
-                    <Divider />
                     {/* <Ncds ncds={ncds} /> */}
                 </div>
                 : categories ?
