@@ -6,9 +6,11 @@ import dynamic from 'next/dynamic'
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
-const Topic = dynamic(() => import("/components/ncds/topic.js"))
+const Topic = dynamic(() => import("/components/ncds/topic.js"),
+{ ssr: false })
 const Content = dynamic(() => import("/components/ncds/content.js"))
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"))
+const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
+{ ssr: false })
 
 
 export default function Index() {

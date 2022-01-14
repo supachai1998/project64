@@ -7,8 +7,10 @@ import { noti } from '/components/noti.js';
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const CusInput = dynamic(() => import("/components/cusInput"))
 
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore"))
-const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"))
+const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore"),
+{ ssr: false })
+const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
+{ ssr: false })
 
 
 

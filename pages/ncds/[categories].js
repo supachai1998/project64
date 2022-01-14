@@ -6,9 +6,11 @@ import dynamic from 'next/dynamic'
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
-const Topic = dynamic(() => import("/components/ncds/topic.js"))
+const Topic = dynamic(() => import("/components/ncds/topic.js"),
+{ ssr: false })
 const Content = dynamic(() => import("/components/ncds/content.js"))
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"))
+const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
+{ ssr: false })
 
 
 export default function Index() {
@@ -37,10 +39,8 @@ export default function Index() {
                             <p className='w-2/3 text-left ml-auto mr-auto'>โรคที่ร่างกายมีระดับน้ำตาลในเลือดสูงผิดปกติ โดยเกิดจากความผิดปกติของการใช้น้ำตาลทำให้ร่างกายไม่สามารถนำน้ำตาลไปใช้เป็นพลังงานได้ตามปกติ ทำให้มีระดับน้ำตาลสูงขึ้น</p>
                             <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
                         </div>
-                        {/* <Divider /> */}
-                        <ContentHeader headerData={headerData}/>
+                        <ContentHeader headerData={headerData} url_yt={"https://www.youtube.com/embed/elkz5u4QvXQ"}/>
                         
-                        {/* <Divider /> */}
                         <div className='mx-32'>
                             <Topic raw={data} categories={categories} placeholder={"ชื่อโรค , อาการ , สาเหตุ "} />
                             <DisplayFoodReadMore data={blogTrends} title={`บทความยอดนิยม`}  />

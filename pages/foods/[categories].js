@@ -23,7 +23,7 @@ export default function Index() {
                     <div className="flex flex-col bg-gray-50 ipad:flex-row relative ">
                             <CustImage src={"https://sg.fiverrcdn.com/photos/112566478/original/386e485f0d4853746792abe5e592480ec32c41d1.jpg?1527930323"} alt={"0"} width="100%" height="517px" preview={false} /></div>
                             <div className='absolute w-full text-center h-80 '>
-                                <label className='font-Poppins text-10xl text-white my-auto '>{name}</label>
+                                <label className='font-Poppins text-10xl text-white my-auto p-0'>{name}</label>
                             </div>
                        
                             <div className='card mv-10 w-11/12 mx-auto'>
@@ -33,7 +33,6 @@ export default function Index() {
                             </div>
                         
                   
-                    <Divider />
                     <Ncds ncds={ncds} />
                     <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} headTextColor={"text-green-900"} headLineColor={"bg-green-300"} />
                 </div>

@@ -52,11 +52,7 @@ const customIcons = {
 const {OptGroup,Option} = Select
 
 export default function DisplayBlogReadMore({ data, title, headTextColor, headLineColor }) {
-  const DisplayBlogReadMore = dynamic(
-    () => import("/components/displayBlogReadMore.js"),
-    { ssr: false }
-  )
-  
+
   return (
     <motion.div
       variants={fadeInUp}

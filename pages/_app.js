@@ -191,7 +191,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
                   </ConfigProvider>
                 </AnimatePresence>
               </Content>
-              <Navigator />
+              {/* <Navigator /> */}
             </Layout>
 
           </Layout>
@@ -270,12 +270,14 @@ const TopProgressBar = dynamic(
   },
   { ssr: false },
 );
-const Navigator = dynamic(
-  () => {
-    return import("/components/navigator");
-  },
-  { ssr: false },
-);
+
+
+// const Navigator = dynamic(
+//   () => {
+//     return import("/components/navigator");
+//   },
+//   { ssr: false },
+// );
 
 
 // const typeFood = [

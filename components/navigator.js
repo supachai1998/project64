@@ -34,11 +34,10 @@ export default function Navigator() {
         });
     }
     return (
-        <div></div>
-        // <div className="fixed right-0 z-10 flex flex-col gap-4 px-2 py-3 mr-2 duration-500 transform rounded-lg hover:bg-blue-300 hover:scale-125 opacity-90 top-1/2 ">
-        //     <Tooltip title="เลื่อนขึ้น" placement="left" ><ArrowUpwardIcon className="hover:text-blue-700" onClick={handleGoToTop} style={{ width: "1.1rem", height: "1.1rem" }} /></Tooltip>
-        //     {/* <Tooltip title="ย้อนกลับ" placement="left"><ArrowBackIcon className="hover:text-blue-700" onClick={handleBackPage} style={{ width: "1.1rem", height: "1.1rem" }} /></Tooltip> */}
-        //     {/* <Tooltip title="เลื่อนลง" placement="left"><ArrowUpwardIcon className="transform rotate-180 hover:text-blue-700 " onClick={handleGoToBelow} style={{ width: "1.1rem", height: "1.1rem" }} /></Tooltip> */}
-        // </div>
+        <div className="fixed right-0 z-10 flex flex-col gap-4 px-2 py-3 mr-2 duration-500 transform rounded-lg hover:bg-blue-300 hover:scale-125 opacity-90 top-1/2 ">
+            <Tooltip title="เลื่อนขึ้น" placement="left" ><ArrowUpwardIcon className="hover:text-blue-700" onClick={handleGoToTop} style={{ width: "1.1rem", height: "1.1rem" }} /></Tooltip>
+            {/* <Tooltip title="ย้อนกลับ" placement="left"><ArrowBackIcon className="hover:text-blue-700" onClick={handleBackPage} style={{ width: "1.1rem", height: "1.1rem" }} /></Tooltip> */}
+            {/* <Tooltip title="เลื่อนลง" placement="left"><ArrowUpwardIcon className="transform rotate-180 hover:text-blue-700 " onClick={handleGoToBelow} style={{ width: "1.1rem", height: "1.1rem" }} /></Tooltip> */}
+        </div>
     )
 }

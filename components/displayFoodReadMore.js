@@ -55,10 +55,6 @@ const {OptGroup,Option} = Select
 var ck_ncds = false
 export default function DisplayFoodReadMore({ data, title, headTextColor, headLineColor }) {
 
-  const DisplayFoodReadMore = dynamic(
-    () => import("/components/displayFoodReadMore.js"),
-    { ssr: false }
-  )
   return (
     <motion.div
       variants={fadeInUp}
@@ -69,7 +65,6 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
       className='mx-10'
     >
 
-        <Divider/>
       <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl ">
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
         <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>

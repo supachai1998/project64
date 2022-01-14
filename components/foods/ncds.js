@@ -107,7 +107,7 @@ const Ncds = ({ ncds }) => {
                                 <>
                                     {/* {console.log(suggess)} */}
                                     {imgUrl &&<div className="w-full h-96 md:w-full "><CusImage src={imgUrl} alt={ref} className="w-full h-full  " width="100%" height="100%" preview={false} /></div>}
-                                    <div className="flex flex-col w-full h-full gap-3 px-5 pb-5 text-center">
+                                    <div className="flex flex-col w-full h-full gap-3 px-5 pb-5 text-center mt-5">
                                         <div className="flex flex-col  ">
                                             <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
@@ -158,8 +158,8 @@ const CusModal = ({ handleCancel, content }) => {
     const { videoUrl, title } = content
     return (
         <>
-            <Modal title={title} visible={true} centered onCancel={handleCancel} width="100%" footer={null} >
-                <div className="w-full sm:h-screen h-52"><ReactPlayer url={videoUrl} width="100%" height="100%" /></div>
+            <Modal title={title} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
+                <div className="h-screen w-full p-0 m-0 "><ReactPlayer url={videoUrl} width="100%" height="100%" /></div>
             </Modal>
         </>
     );
