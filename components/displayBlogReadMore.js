@@ -116,7 +116,7 @@ margin={20} >
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             key={id + index + Math.random()} 
-            className="grid-cols-1  grid rounded-xl h-fix73 bg-gray-50 items-center  item shadow-lg p-0 ">
+            className="grid-cols-1  grid rounded-xl lg:h-fix73 h-full bg-gray-50 items-center  item shadow-lg p-0 ">
             <div className="relative w-full" >
               <CustImage src={imgUrl} alt={title_th} className="" width="100%" height="200px" preview={false} />
 
@@ -180,7 +180,6 @@ margin={20} >
     </motion.div>
 
   )
-  // const OwlCarousel = dynamic(import("react-owl-carousel"), {ssr: false});
 
 
 }

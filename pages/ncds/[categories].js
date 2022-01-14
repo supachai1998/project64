@@ -41,7 +41,7 @@ export default function Index() {
                         </div>
                         <ContentHeader headerData={headerData} url_yt={"https://www.youtube.com/embed/elkz5u4QvXQ"}/>
                         
-                        <div className='mx-32'>
+                        <div className='lg:mx-32 mx-0'>
                             <Topic raw={data} categories={categories} placeholder={"ชื่อโรค , อาการ , สาเหตุ "} />
                             <DisplayFoodReadMore data={blogTrends} title={`บทความยอดนิยม`}  />
                         </div>
