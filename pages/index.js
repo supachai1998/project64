@@ -53,9 +53,11 @@ export default function Index() {
         </div>
         {loading && input.length > 2 && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>}
       </div>
-
-      <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} />
-      <DisplayBlogReadMore data={blogTrends} title={"บทความยอดนิยม"} />
+      <div className='mx-10'>
+        <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} />
+        <DisplayBlogReadMore data={blogTrends} title={"บทความยอดนิยม"} />
+      </div>
+      
     </motion.div>
   )
 }

@@ -13,6 +13,24 @@
   /* ... */
 }
 
+@media only screen and (max-width: 1256px){
+  .ant-steps{
+    display:flex !important;
+    flex-direction: column !important;
+    margin: 10px;
+    padding-left: 16px;
+    width: 100%;
+  }
+  .ant-steps-item-container{
+    
+    padding-bottom: 16px;
+  }
+  .ant-steps-item-active{
+    padding-left: 16px !important;
+  }
+}
+
+
 .mv-10{
   top: -50px;
   position: relative;
