@@ -110,7 +110,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
           setDefaultSelectedKeys(categories)
         } else {
           if (!categories) {
-            setDefaultSelectedKeys("home")
+            // setDefaultSelectedKeys("home")
             setTitle("หน้าหลัก")
           }
           else {
