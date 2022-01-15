@@ -3,10 +3,11 @@ const CustImage = dynamic(() => import("/components/cusImage.js"))
 import OwlCarousel from "react-owl-carousel";
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import "owl.carousel/dist/assets/owl.theme.default.css";
-
+import {  Select } from 'antd';
+const { Option, OptGroup } = Select
 export default function Content({ bodyContent }) {
     return (
-        <div className="flex flex-col w-full  sm:h-1/4 sm:gap-y-2 gap-y-12 px-60 my-15">
+        <div className="flex flex-col w-full  sm:h-1/4 sm:gap-y-2 gap-y-12 px-20 my-15 bg-gray-100">
 <OwlCarousel
 loop={false}
 items={1}
@@ -26,19 +27,18 @@ navText={[
 }
 dots={false}
 margin={20} >
-            {bodyContent.map(({ title, content ,imgUrl}, index) => (
+            {bodyContent.map(({ title, content ,imgUrl,yt_url}, index) => (
                     // eslint-disable-next-line react/jsx-key
                     <div className="relative mx-auto h-1/2">
                         
-                        <CustImage className="w-1.5 mx-auto bg-cover h-10" src={imgUrl} alt={"0"} width="100%" height="100%" preview={false} />
+                        <CustImage className="w-1.5 mx-auto bg-cover h-10" src={imgUrl} alt={"0"} width="1637px" height="500px" preview={false} />
                     </div>
                 ))}
 
 </OwlCarousel>
-
             {bodyContent.map(({ title, content ,imgUrl}, index) => (
-                <div key={index} className="mt-3 h-1/4 {index!=1}">
-
+                <div key={index} className="mt-3 h-1/4 ">
+                    {index==1?<iframe className='mx-auto' width="560" height="315" src="https://www.youtube.com/embed/TLvDDRD7H4o" title="YouTube video player"  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ></iframe>:""}
                      {/* {imgUrl&&index!=0 && <CustImage src={imgUrl} width="203px" height="289px"/>} */}
                     <div>
                     <p className={index % 2 === 0
@@ -51,7 +51,17 @@ margin={20} >
                      
                     </div>
             ))}
+            <div className='flex justify-end'>
+                <Select className='w-1/6 shadow-lg my-4'>
 
+                    <option value="1"><span className="text-yellow-400">★</span><span className="mx-2">1 คะแนน</span></option>
+                    <option value="2"><span className="text-yellow-400">★</span><span className="mx-2">2 คะแนน</span></option>
+                    <option value="3"><span className="text-yellow-400">★</span><span className="mx-2">3 คะแนน</span></option>
+                    <option value="4"><span className="text-yellow-400">★</span><span className="mx-2">4 คะแนน</span></option>
+                    <option value="5"><span className="text-yellow-400">★</span><span className="mx-2">5 คะแนน</span></option>
+                    
+                </Select>
+            </div>
         </div>
     )
 }

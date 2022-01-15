@@ -8,7 +8,8 @@ const CustImage = dynamic(() => import("/components/cusImage.js"))
 const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
 const Topic = dynamic(() => import("/components/ncds/topic.js"),
 { ssr: false })
-const Content = dynamic(() => import("/components/ncds/content.js"))
+const Content = dynamic(() => import("/components/ncds/content.js"),
+{ ssr: false })
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
 { ssr: false })
 const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
