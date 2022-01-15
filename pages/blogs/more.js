@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router'
-import React, { useState, useEffect } from 'react'
 import { Card, Divider,Input } from 'antd';
 import dynamic from 'next/dynamic'
 
@@ -7,7 +6,6 @@ import dynamic from 'next/dynamic'
 const {Search} = Input
 
 const CustImage = dynamic(() => import("/components/cusImage.js"))
-const CusInput = dynamic(() => import("/components/cusInput"))
 const Topic = dynamic(() => import("/components/foods/topic.js"),
 { ssr: false })
 const ContentHeader = dynamic(() => import("/components/foods/contentheader.js"))
@@ -19,31 +17,32 @@ const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMor
 
 export default function Steam() {
     const router = useRouter()
-    const [data, setData] = useState(blogTrends)
+    const { categories, name } = router.query
 
     return (
         <div className="mt-3 min-h-screen">
         
                     <div className="grid  gap-4  px-10">
-                    <div >
-                        <CusInput data={data} setData={setData} originData={blogTrends} />
-
+                        <div>
+                            <label className="text-xl">ค้นหา</label>
+                            <Search className="z-0 w-full input search loading with enterButton"  maxLength={30} enterButton inputMode="search" 
+          placeholder={"ชื่อบทความ"} />
                         </div>
                         <div className='grid '>
-                            <span className='w-full text-3xl font-bold font-Charm text-center'>อาหาร</span>
+                            <span className='w-full text-3xl font-bold font-Charm text-center'>บทความ</span>
                             <div className='grid justify-items-center'>
-                                <span className='border-b-2 border-solid border-green-800 w-full mx-10 justify-center text-right font-Poppins'>พบทั้งหมด {ncds.length} จาก 300 เมนู รายการ</span>
+                                <span className='border-b-2 border-solid border-green-800 w-full mx-10 justify-center text-right font-Poppins'>{blogTrends.length} จาก 300 บทความ</span>
                             </div>
                             <div className='grid grid-cols-4'>
-                            {!!onSearchTomyum && onSearchTomyum.map(({ title,title_en,title_th,categories,type, imgUrl }) =>
+                            {!!blogTrends && blogTrends.map(({ title,title_th,categories,type, imgUrl}) =>
                                 
                                     // eslint-disable-next-line react/jsx-key
                                     <div className='grid grid-cols-2  m-5 '>
                                         
                                         {imgUrl&&<CustImage src={imgUrl} width="90%" height="61px"/>}
-                                        <a className='text-black hover:text-gray-500 font-bold font-Poppins not-italic' onClick={() => router.push(`/${type}/${categories}?name=${title_th}`)}>
-                                            <span>{title_th}</span>
-                                            <p className='truncate text-sm'>{title_en}</p>
+                                        <a className='text-black hover:text-gray-500 font-bold font-Poppins not-italic'  onClick={() => router.push(`/${type}/${categories}?name=${title}`)}>
+                                            <span>{title}</span>
+                                            {/* <p className='truncate text-sm'>{title}</p> */}
                                         </a>
 
                                     </div>
@@ -120,128 +119,50 @@ const ncds = [
 
 ]
 
-const onSearchTomyum = [
+
+const blogTrends = [
     {
       id: 0,
-      type: "foods",
-      categories: "soup",
-      title_th: "ต้มยำกุ้ง",
-      title_en: "tom yum kung",
-      cal: 343,
-      positive: [
-        {
-          ncds: "โรคเบาหวาน",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้ แต่ควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล"
-        },
-        {
-          ncds: "โรคถุงลมโป่งพอง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้"
-        },
-        {
-          ncds: "โรคมะเร็ง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้ ในปริมาณที่จำกัด"
-        },
-      ],
-      nagative: [
-        {
-          ncds: "โรคความดันโลหิตสูง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-        },
-        {
-          ncds: "โรคหลอดเลือดสมอง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-        },
-        {
-          ncds: "โรคอ้วนลงพุง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-        },
-      ],
-      imgUrl: "https://www.jmthaifood.com/wp-content/uploads/2020/01/%E0%B8%95%E0%B9%89%E0%B8%A1%E0%B8%A2%E0%B8%B3%E0%B8%81%E0%B8%B8%E0%B9%89%E0%B8%87-1.jpg",
-    },
-    {
-      id: 1,
-      type: "foods",
-      categories: "soup",
-      title_th: "ต้มยำปลานิล",
-      title_en: "tom yum tilapia",
-      cal: 290,
-      positive: [
-        {
-          ncds: "โรคเบาหวาน",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้ แต่ควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล"
-        },
-        {
-          ncds: "โรคถุงลมโป่งพอง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้"
-        },
-        {
-          ncds: "โรคมะเร็ง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้ ในปริมาณที่จำกัด"
-        },
-        {
-          ncds: "โรคความดันโลหิตสูง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้"
-        },
-        {
-          ncds: "โรคหลอดเลือดสมอง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "สามารถทานได้"
-        },
-      ],
-      nagative: [
-        {
-          ncds: "โรคอ้วนลงพุง",
-          intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-          because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-        },
-      ],
-      imgUrl: "https://img-global.cpcdn.com/recipes/d573bc1742ed1d14/1200x630cq70/photo.jpg",
-    },
-    {
-      id: 3,
       type: "ncds",
       categories: "diabetes",
       title_th: "อาหาร",
       title: "โรคเบาหวาน ควรรับประทานอย่างไร? (Diabetic Diet)",
-      intro: "ข้อความเกริ่นนำ....(ไม่เกิน 50 ตัวอักษร)",
+      intro : "ข้อความเกริ่นนำ....(ไม่เกิน 50 ตัวอักษร)",
       detail: "อาหารสำหรับผู้ป่วยเบาหวานคืออาหารทั่วไปไม่แตกต่างจากอาหารที่รับประทานเป็นปกติ แต่ควรเป็นอาหารที่ไม่หวานจัด โดยคำนึงถึงปริมาณ ชนิดของแป้ง และไขมันเป็นสิ่งสำคัญ เพื่อควบคุมระดับน้ำตาลและไขมันในเลือด รวมถึงการรักษาน้ำหนักตัวให้อยู่ในเกณฑ์ปกติ นอกจากนี้ ควรรับประทานอาหารให้เป็นเวลา และปริมาณที่ใกล้เคียงกันในแต่ละมื้อ โดยเฉพาะปริมาณคาร์โบไฮเดรตโดยรวม หากต้องการลดน้ำหนักให้ลดปริมาณอาหาร แต่ไม่ควรงดอาหารมื้อใดมื้อหนึ่ง เพราะจะทำให้หิวและอาจรับประทานในมื้อถัดไปมากขึ้น ซึ่งจะส่งผลให้ระดับน้ำตาลในเลือดขึ้นๆ ลงๆ ควรปรึกษาแพทย์ที่ทำการรักษาเนื่องจากอาจมีการปรับยาในการรักษาเบาหวาน",
       ref: "https://www.siphhospital.com/th/news/article/share/450",
       imgUrl: "https://siph-space.sgp1.digitaloceanspaces.com/media/upload/diabeteshowtoeat_og_1200.jpg",
     },
     {
-      id: 4,
+      id: 1,
+      type: "blogs",
+      categories: "blogs_food",
+      title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกันx",
+      title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+      intro :"7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+      detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+      ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+      imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+    {
+      id: 2,
       type: "blogs",
       categories: "blogs_food",
       title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
       title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-      intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+      intro :"7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
       detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
       ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
       imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-    },
-  ]
-  
-
-const blogTrends = [
+  },
     {
-        id: 0,
-        type: "blogs",
-        categories: "blogs_food",
-        title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
-        title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-        detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
-        ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
-        imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-    },
-
-]
+      id: 3,
+      type: "blogs",
+      categories: "blogs_food",
+      title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
+      title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
+      intro :"7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
+      detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
+      ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
+      imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+  },
+  ]

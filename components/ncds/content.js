@@ -52,7 +52,7 @@ margin={20} >
                     </div>
             ))}
             <div className='flex justify-end'>
-                <Select className='w-1/6 shadow-lg my-4'>
+                <Select className='w-1/6  my-4 text-center'>
 
                     <option value="1"><span className="text-yellow-400">★</span><span className="mx-2">1 คะแนน</span></option>
                     <option value="2"><span className="text-yellow-400">★</span><span className="mx-2">2 คะแนน</span></option>

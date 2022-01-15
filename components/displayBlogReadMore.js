@@ -173,7 +173,7 @@ margin={20} >
         ))}
       </OwlCarousel>
       <div className='flex justify-end text-lg'>
-        <a href="#" className='text-right text-gray-500 hover:text-black'>อ่านทั้งหมด</a>
+        <a onClick={() => router.push(`/blogs/more`)} className='text-right text-gray-500 hover:text-black'>อ่านทั้งหมด</a>
       </div>
       </div>
     </motion.div>
