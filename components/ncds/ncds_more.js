@@ -94,7 +94,7 @@ const Ncds = ({ ncds }) => {
     }
     if (!data) return null
     return (
-        <div className="">
+        <div className="mx-10">
             <div className="flex justify-center text-center flex-col">
  
                 <div className="flex w-full gap-3 md:w-1/2 mt-5 ml-auto">
@@ -157,7 +157,7 @@ margin={20} >
                                         <div>
                                           
                                         </div>
-                                        <div className=''> {because} </div>
+                                        <div className='flex-nowrap truncate'>{because} </div>
                                         <hr />
                                         <div className='mx-auto m-4 w-full'>
                                             <a onClick={() => router.push(`/${type}/${categories}?name=${title_th}`)} className=" text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 px-10">อ่านต่อ</a>
