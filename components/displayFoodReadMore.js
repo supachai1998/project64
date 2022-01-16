@@ -1,5 +1,3 @@
-// import '@fontawesome-free/css/all.css'
-
 import { Carousel, Tooltip, Divider ,Rate,Select } from 'antd';
 import { FrownOutlined, MehOutlined, SmileOutlined} from '@ant-design/icons';
 
@@ -7,8 +5,7 @@ import router from 'next/router';
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion';
 import OwlCarousel from "react-owl-carousel";
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import "owl.carousel/dist/assets/owl.theme.default.css";
+
 
 var show_ncds = 0;
 const CustImage = dynamic(() => import("/components/cusImage.js"))

@@ -6,8 +6,7 @@ import router from 'next/router';
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion';
 import OwlCarousel from "react-owl-carousel";
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import "owl.carousel/dist/assets/owl.theme.default.css";
+
 
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const easing = [0.6, -0.05, 0.01, 0.99];

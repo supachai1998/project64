@@ -6,8 +6,7 @@ import ReactPlayer from 'react-player';
 
 import { VideoCameraOutlined } from '@ant-design/icons';
 import OwlCarousel from "react-owl-carousel";
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import "owl.carousel/dist/assets/owl.theme.default.css";
+
 const state= {
     responsive:{
         0: {

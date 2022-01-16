@@ -1,6 +1,10 @@
 import '../styles/globals.css'
 import 'antd/dist/antd.css';
 import "nprogress/nprogress.css";
+
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import "owl.carousel/dist/assets/owl.theme.default.css";
+
 import React, { useState, useEffect } from 'react'
 import { useRouter, } from 'next/router'
 import Head from 'next/head'
