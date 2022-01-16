@@ -63,8 +63,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
       className='m-10 mt-0'
     >
 
-      <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl">
-        {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
+      <div className="flex justify-center flex-col w-full p-3 transition-all duration-500 ease-in-out rounded-2xl">
         <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
         <span className=' w-full text-right mb-4 border-b border-b-green' >
           <a href="#" className='hover:text-gray-500 text-black'>
@@ -115,7 +114,8 @@ margin={20} >
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             key={id + index + Math.random()} 
-            className="grid-cols-1  grid rounded-xl lg:h-fix73 h-full bg-gray-50 items-center  item shadow-lg p-0 ">
+            className="grid-cols-1  grid rounded-xl lg:h-fix73 h-full bg-gray-50 items-center  item p-0 ">
+              
             <div className="relative w-full" >
               <CustImage src={imgUrl} alt={title_th} className="" width="100%" height="200px" preview={false} />
 
@@ -162,8 +162,10 @@ margin={20} >
                   <p className="pr-3 mt-1 mx-5 truncate flex-nowrap">{intro}...</p>
                   <hr className='mb-2 '/>
                   <div className="flex justify-center ">
-                    <a onClick={() => router.push(`/${type}/${categories}?name=${title_th}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                    <a onClick={() => router.push(`/${type}/${categories}?name=${title_th}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800  m-5 ">อ่านต่อ</a>
+
                   </div>
+
                 </div>
               }
             </div>

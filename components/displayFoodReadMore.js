@@ -113,7 +113,7 @@ margin={20} >
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             key={id + index + Math.random()} 
-            className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
+            className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item  m-0 p-0">
 
             <div className="relative w-full" >
               <CustImage src={imgUrl} alt={title_th} className="" width="100%" height="200px" preview={false} />
