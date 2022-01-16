@@ -159,7 +159,7 @@ margin={20} >
                       <span className="text-gray-900 font-Poppins font-bold text-lg leading-none">{300}</span>
                     </div>
                   </div>
-                  <p className="pr-3 mt-1 mx-5">{intro}...</p>
+                  <p className="pr-3 mt-1 mx-5 truncate flex-nowrap">{intro}...</p>
                   <hr className='mb-2 '/>
                   <div className="flex justify-center ">
                     <a onClick={() => router.push(`/${type}/${categories}?name=${title_th}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
