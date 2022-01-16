@@ -12,7 +12,7 @@
   }
   /* ... */
 }
-.ant-image-img{
+.owl-item .ant-image-img{
   box-shadow: inset -4px -4px 4px rgba(0, 0, 0, 0.2), inset 0px 4px 4px rgba(0, 0, 0, 0.2);
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }

@@ -66,7 +66,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
       <div className="flex justify-center flex-col w-full p-3 transition-all duration-500 ease-in-out rounded-2xl">
         <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
         <span className=' w-full text-right mb-4 border-b border-b-green' >
-          <a href="#" className='hover:text-gray-500 text-black'>
+          <a onClick={() => router.push(`/blogs/more`)} className='hover:text-gray-500 text-black'>
           บทความที่เกี่ยวข้อง
           </a>
           </span>        
@@ -115,7 +115,7 @@ margin={20} >
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
             key={id + index + Math.random()} 
             className="grid-cols-1  grid rounded-xl lg:h-fix73 h-full bg-gray-50 items-center  item p-0 ">
-              
+
             <div className="relative w-full" >
               <CustImage src={imgUrl} alt={title_th} className="" width="100%" height="200px" preview={false} />
 

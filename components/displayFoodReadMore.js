@@ -69,7 +69,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
         <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
         <span className=' w-full text-right mb-4 border-b border-b-green' >
-          <a href="#" className='hover:text-gray-500 text-black'>
+          <a onClick={() => router.push(`/foods/more`)} className='hover:text-gray-500 text-black'>
           อาหารความที่เกี่ยวข้องกับโรคเบาหวาน
           </a>
           </span>        
