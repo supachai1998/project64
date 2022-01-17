@@ -3,7 +3,7 @@ export default function ContentHeader  ({ headerData,url_yt })  {
     return (
         <div className="flex flex-wrap p-6 rounded-md mx-10 bg-gray-50">
 
-            <div className="mb-5 -ml-2  text-xs lg:text-sm font-bold  lg:flex-row flex "> 
+            <div className="mb-5 -ml-2  text-xs lg:text-sm font-bold  flex-col flex w-full text-center lg:flex-row  "> 
                 <a href="#" className="text-gray-500 hover:text-gray-500 border-gray-300 border-2 mx-1 p-2 rounded-sm mb-2">ลดความเสี่ยงต่อการเกิดโรค</a>
                 <a href="#" className="text-gray-500 hover:text-gray-500 border-gray-300 border-2 mx-1 p-2 rounded-sm mb-2">คำแนะนำในการปฎิบัติตัว</a>
                 <a href="#" className="text-gray-500 hover:text-gray-500 border-gray-300 border-2 mx-1 p-2 rounded-sm mb-2">สัญญาณการเกิดโรค</a>

@@ -38,7 +38,9 @@ export default function Index() {
                 : categories ?
                     <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto">
                         <div className="text-center p-5 ">
-                            <CustImage src={"https://thaipedendo.org/wp-content/uploads/2020/08/Type-2-diabetes-crop-scaled.jpg"} alt={"0"} className="mr-auto ml-auto w-50 block" width="786px" height="288px" preview={false} />
+                            {/* <CustImage src={"https://thaipedendo.org/wp-content/uploads/2020/08/Type-2-diabetes-crop-scaled.jpg"} alt={"0"}  className="mr-auto ml-auto h-96 " width="786px" height="288px" preview={false} /> */}
+                            <img src="https://thaipedendo.org/wp-content/uploads/2020/08/Type-2-diabetes-crop-scaled.jpg" className="mr-auto ml-auto h-96  mb-2 " />
+                            
                             <p className='w-2/3 text-left ml-auto mr-auto'>โรคที่ร่างกายมีระดับน้ำตาลในเลือดสูงผิดปกติ โดยเกิดจากความผิดปกติของการใช้น้ำตาลทำให้ร่างกายไม่สามารถนำน้ำตาลไปใช้เป็นพลังงานได้ตามปกติ ทำให้มีระดับน้ำตาลสูงขึ้น</p>
                             <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
                         </div>
