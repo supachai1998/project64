@@ -29,7 +29,7 @@ export default function Steam() {
           placeholder={"ชื่อบทความ"} />
                         </div>
                         <div className='grid '>
-                            <span className='w-full text-3xl font-bold font-Charm text-center'>บทความ</span>
+                            <span className='w-full text-4xl font-bold font-Charm text-center'>บทความ</span>
                             <div className='grid justify-items-center'>
                                 <span className='border-b-2 border-solid border-green-800 w-full mx-10 justify-center text-right font-Poppins'>{blogTrends.length} จาก 300 บทความ</span>
                             </div>

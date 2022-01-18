@@ -30,7 +30,7 @@ export default function Steam() {
 
                         </div>
                         <div className='grid '>
-                            <span className='w-full text-3xl font-bold font-Charm text-center'>อาหาร</span>
+                            <span className='w-full text-4xl font-bold font-Charm text-center'>อาหาร</span>
                             <div className='grid justify-items-center'>
                                 <span className='border-b-2 border-solid border-green-800 w-full mx-10 justify-center text-right font-Poppins'>พบทั้งหมด {ncds.length} จาก 300 เมนู รายการ</span>
                             </div>

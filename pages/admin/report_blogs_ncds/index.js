@@ -14,7 +14,7 @@ export default function Index() {
         )
     }
     else if (status === "unauthenticated")  {
-       return <div className="flex items-center justify-center h-screen text-3xl">คุณไม่ใช่ผู้ดูแลระบบ</div>
+       return <div className="flex items-center justify-center h-screen text-4xl">คุณไม่ใช่ผู้ดูแลระบบ</div>
     }
     return <LinearProgress/>
 }

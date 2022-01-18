@@ -18,7 +18,7 @@ export default function Topic  ({ raw, categories,placeholder }) {
     return (
         <>
             <div className="flex justify-start ">
-                <span className="w-full text-2xl font-bold font-Charm ">{title_th}</span>
+                <span className="w-full text-4xl font-bold font-Charm ">{title_th}</span>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3" ref={displaySearch}>
                 {_data && _data.map(({ title, detail, imgUrl }, index) => (

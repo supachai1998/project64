@@ -64,7 +64,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
 
       <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl ">
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
-        <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
+        <p className={headTextColor + " mt-4 text-4xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
         <span className=' w-full text-right mb-4 border-b border-b-green' >
           <a onClick={() => router.push(`/foods/more`)} className='hover:text-gray-500 text-black'>
           อาหารความที่เกี่ยวข้องกับโรคเบาหวาน
@@ -114,45 +114,44 @@ margin={20} >
 
             <div className="relative w-full" >
               <CustImage src={imgUrl} alt={title_th} className="" width="100%" height="200px" preview={false} />
-
-              
+         
             
             
             </div>
             <div className={title ? "w-full h-full flex flex-col  p-1 " : "w-full h-full flex flex-col  "}>
               {positive && nagative ? <div className="flex flex-col">
                   <div className=" flex-col text-center mb-0">
-                    <p className="font-Charm text-3xl title-article pb-0 truncate mb-2"> {title_th}</p>
-                    <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' ></div>
-                    <p className="font-Charm text-xs pb-0 truncate text-gray-500"> {title_en}</p>
+                    <p className="font-Charm text-4xl title-article pb-0 truncate mb-2"> {title_th}</p>
+                    <div className='border-green-800 border-b-4 border-solid w-1/2 mx-auto' ></div>
+                    <p className="font-Charm text-lg pb-0 truncate text-gray-500  pt-1"> {title_en}</p>
+
                   </div>
 
-                  <div className="flex justify-between mb-4  ml-0 px-5">
-                    <div className='flex flex-col p-2'>
-                      <span className="text-gray-500 font-Poppins leading-none font-bold text-2xl">{cal}</span>
-                      <span className="text-gray-900 font-Poppins font-bold text-sm leading-none">กิโลแคลอรี่</span>
+                  <div className="flex justify-between flex-end mb-4  ml-0 px-5">
+                    <div className='flex flex-col '>
+                      <span className="text-black font-Poppins leading-none  text-4xl">{cal}</span>
+                      <span className="text-gray-400 font-Poppins  text-sm leading-none">กิโลแคลอรี่</span>
+                   
                     </div>
 
-                    <div className='flex flex-col text-center justify-end'>
 
                         {positive.some(el=>{
                         if(el.ncds=="โรคเบาหวาน")
                           return true
                           })==true?
-                        <>
-                          <span className="text-green-700 font-Poppins leading-none font-bold text-2xl">แนะนำ</span>
-                          <span className="text-gray-500 font-Poppins leading-none font-bold text-xs">สามารถรับประทานได้</span>
-                        </>
+                        <div className='flex flex-col text-center  '>
+                          <span className="text-green-700 font-Poppins leading-none text-4xl">แนะนำ</span>
+                          <span className="text-gray-500 font-Poppins leading-none text-xs">สามารถรับประทานได้</span>
+                        </div>
                        
                         :
-                        <>
-                          <span className="text-red-700 font-Poppins leading-none font-bold text-lg">ไม่แนะนำ</span>
-                          <span className="text-gray-500 font-Poppins leading-none font-bold text-xs">ไม่ควรรับประทาน</span>
-                        </>}
+                        <div className='flex flex-col text-center  '>
+                          <span className="text-red-700 font-Poppins leading-none text-lg">ไม่แนะนำ</span>
+                          <span className="text-gray-500 font-Poppins leading-none text-xs">ไม่ควรรับประทาน</span>
+                        </div>}
                         
                         {/* <span className="text-red-700 font-Poppins leading-none font-bold text-lg">ไม่แนะนำ</span>
                         <span className="text-gray-500 font-Poppins leading-none font-bold text-xs">ไม่ควรรับประทาน</span> */}
-                    </div>
                   </div>
                 <hr className="mb-2" />
                 
@@ -164,7 +163,7 @@ margin={20} >
                 <div className="flex flex-col p-4">
                   
                   <div className=" flex-col text-center mb-0">
-                    <p className="font-Charm text-xl title-article pb-0 truncate ">{title}</p>
+                    <p className="font-Charm text-xl title-article pb-0 truncate mb-2">{title}</p>
                     
                   </div>
                   <div className="flex justify-between mb-4 m-4 ml-0">

@@ -43,7 +43,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
         <Divider/>
       <div className="flex justify-between w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl">
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
-        <p className={headTextColor + " mt-4 text-2xl font-bold  transition transform font-Charm"}>{title}</p>
+        <p className={headTextColor + " mt-4 text-4xl font-bold  transition transform font-Charm"}>{title}</p>
 
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
       </div>

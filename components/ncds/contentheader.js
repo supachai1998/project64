@@ -11,7 +11,7 @@ export default function ContentHeader  ({ headerData,url_yt })  {
             </div>
             {headerData.map(({title,content},index)=>(
                 <div key={index} className="">
-                    <p className="pl-1 text-2xl font-thin border-l-2 border-green-600 lg:text-2xl font-Charm">{title}</p>
+                    <p className="pl-1 text-4xl font-thin border-l-2 border-green-600 lg:text-4xl font-Charm">{title}</p>
                     <p className={index % 2 === 0 ?"pr-2 -mt-2 overflow-auto zm:text-sm font-Poppins text-base mx-5"
                         : "pr-2 -mt-2 overflow-auto zm:h-full zm:text-sm font-Poppins text-base"} >{Array.isArray(content) 
                             ? content.map((data,index)=><p className={"font-Poppins text-base zm:text-sm mt-1 mx-5"} key={index}>{index+1}. {data}</p>)

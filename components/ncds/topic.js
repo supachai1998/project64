@@ -58,7 +58,7 @@ export default function Topic  ({ raw, categories,placeholder }) {
         <>
 
             <div className="grid mx-10">
-                <span className="w-full text-3xl font-bold font-Charm text-center">{title_th}</span>
+                <span className="w-full text-4xl font-bold font-Charm text-center">{title_th}</span>
                 <div className='grid justify-items-center'>
                     <span className='border-b-2 border-solid border-green-800 w-full mx-10 justify-center text-right font-Poppins'>ทั้งหมด 10 รายการ</span>
                 </div>
@@ -92,10 +92,10 @@ margin={20} >
                         <CusImage className="duration-150 transform " src={imgUrl} alt={"0"} width="100%" height={200} preview={false} />
                         <div className='mx-5 mb-10'>
                         <div className=" flex-col text-center mb-0">
-                            <p className="font-Charm text-3xl title-article pb-0 truncate mb-2"> {title}</p>
+                            <p className="font-Charm text-4xl title-article pb-0 truncate mb-2"> {title}</p>
                             <p className="font-Charm text-xs pb-0 truncate text-gray-500"> {title_en}</p>
                         </div>
-                        <div className='text-center leading-none text-2xl '>
+                        <div className='text-center leading-none text-4xl '>
 
                             <p className='mb-0 font-bold'>{detail}</p>
                             <p className='text-xl text-gray-500'>กิโลแคลอรี่</p>

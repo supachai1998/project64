@@ -78,7 +78,7 @@ const Ncds = ({ ncds }) => {
     return (
         <div className="w-full h-full">
             <div className="flex justify-between ">
-                <span className="w-full text-2xl font-Charm">โรคติดต่อไม่เรื้อรัง</span>
+                <span className="w-full text-4xl font-Charm">โรคติดต่อไม่เรื้อรัง</span>
                 <div className="flex w-full gap-3 md:w-1/2">
                     <Select className="w-full md:w-1/3" defaultValue={sortData} placeholder="จัดเรียงตาม" onChange={v=>setSortData(v)}>
                         {[
@@ -107,7 +107,7 @@ const Ncds = ({ ncds }) => {
                                     {imgUrl &&<div className="w-full h-full md:w-2/3"> <CusImage src={imgUrl} alt={ref} className="w-full h-full rounded-xl" width="100%" height="100%" preview={false} /></div>}
                                     <div className="flex flex-col w-full h-full gap-3">
                                         <div className="flex gap-4 ">
-                                            <div className="text-2xl text-gray-800 font-Charm "> {ncds} </div>
+                                            <div className="text-4xl text-gray-800 font-Charm "> {ncds} </div>
                                             <div className="text-sm stroke-current ">{suggess ? <ThumbUpAlt className="text-green-600" /> : <ThumbDownAlt className="text-red-600" />}</div>
                                         </div>
                                         <div> {because} </div>
@@ -119,7 +119,7 @@ const Ncds = ({ ncds }) => {
                                     <div className="flex flex-col w-full h-full gap-3">
                                         <div className="flex justify-end gap-4">
                                             <div className="text-sm stroke-current ">{suggess ? <ThumbUpAlt className="text-green-600" /> : <ThumbDownAlt className="text-red-600" />}</div>
-                                            <div className="text-2xl text-gray-800 font-Charm "> {ncds} </div>
+                                            <div className="text-4xl text-gray-800 font-Charm "> {ncds} </div>
                                         </div>
                                         <div className="text-right"> {because} </div>
                                         {videoUrl && <Button className="max-w-sm md:mx-auto" onClick={() => showModal(ncds, videoUrl)}> แสดงวีดีโอ </Button>}

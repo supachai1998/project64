@@ -63,7 +63,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
     >
 
       <div className="flex justify-center flex-col w-full p-3 transition-all duration-500 ease-in-out rounded-2xl">
-        <p className={headTextColor + " mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
+        <p className={headTextColor + " mt-4 text-4xl mb-0 font-bold  transition transform font-Charm w-full text-center "}>{title}</p>
         <span className=' w-full text-right mb-4 border-b border-b-green' >
           <a onClick={() => router.push(`/blogs/more`)} className='hover:text-gray-500 text-black'>
           บทความที่เกี่ยวข้อง
@@ -142,13 +142,13 @@ margin={20} >
                     <div key={index + Math.random()} className="pr-3 mt-1" >
                       <span className="text-gray-800 ">{ncds} </span>
                     </div>))}
+                    
                 </div>
               </div>
                 :
                 <div className="flex flex-col p-2">
-
                   <div className=" flex-col text-center mb-0 pr-5 pl-5">
-                    <p className="font-Charm text-xl title-article pb-0 truncate   ">{title}</p>
+                    <p className="font-Charm text-xl title-article pb-0 truncate mb-2  ">{title}</p>
                     <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' ></div>
                   </div>
                   <div className="flex justify-between mb-4 m-4 ml-0  pr-5 pl-5">

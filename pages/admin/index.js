@@ -106,7 +106,7 @@ const { Option } = Select
 const HeaderAdmin = ({ title, onSelectPage }) => {
     return (
         <div className=" flex flex-col w-full  gap-4 m-2">
-            <span className="text-xl duration-500 transform md:text-2xl">{title}</span>
+            <span className="text-xl duration-500 transform md:text-4xl">{title}</span>
             <div className="flex   gap-2 flex-warp">
                 <Button onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button>
                 <Button onClick={() => onSelectPage("บทความ")}>บทความ</Button>

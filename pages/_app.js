@@ -184,7 +184,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
                         : <MenuOutlined className={animationZoomHover} />}
                   </div>
                 </Tooltip>
-                <p className="my-auto ml-2 text-2xl text-white">{title}</p>
+                <p className="my-auto ml-2 text-4xl text-white">{title}</p>
               </Header>
               <Content
                 className="p-2 site-layout-background"

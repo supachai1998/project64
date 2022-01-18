@@ -183,7 +183,7 @@ function MyApp({ Component, pageProps }) {
           <div className='px-3 my-auto text-lg text-white trigger hover:border-gray-50 hover:scale-110' onClick={toggle}>
             {collapsed ? <MenuOutlined className={animationZoomHover} /> : <MenuOutlined className={animationZoomHover} />}
           </div></Tooltip>
-        <p className="my-auto text-2xl text-white font-Charm">{title}</p>
+        <p className="my-auto text-4xl text-white font-Charm">{title}</p>
       </Header>
       <Content
         className="p-2 site-layout-background"

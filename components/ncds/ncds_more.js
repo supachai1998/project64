@@ -113,7 +113,7 @@ const Ncds = ({ ncds }) => {
                     </select>
                     <Search className="w-1/4 input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search" placeholder={`ชื่อโรค`} ref={refSearchInput} />
                 </div>
-                <p className=" mt-4 text-2xl mb-0 font-bold  transition transform font-Charm w-full text-center ">โรคติดต่อไม่เรื้อรัง</p>
+                <p className=" mt-4 text-4xl mb-0 font-bold  transition transform font-Charm w-full text-center ">โรคติดต่อไม่เรื้อรัง</p>
                 <span className=' w-full text-right mb-4 border-b border-b-green' >
  
           </span>        
@@ -151,7 +151,7 @@ margin={20} >
                                         <div className="flex flex-col  ">
                                             <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
-                                            <span className="text-2xl text-gray-800 font-Charm "> {ncds} </span>
+                                            <span className="text-4xl text-gray-800 font-Charm "> {ncds} </span>
                                         </div>
                                         <div>
                                           

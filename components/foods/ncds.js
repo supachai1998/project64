@@ -79,7 +79,7 @@ const Ncds = ({ ncds }) => {
     return (
         <div className="w-full h-full px-10">
             <div className="flex justify-center text-center ">
-                <span className="w-full text-2xl font-Charm">โรคติดต่อไม่เรื้อรัง</span>
+                <span className="w-full text-4xl font-Charm">โรคติดต่อไม่เรื้อรัง</span>
                 {/* <div className="flex w-full gap-3 md:w-1/2">
                     <Select className="w-full md:w-1/3" defaultValue={sortData} placeholder="จัดเรียงตาม" onChange={v=>setSortData(v)}>
                         {[
@@ -111,7 +111,7 @@ const Ncds = ({ ncds }) => {
                                         <div className="flex flex-col  ">
                                             <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
-                                            <span className="text-2xl text-gray-800 font-Charm "> {ncds} </span>
+                                            <span className="text-4xl text-gray-800 font-Charm "> {ncds} </span>
                                         </div>
                                         <div>
                                             <label className='text-green-500 text-4xl '>
@@ -129,7 +129,7 @@ const Ncds = ({ ncds }) => {
                                         <div className="flex flex-col  ">
                                             <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
-                                            <span className="text-2xl text-gray-800 font-Charm "> {ncds} </span>
+                                            <span className="text-4xl text-gray-800 font-Charm "> {ncds} </span>
                                         </div>
                                         <div>
                                             <label className='text-red-500 text-4xl '>

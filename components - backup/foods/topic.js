@@ -38,7 +38,7 @@ export default function Topic  ({ raw, categories,placeholder }) {
     return (
         <>
             <div className="flex justify-between ">
-                <span className="w-full text-2xl font-bold font-Charm ">{title_th}</span>
+                <span className="w-full text-4xl font-bold font-Charm ">{title_th}</span>
                 <Search className="w-1/4 input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch}  maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"  
                 placeholder={placeholder} ref={refSearchInput}/>
             </div>

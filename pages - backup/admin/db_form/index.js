@@ -24,7 +24,7 @@ export default function Index() {
         <div className="w-full h-full min-h-screen">
             {/* header */}
             <div className="flex flex-col gap-6 p-6 text-gray-800 rounded-xl">
-                {/* <div className="text-2xl font-bold border-l-4 border-gray-800 font-Charm"><span className="ml-3">ข้อมูลสถิติแบบประเมิน</span></div> */}
+                {/* <div className="text-4xl font-bold border-l-4 border-gray-800 font-Charm"><span className="ml-3">ข้อมูลสถิติแบบประเมิน</span></div> */}
                 {/* Card */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 ">
                     {[
@@ -35,13 +35,13 @@ export default function Index() {
 
                     ].map(({ title, content,bg }, index) => (
                         <div className={bg+` flex flex-col gap-4 p-4 text-center text-gray-50`} key={index} >
-                            <span className="text-2xl font-bold">{content}</span>
+                            <span className="text-4xl font-bold">{content}</span>
                             <span className="text-sm text-gray-300">{title}</span>
                         </div>
                     ))}
                 </div>
                 {/* End Card */}
-                <div className="flex justify-between w-full text-2xl font-bold border-l-4 border-gray-800 font-Charm">
+                <div className="flex justify-between w-full text-4xl font-bold border-l-4 border-gray-800 font-Charm">
                     <span className="ml-3">จัดการข้อมูล</span>
                     <Button className="text-xl font-Poppins" onClick={showModal} icon={<PlusCircleOutlined className="w-4 h-4"/>}>เพิ่มข้อมูล</Button>
                 </div>

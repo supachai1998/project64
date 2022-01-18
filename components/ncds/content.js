@@ -41,8 +41,8 @@ margin={20} >
                      {/* {imgUrl&&index!=0 && <CustImage src={imgUrl} width="203px" height="289px"/>} */}
                     <div>
                     <p className={index % 2 === 0
-                                            ? "pr-1 text-2xl font-thin text-right border-r-2 border-blue-600 lg:text-2xl font-Charm"
-                                            : "pl-1 text-2xl font-thin border-l-2 border-green-600 lg:text-2xl font-Charm"}>{title || ""}</p>
+                                            ? "pr-1 text-4xl font-thin text-right border-r-2 border-blue-600 lg:text-4xl font-Charm"
+                                            : "pl-1 text-4xl font-thin border-l-2 border-green-600 lg:text-4xl font-Charm"}>{title || ""}</p>
                                         <p className={index % 2 === 0 ?   "-mt-2 text-right w-full":"pr-2 -mt-3 text-left w-full"}>{content || ""}
                                     
                                         </p>

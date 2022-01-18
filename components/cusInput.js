@@ -46,7 +46,7 @@ export default function CusInput({ data, setData ,originData}) {
       {statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
         : <div className="grid grid-cols-1 gap-3 mx-10 row-span-full">
           <div className="grid ">
-            <label className='text-2xl'>ค้นหา</label>
+            <label className='text-4xl'>ค้นหา</label>
           </div>
           <div className="grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row">
             <Tooltip title="ถ่ายภาพ">

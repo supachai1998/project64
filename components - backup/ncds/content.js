@@ -4,8 +4,8 @@ export default function Content({ bodyContent }) {
             {bodyContent.map(({ title, content ,imgUrl}, index) => (
                 <div key={index} className="mt-3 h-1/4">
                     <p className={index % 2 === 0 
-                        ?  "pl-1 text-2xl font-thin border-l-2 border-green-600 lg:text-2xl font-Charm" 
-                        : "pr-1 text-2xl font-thin text-right border-r-2 border-blue-600 lg:text-2xl font-Charm"}>{title || ""}</p>
+                        ?  "pl-1 text-4xl font-thin border-l-2 border-green-600 lg:text-4xl font-Charm" 
+                        : "pr-1 text-4xl font-thin text-right border-r-2 border-blue-600 lg:text-4xl font-Charm"}>{title || ""}</p>
                     <span className={index % 2 === 0 ?"pr-2 -mt-3 overflow-auto zm:h-20":"-mt-2 text-left sm:text-right" }>{content || ""}</span>
                     {imgUrl && <>imgUrl</>}
                 </div>
