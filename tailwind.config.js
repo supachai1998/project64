@@ -40,10 +40,10 @@ module.exports = {
       fontSize: {
         'xxs': '0.5rem'
       },
-      fontFamily: {
-        "Poppins": ['Poppins', 'sans-serif'],
-        "Charm": ['Charm', 'sans-serif'],
-      },
+      // fontFamily: {
+      //   "Poppins": ['Poppins', 'sans-serif'],
+      //   "Kanit": ['Kanit', 'sans-serif'],
+      // },
 
     },
     variants: {

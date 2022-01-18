@@ -48,16 +48,21 @@ export default function Index() {
         i < currentIndex && setCurrentIndex(i)
     }
     return (
-        <div className="flex flex-col min-h-screen ">
-            <Steps current={currentIndex}>
-                {choice.map((item, i) => (
-                    <Step key={i} title={isMobile ? "" : item.title} onStepClick={handleStepClick} />
-                ))}
-            </Steps>
-            <div className="flex flex-col self-center w-full h-full p-3 xl:w-1/2">
-                <p>{title}</p>
+        <div className="flex flex-col m-5 lg:mx-20 mx-0 h-screen">
+            <div className='lg:w-full flex flex-col' >
+                
+                    <Steps  current={currentIndex} >
+                        
+                        {choice.map((item, i) => (
+                            <Step key={i} title={item.title} onStepClick={handleStepClick} />
+                        ))}
+                    </Steps>
+            </div>
+           
+            <div className=" mt-5">
+                {/* <p>{title}</p> */}
 
-                <div className="flex flex-col w-full gap-4 p-3 bg-gray-300 rounded-lg ">
+                <div className=" w-full gap-4 bg-white rounded-lg p-10 lg:mx-2 shadow-lg ">
                     {content.map((con, i) => (
                         <motion.div
                             variants={fadeInUp}
@@ -69,31 +74,38 @@ export default function Index() {
 
                         </motion.div>
                     ))}
+                        <div className="flex justify-center mt-3 ">
+                    
+                        <a  onClick={() => prev()} className='text-gray-500 hover:text-gray-900'>
+                            ข้อก่อนหน้า
+                        </a>
+                        <span className='mx-2 text-gray-500'>|</span>
+                    
 
+                        <a type="default" className='text-green-700 hover:text-green-900'
+                            disabled={!_choice[currentIndex].content.find(val => val.checked === true)} onClick={() => next()}>
+                            ข้อถัดไป
+                        </a>
+              
+                   
+
+                </div>
+                     
                 </div>
 
 
-                <div className="flex justify-end mt-3 ">
-                    {currentIndex > 0 && (
-                        <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-                            ก่อนหน้า
+                <div className='flex justify-end mt-5'>
+                        
+                        <Button type="primary" onClick={handleSubmit} loading={btnLoading} className='mx-2'
+                            disabled={!_choice[currentIndex].content.find(val => val.checked === true)} danger>
+                            ล้างฟอร์ม
                         </Button>
-                    )}
-                    {currentIndex < choice.length - 1 && (
-
-                        <Button type="default"
-                            disabled={!_choice[currentIndex].content.find(val => val.checked === true)} onClick={() => next()}>
-                            ถัดไป
-                        </Button>
-                    )}
-                    {currentIndex === choice.length - 1 && (
-
+               
                         <Button type="primary" onClick={handleSubmit} loading={btnLoading}
                             disabled={!_choice[currentIndex].content.find(val => val.checked === true)}>
                             ส่งแบบประเมิน
                         </Button>
-                    )}
-
+               
                 </div>
             </div>
         </div>

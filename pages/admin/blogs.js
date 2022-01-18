@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-const { Paragraph } = Typography;
+const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
 const { Option } = Select
@@ -16,11 +16,11 @@ export default function Index() {
     const [blogs, setBlogs] = useState([])
     const reload = async () => {
         const reqBlogs = await fetch("/api/getBlogs").then(res => res.status === 200 && res.json())
-        const newBlogs = reqBlogs.map((val)=>{
-            const totalvote = val.vote_1+val.vote_2+val.vote_3+val.vote_4+val.vote_5
+        const newBlogs = reqBlogs.map((val) => {
+            const totalvote = val.vote_1 + val.vote_2 + val.vote_3 + val.vote_4 + val.vote_5
             const avg = totalvote / 5
-            return {...val,totalvote , avg}
-        } )
+            return { ...val, totalvote, avg }
+        })
         // console.log(newBlogs)
         setBlogs(!!newBlogs && newBlogs.length > 0 && newBlogs || [])
     }
@@ -35,8 +35,9 @@ export default function Index() {
                 <div className="text-xl">ตารางบทความ</div>
                 <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูล</Button>
             </div>
-            <ModalAdd setModalAdd={setModalAdd} modalAdd={modalAdd} reload={reload}  />
-            <ModalEdit setModalEdit={setModalEdit} modalEdit={modalEdit} reload={reload}  />
+            <ModalAdd setModalAdd={setModalAdd} modalAdd={modalAdd} reload={reload} />
+            <ModalEdit setModalEdit={setModalEdit} modalEdit={modalEdit} reload={reload} />
+            <ModalView setModalView={setModalView} modalView={modalView} reload={reload} />
             <TableForm blogs={blogs} reload={reload} modalEdit={modalEdit} setModalEdit={setModalEdit} modalView={modalView} setModalView={setModalView} />
         </div>
     )
@@ -96,29 +97,29 @@ const TableForm = ({ blogs, reload,
             render: val => <Tooltip title={val}><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
-            title: 'ค่าเฉลี่ย',
+            title: 'ผลโหวต',
             dataIndex: 'avg',
             key: 'avg',
-            render: (val,source) => <Tooltip title={`${source.totalvote} โหวต`}><Paragraph align="right" ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
+            render: (val, source) => <Tooltip title={`${source.totalvote} โหวต`}><Paragraph align="right" ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
             title: 'จำนวนหัวข้อย่อย',
             dataIndex: 'subBlog',
             key: 'subBlog',
-            render: val =><Paragraph align="right" ellipsis={ellipsis}>{val.length}</Paragraph>
+            render: val => <Paragraph align="right" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
             title: 'การอนุมัติ',
             dataIndex: 'approve',
             key: 'approve',
             width: '10%',
-            render: (val,source) => <button onClick={() => showConfirmApprove(source)}>
-                {val === 1 ?<Tooltip title="อนุมัติ">
+            render: (val, source) => <button className="w-full ml-3 mb-2" onClick={() => showConfirmApprove(source)}>
+                {val === 1 ? <Tooltip title="อนุมัติ">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg></Tooltip>
                     : val === 2 ?
-                    <Tooltip title="ไม่อนุมัติ"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                        <Tooltip title="ไม่อนุมัติ"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                         </svg></Tooltip>
                         : <Tooltip title="รออนุมัติ">
@@ -176,7 +177,8 @@ const TableForm = ({ blogs, reload,
         const { approve } = val
         const th_approve = approve === 0 ? "รอการอนุมัติ" : approve === 1 ? "อนุมัติ" || approve === 2 : "ไม่อนุมัติ"
         const th_request = approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"
-        const preData = {id : val.id ,approve : approve === 0 ? 1 : approve === 1 ? 2 || approve === 2 : 1 }
+        const preData = { id: val.id, approve: approve === 0 ? 1 : approve === 1 ? 2 || approve === 2 : 1 }
+        console.log(val)
         confirm({
             title: `คุณต้องการจะ${approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"}`,
             content: <div>
@@ -210,14 +212,14 @@ const TableForm = ({ blogs, reload,
         <Table dataSource={blogs} columns={columns} />
     </div>
 }
-const ModalAdd = ({ modalAdd, setModalAdd }) => {
+const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
     const [fileList, setFileList] = useState(null)
     const [type, setType] = useState(null)
     const [ncds, setNCDS] = useState()
     const [form] = Form.useForm();
     useEffect(() => {
         form.setFieldsValue();
-    }, [form]);
+    }, [form,modalAdd]);
     useEffect(() => {
         (async () => {
             const data = await fetch('/api/getNCDS').then(resp => resp.json());
@@ -253,7 +255,7 @@ const ModalAdd = ({ modalAdd, setModalAdd }) => {
                 notification.success({
                     message: "เพิ่มข้อมูลสำเร็จ"
                 })
-                // reload()
+                reload()
                 setModalAdd(false)
             } else notification.error({
                 message: 'ไม่สามารถเพิ่มข้อมูลได้',
@@ -308,34 +310,6 @@ const ModalAdd = ({ modalAdd, setModalAdd }) => {
                     {Type.map(({ name_th, name_en }, ind) => <Option key={ind} value={name_en}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
-            {/* {type &&
-                type === "FOOD" ? <Form.Item
-                    name="food"
-                    label="ชื่ออาหาร"
-                    rules={[{ required: true }]}>
-                <Select
-                    showSearch
-                    placeholder="เลือกชื่ออาหาร"
-                    optionFilterProp="children"
-                    // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {Type.map(({ name_th, name_en }, ind) => <Option key={ind} value={name_en}>{name_th}</Option>)}
-                </Select>
-            </Form.Item>
-                : type === "NCDS" && <Form.Item
-                    name="ncds"
-                    label="ชื่อโรคไม่ติดต่อ"
-                    rules={[{ required: true }]}>
-                    <Select
-                        showSearch
-                        placeholder="เลือกโรคไม่ติดต่อ"
-                        optionFilterProp="children"
-                        // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                        filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                        {ncds.map(({ name_th, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
-                    </Select>
-                </Form.Item>
-            } */}
             <Form.Item
                 name="name"
                 label="ชื่อบทความ"
@@ -380,7 +354,7 @@ const ModalAdd = ({ modalAdd, setModalAdd }) => {
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
-                        {fields.map((field, ind) => (
+                        {!!fields && fields.map((field, ind) => (
                             <Form.Item
                                 {...fields}
                                 noStyle
@@ -411,6 +385,25 @@ const ModalAdd = ({ modalAdd, setModalAdd }) => {
                                 >
                                     <TextArea rows={4} placeholder="เนื้อความ" />
                                 </Form.Item>
+                                {/* <Form.Item
+                                    name="image"
+                                    label="รูปภาพ"
+                                    rules={[{ required: true }]}
+                                >
+
+                                    <Upload
+                                        multiple={true}
+                                        accept='image/png,image/jpeg'
+                                        maxCount={5}
+                                        action="/api/uploads"
+                                        listType="picture"
+                                        defaultFileList={[]}
+                                        onChange={onChange}
+                                        className="upload-list-inline"
+                                    >
+                                        <Button disable={fileList?.length === 1} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
+                                    </Upload>
+                                </Form.Item> */}
                             </Form.Item>
 
                         ))}
@@ -435,15 +428,23 @@ const ModalAdd = ({ modalAdd, setModalAdd }) => {
         </Form>
     </Modal>
 }
-const ModalEdit = ({ modalEdit, setModalEdit }) => {
-    const [fileList, setFileList] = useState(modalEdit.image)
+const ModalEdit = ({ modalEdit, setModalEdit, reload }) => {
+    const [fileList, setFileList] = useState([])
     const [type, setType] = useState(null)
     const [ncds, setNCDS] = useState()
     const [form] = Form.useForm();
     useEffect(() => {
         console.log(modalEdit)
         form.setFieldsValue(modalEdit);
-    }, [form,modalEdit]);
+        !!modalEdit && setFileList(modalEdit.image.map(({ id, name }) => {
+            return {
+                id: id,
+                status: "done",
+                url: `/uploads/${name}`,
+                name: name
+            }
+        }))
+    }, [form, modalEdit]);
 
     const onOk = () => {
         setModalEdit(false)
@@ -451,16 +452,15 @@ const ModalEdit = ({ modalEdit, setModalEdit }) => {
     const onCancel = () => {
         setModalEdit(false)
     }
-    
+
     const onSubmit = async (val) => {
         const _tempimage = val?.image?.fileList || val?.image
         const _tempsubBlog = val?.subBlog
-        console.log(val)
         if (Array.isArray(_tempimage) && _tempimage.length > 0 && Array.isArray(_tempsubBlog) && _tempsubBlog.length > 0) {
             delete val['image']
             delete val['subBlog']
-            const subBlog = { update: _tempsubBlog }
-            const image = { update: _tempimage.map(({ name }) => ({ name: name })) }
+            const subBlog = _tempsubBlog
+            const image = _tempimage.map(({ id, name }) => { return { id: id, name: name } })
             val['id'] = modalEdit.id
             val['image'] = image
             val['subBlog'] = subBlog
@@ -468,29 +468,29 @@ const ModalEdit = ({ modalEdit, setModalEdit }) => {
             const res = await fetch(`/api/getBlogs`, {
                 headers: { 'Content-Type': 'application/json', },
                 method: "PATCH",
-                body: JSON.stringify(val)
+                body: JSON.stringify({ old: modalEdit, new: val })
             })
-            
+
             // console.log('send:', val);
             if (res.status === 200) {
                 notification.success({
-                    message: "เพิ่มข้อมูลสำเร็จ"
+                    message: "แก้ไขข้อมูลสำเร็จ"
                 })
-                // reload()
-                setModalAdd(false)
+                reload()
+                setModalEdit(false)
             } else notification.error({
-                message: 'ไม่สามารถเพิ่มข้อมูลได้',
+                message: 'ไม่สามารถแก้ไขข้อมูลได้',
                 description: res.message,
             })
         } else {
             notification.error({
-                message: 'ไม่สามารถเพิ่มข้อมูลได้',
+                message: 'ไม่สามารถแก้ไขข้อมูลได้',
                 description: "การป้อนข้อมูลไม่ครบ",
             })
         }
     }
     const onFinishFailed = () => {
-        
+
     }
     const onReset = () => {
         setFileList(null)
@@ -564,7 +564,7 @@ const ModalEdit = ({ modalEdit, setModalEdit }) => {
                     maxCount={5}
                     action="/api/uploads"
                     listType="picture"
-                    defaultFileList={[]}
+                    fileList={fileList}
                     onChange={onChange}
                     className="upload-list-inline"
                 >
@@ -575,7 +575,7 @@ const ModalEdit = ({ modalEdit, setModalEdit }) => {
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
-                        {fields.map((field, ind) => (
+                        {!!fields && fields.map((field, ind) => (
                             <Form.Item
                                 {...fields}
                                 noStyle
@@ -626,6 +626,142 @@ const ModalEdit = ({ modalEdit, setModalEdit }) => {
             <div className="flex justify-end gap-2">
                 <Button htmlType="reset">ล้างค่า</Button>
                 <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
+            </div>
+        </Form>
+    </Modal>
+}
+const ModalView = ({ modalView, setModalView, reload }) => {
+    const [fileList, setFileList] = useState([])
+    const [type, setType] = useState(null)
+    const [ncds, setNCDS] = useState()
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        form.setFieldsValue(modalView);
+        if (!!modalView) {
+            setFileList(modalView.image.map(({ id, name }) => {
+                return {
+                    id: id,
+                    status: "done",
+                    url: `/uploads/${name}`,
+                    name: name
+                }
+            }))
+            console.log(modalView)
+            const newState = { ...modalView, type_th: modalView.type === "NCDS" ? "โรคไม่ติดต่อ" : modalView.type === "FOOD" ? "อาหาร" : modalView.type === "ALL" && "ทั้งหมด" }
+            !modalView.type_th && setModalView(newState)
+        }
+    }, [form, modalView, setModalView]);
+
+    const onOk = () => {
+        setModalView(false)
+    }
+    const onCancel = () => {
+        setModalView(false)
+    }
+
+    const onFinishFailed = () => {
+
+    }
+    const onReset = () => {
+        setFileList(null)
+    }
+    const onTypeChange = (val) => {
+        val !== 1 && setType(val)
+    }
+    return <Modal title={"แก้ไขข้อมูลบทความ"}
+
+        visible={!!modalView ? true : false}
+        okText={<>ตกลง</>}
+        cancelText={<>ยกเลิก</>}
+        onOk={onOk}
+        onCancel={onCancel}
+        width="100%"
+        footer={<></>}>
+        <Form
+            form={form}
+
+            // initialValues={{}}
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 18 }}
+            onFinish={onCancel}
+            onFinishFailed={onFinishFailed}
+            onReset={onReset}>
+            <Form.Item
+                name="type"
+                label="ประเภท"
+            >
+                <Typography ><span className="text" >{modalView.type_th}</span></Typography>
+            </Form.Item>
+            <Form.Item
+                name="name"
+                label="ชื่อบทความ">
+                <Typography ><span className="text">{modalView.name}</span></Typography>
+            </Form.Item>
+            <Form.Item
+                name="imply"
+                label="บทย่อ">
+                <Typography ><span className="text">{modalView.imply}</span></Typography>
+                {/* <TextArea disabled rows={4} placeholder="บทย่อ" /> */}
+            </Form.Item>
+            <Form.Item
+                name="video"
+                label="วิดีโอ">
+                <Typography ><span className="text">{modalView.video}</span></Typography>
+            </Form.Item>
+            <Form.Item
+                name="image"
+                label="รูปภาพ"
+            >
+                <Upload
+                    listType="picture-card"
+                    fileList={fileList}
+                    disabled
+                />
+            </Form.Item>
+            <Form.List name="subBlog" >
+                {(fields, { add, remove }, { errors }) => (
+                    <>
+                        <Divider />
+                        {!!fields && fields.map((field, ind) => (
+                            <Form.Item
+                                {...fields}
+                                noStyle
+                                shouldUpdate
+                                key={field.key}
+                            >
+
+                                <Form.Item label={`หัวข้อที่ ${ind + 1}`}><Divider /></Form.Item>
+                                <Form.Item
+                                    {...field}
+                                    label="ชื่อหัวข้อ"
+                                    name={[field.name, 'name']}
+                                // fieldKey={[field.fieldKey, 'name']}
+                                >
+                                    <div className="flex gap-3 items-center">
+                                        <Typography ><span className="text">{modalView.subBlog[ind].name}</span></Typography>
+                                    </div>
+                                </Form.Item>
+                                <Form.Item
+                                    {...field}
+                                    label="เนื้อความ"
+                                    name={[field.name, 'detail']}
+                                // fieldKey={[field.fieldKey, 'detail']}
+                                >
+                                    <Typography ><span className="text">{modalView.subBlog[ind].detail}</span></Typography>
+                                </Form.Item>
+                            </Form.Item>
+
+                        ))}
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                )}
+            </Form.List>
+
+            <div className="flex justify-end gap-2">
+                <button htmlType="reset" onClick={onCancel}
+                    className="button-cus bg-red-400 text-white hover:bg-red-300">ปิด</button>
             </div>
         </Form>
     </Modal>

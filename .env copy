@@ -1,0 +1,13 @@
+NEXT_PUBLIC_PREDICT=http://192.168.43.65:8000
+NEXT_PUBLIC_IP=http://192.168.43.65:3000
+# This was inserted by `prisma init`:
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#using-environment-variables
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server and MongoDB (Preview).
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+<!-- DATABASE_URL="mysql://dev:*@192.168.43.65:3306/ncds" -->
+<!-- DATABASE_URL=mysql://qfvaupigbu8j:pscale_pw_5S3hr7gokgbHCxcrl3QfQ8EYvR-oPQI2HBcQWw9Ytqo@g69r96o9t2i1.ap-northeast-2.psdb.cloud/project-senior?sslaccept=strict -->
+<!-- DATABASE_URL=prisma://aws-us-east-1.prisma-data.com/?api_key=RpQ-8mDhgki0Hu8EifXDpOajRJzRntbhJGpYR2vKNEAKPa1WkTAmv9mRDDIsBYKz -->
+DATABASE_URL=mysql://9e0li4kp2qqe:pscale_pw_S_lNh39xAmR3uAFmSG5qAryiR-cGkdk-NIJ6JTa_zcQ@olcffkrhhb4w.ap-southeast-2.psdb.cloud/project-senior?sslaccept=strict

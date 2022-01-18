@@ -6,10 +6,14 @@ import dynamic from 'next/dynamic'
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
-const Topic = dynamic(() => import("/components/ncds/topic.js"))
-const Content = dynamic(() => import("/components/ncds/content.js"))
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"))
-
+const Topic = dynamic(() => import("/components/ncds/topic.js"),
+{ ssr: false })
+const Content = dynamic(() => import("/components/ncds/content.js"),
+{ ssr: false })
+const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
+{ ssr: false })
+const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
+{ ssr: false })
 
 export default function Index() {
     const router = useRouter()
@@ -19,27 +23,31 @@ export default function Index() {
         <>
             {name ?
                 <div className="flex flex-col w-full h-auto min-h-screen gap-4 my-auto">
-                    <div className="relative mx-auto h-1/2">
-                        <CustImage className="w-1/2 mx-auto bg-cover h-1/2"  src={"https://siph-space.sgp1.digitaloceanspaces.com/media/upload/diabeteshowtoeat_og_1200.jpg"} alt={"0"} width="100%" height="100%" preview={false} />
-                    </div>
+                    
                     <div className="flex flex-col bg-gray-50 ipad:flex-row gap-y-1">
                         <Content className="w-full " bodyContent={bodyContent} />
                     </div>
-                    <DisplayFoodReadMore data={blogTrends} title={`บทความยอดนิยม`}  />
+                    <div className='mx-10'>
+                    <Topic raw={data} categories={categories} placeholder={"ชื่อโรค , อาการ , สาเหตุ "} />
+                    {/* <DisplayFoodReadMore data={blogTrends} title={`อาหาร`}  /> */}
+                    <DisplayBlogReadMore data={blogTrends} title={`บทความยอดนิยม`} />
+                    </div>
                     
-                    {/* <Divider /> */}
                     {/* <Ncds ncds={ncds} /> */}
                 </div>
                 : categories ?
                     <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto">
-                        <div className="w-full bg-gray-300 sm:h-96 h-52">
-                            <CustImage src={"https://thaipedendo.org/wp-content/uploads/2020/08/Type-2-diabetes-crop-scaled.jpg"} alt={"0"} className="" width="100%" height="100%" preview={false} />
+                        <div className="text-center p-5 ">
+                            <CustImage src={"https://thaipedendo.org/wp-content/uploads/2020/08/Type-2-diabetes-crop-scaled.jpg"} alt={"0"} className="mr-auto ml-auto w-50 block" width="786px" height="288px" preview={false} />
+                            <p className='w-2/3 text-left ml-auto mr-auto'>โรคที่ร่างกายมีระดับน้ำตาลในเลือดสูงผิดปกติ โดยเกิดจากความผิดปกติของการใช้น้ำตาลทำให้ร่างกายไม่สามารถนำน้ำตาลไปใช้เป็นพลังงานได้ตามปกติ ทำให้มีระดับน้ำตาลสูงขึ้น</p>
+                            <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
                         </div>
-                        <Divider />
-                        <ContentHeader headerData={headerData}/>
-                        <Divider />
-                        <Topic raw={data} categories={categories} placeholder={"ชื่อโรค , อาการ , สาเหตุ "} />
-                        <DisplayFoodReadMore data={blogTrends} title={`บทความยอดนิยม`}  />
+                        <ContentHeader headerData={headerData} url_yt={"https://www.youtube.com/embed/elkz5u4QvXQ"}/>
+                        
+                        <div className='lg:mx-32 mx-0'>
+                            <Topic raw={data} categories={categories} placeholder={"ชื่อโรค , อาการ , สาเหตุ "} />
+                            <DisplayFoodReadMore data={blogTrends} title={`บทความยอดนิยม`}  />
+                        </div>
                     </div> : <></>
             }
         </>
@@ -95,10 +103,10 @@ const headerData = [
         content: [
             "เบาหวานประเภทที่ 1 (Type 1 Diabetes) เกิดจากตับอ่อนไม่สามารถผลิตฮอร์โมนอินซูลินได้",
             "เบาหวานประเภทที่ 2 (Type 2 Diabetes) เกิดจากการที่ตับอ่อนผลิตฮอร์โมนอินซูลินได้ไม่เพียงพอต่อการใช้ หรือเกิดภาวะการดื้ออินซูลิน (Insulin Resistance)",
-            "เบาหวานขณะตั้งครรภ์ (Gestational Diabetes) ซึ่งเป็นโรคเบาหวานที่พัฒนาขึ้นระหว่างการตั้งครรภ์จากการเปลี่ยนแปลงฮอร์โมน โดยที่ผู้ป่วยไม่เคยเป็นโรคเบาหวานมาก่อน ",
+            "เบาหวานขณะตั้งครรภ์ (Gestational Diabetes) ซึ่งเป็นโรคเบาหวานที่พัฒนาขึ้นระหว่างการตั้งครรภ์จากการเปลี่ยนแปลงฮอร์โมน โดยที่ผู้ป่วยไม่เคยเป็นโรคเบาหวานมาก่อน ",
             "กรรมพันธุ์หรือแบบโมโนเจนิก (Monogenic Diabetes)",
             "การใช้ยา ",
-            "โรคชนิดอื่นอย่างโรคซิสติก ไฟโบรซิส (Cystic Fibrosis)",
+            "โรคชนิดอื่นอย่างโรคซิสติก ไฟโบรซิส (Cystic Fibrosis)",
         ]
     },
     {
@@ -162,6 +170,52 @@ const blogTrends = [
         detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
         ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
         imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
+    },
+
+] 
+const ncds = [
+    {
+        ncds: "โรคเบาหวาน",
+        because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+        imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
+        videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+        suggess: true,
+        ref: "https://www.poonrada.com/sickness/detail/87",
+    },
+    {
+        ncds: "ความดันโลหิตสูง",
+        because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+        // videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+        suggess: false,
+        ref: "https://www.poonrada.com/sickness/detail/87",
+    },
+    {
+        ncds: "โรคถุงลมโป่งพอง",
+        because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+        videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+        suggess: true,
+        ref: "https://www.poonrada.com/sickness/detail/87",
+    },
+    {
+        ncds: "โรคหลอดเลือดสมอง",
+        because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+        // videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+        suggess: false,
+        ref: "https://www.poonrada.com/sickness/detail/87",
+    },
+    {
+        ncds: "โรคอ้วนลงพุง",
+        because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+        videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+        suggess: true,
+        ref: "https://www.poonrada.com/sickness/detail/87",
+    },
+    {
+        ncds: "โรคมะเร็ง",
+        because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+        // videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+        suggess: false,
+        ref: "https://www.poonrada.com/sickness/detail/87",
     },
 
 ]

@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useState, useRef, useEffect, createRef } from 'react';
 import ReactPlayer from 'react-player';
 
+import { VideoCameraOutlined } from '@ant-design/icons';
 
 
 const { Option, OptGroup } = Select
@@ -76,10 +77,10 @@ const Ncds = ({ ncds }) => {
     }
     if (!data) return null
     return (
-        <div className="w-full h-full">
-            <div className="flex justify-between ">
+        <div className="w-full h-full px-10">
+            <div className="flex justify-center text-center ">
                 <span className="w-full text-2xl font-Charm">โรคติดต่อไม่เรื้อรัง</span>
-                <div className="flex w-full gap-3 md:w-1/2">
+                {/* <div className="flex w-full gap-3 md:w-1/2">
                     <Select className="w-full md:w-1/3" defaultValue={sortData} placeholder="จัดเรียงตาม" onChange={v=>setSortData(v)}>
                         {[
                             { label: "เรียงตามวัน", data: [{ k: "date_des", v: "วันล่าสุด" }, { k: "date_asc", v: "วันสุดท้าย" }] },
@@ -91,9 +92,9 @@ const Ncds = ({ ncds }) => {
                             </OptGroup >))}
                     </Select>
                     <Search className="w-1/4 input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search" placeholder={`ชื่อโรค`} ref={refSearchInput} />
-                </div>
+                </div> */}
             </div>
-            <div className="grid h-full gap-4 p-6 mt-3 md:grid-cols-2">
+            <div className="grid h-full gap-4 p-6 mt-3 md:grid-cols-3 mx-10">
                 {data.map(({ ncds,
                     because,
                     suggess,
@@ -101,31 +102,45 @@ const Ncds = ({ ncds }) => {
                     videoUrl,
                     ref, }, index) => (
                     <>
-                        <div key={index} className="flex flex-col w-full h-full gap-2 p-6 md:flex-row rounded-xl bg-gray-50">
+                        <div key={index} className="flex flex-col w-full h-full gap-5  p-0  rounded-xl bg-gray-50 grid-cols-3 ">
                             {suggess ?
                                 <>
-                                    {imgUrl &&<div className="w-full h-full md:w-2/3"> <CusImage src={imgUrl} alt={ref} className="w-full h-full rounded-xl" width="100%" height="100%" preview={false} /></div>}
-                                    <div className="flex flex-col w-full h-full gap-3">
-                                        <div className="flex gap-4 ">
-                                            <div className="text-2xl text-gray-800 font-Charm "> {ncds} </div>
-                                            <div className="text-sm stroke-current ">{suggess ? <ThumbUpAlt className="text-green-600" /> : <ThumbDownAlt className="text-red-600" />}</div>
+                                    {/* {console.log(suggess)} */}
+                                    {imgUrl &&<div className="w-full h-96 md:w-full "><CusImage src={imgUrl} alt={ref} className="w-full h-full  " width="100%" height="100%" preview={false} /></div>}
+                                    <div className="flex flex-col w-full h-full gap-3 px-5 pb-5 text-center mt-5">
+                                        <div className="flex flex-col  ">
+                                            <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
+                                            <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
+                                            <span className="text-2xl text-gray-800 font-Charm "> {ncds} </span>
                                         </div>
-                                        <div> {because} </div>
-                                        {videoUrl && <Button className="max-w-sm md:mx-auto" onClick={() => showModal(ncds, videoUrl)} > แสดงวีดีโอ </Button>}
+                                        <div>
+                                            <label className='text-green-500 text-4xl '>
+                                                แนะนำ
+                                            </label>
+                                        </div>
+                                        <div className=''> {because} </div>
+                                        {videoUrl && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(ncds, videoUrl)}  ><VideoCameraOutlined /> แสดงวีดีโอ </a>}
                                     </div>
                                 </>
                                 :
-                                <div className="flex flex-col-reverse gap-3 md:flex-row ">
-                                    <div className="flex flex-col w-full h-full gap-3">
-                                        <div className="flex justify-end gap-4">
-                                            <div className="text-sm stroke-current ">{suggess ? <ThumbUpAlt className="text-green-600" /> : <ThumbDownAlt className="text-red-600" />}</div>
-                                            <div className="text-2xl text-gray-800 font-Charm "> {ncds} </div>
+                                <>
+                                {imgUrl &&<div className="w-full h-96 md:w-full "><CusImage src={imgUrl} alt={ref} className="w-full h-full  " width="100%" height="100%" preview={false} /></div>}
+                                <div className="flex flex-col w-full h-full gap-3 px-5 pb-5 text-center">
+                                        <div className="flex flex-col  ">
+                                            <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
+                                            <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
+                                            <span className="text-2xl text-gray-800 font-Charm "> {ncds} </span>
                                         </div>
-                                        <div className="text-right"> {because} </div>
-                                        {videoUrl && <Button className="max-w-sm md:mx-auto" onClick={() => showModal(ncds, videoUrl)}> แสดงวีดีโอ </Button>}
+                                        <div>
+                                            <label className='text-red-500 text-4xl '>
+                                                ไม่แนะนำ
+                                            </label>
+                                        </div>
+                                        <div className=''> {because} </div>
+                                        {videoUrl && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(ncds, videoUrl)}  ><VideoCameraOutlined /> แสดงวีดีโอ </a>}
                                     </div>
-                                    {imgUrl &&<div className="w-full h-full md:w-2/3"> <CusImage src={imgUrl} alt={ref} className="w-full h-full rounded-xl" width="100%" height="100%" preview={false} /></div>}
-                                </div>}
+                                </>
+                                }
                         </div>
 
                     </>
@@ -143,8 +158,8 @@ const CusModal = ({ handleCancel, content }) => {
     const { videoUrl, title } = content
     return (
         <>
-            <Modal title={title} visible={true} centered onCancel={handleCancel} width="100%" footer={null} >
-                <div className="w-full sm:h-screen h-52"><ReactPlayer url={videoUrl} width="100%" height="100%" /></div>
+            <Modal title={title} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
+                <div className="h-screen w-full p-0 m-0 "><ReactPlayer url={videoUrl} width="100%" height="100%" /></div>
             </Modal>
         </>
     );

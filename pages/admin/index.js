@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, Input, Button, message, Select } from 'antd';
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router';
@@ -18,11 +18,16 @@ export default function Index() {
 
     const { router } = useRouter()
 
-    // state
     const [title, setTitle] = useState("จัดการข้อมูล")
+    
     const onSelectPage = (_title) => {
         setTitle(_title)
     }
+
+    useEffect(() => {
+        onSelectPage("โรคไม่ติดต่อเรื้อรัง")
+    },[])
+
     const onFinish = ({ user }) => {
         const { email, password } = user
         signIn("credentials", {
@@ -106,14 +111,14 @@ const { Option } = Select
 const HeaderAdmin = ({ title, onSelectPage }) => {
     return (
         <div className=" flex flex-col w-full  gap-4 m-2">
-            <span className="text-xl duration-500 transform md:text-2xl">{title}</span>
+            <span className="text-xl duration-500 transform md:text-4xl">{title}</span>
             <div className="flex   gap-2 flex-warp">
-                <Button onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button>
-                <Button onClick={() => onSelectPage("บทความ")}>บทความ</Button>
-                <Button onClick={() => onSelectPage("อาหาร")}>อาหาร</Button>
-                <Button onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</Button>
+                <Button  onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button >
+                <Button  onClick={() => onSelectPage("บทความ")}>บทความ</Button >
+                <Button  onClick={() => onSelectPage("อาหาร")}>อาหาร</Button >
+                <Button  onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</Button >
                 <Select
-                    className="w-36"
+                    className="w-36 rounded"
                     placeholder="รายงาน"
                     onChange={(k) => onSelectPage(k)}>
                     <Option key="รายงานแบบประเมินโรค" >แบบประเมินโรค</Option>

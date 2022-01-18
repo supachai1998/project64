@@ -1,6 +1,10 @@
 import '../styles/globals.css'
 import 'antd/dist/antd.css';
 import "nprogress/nprogress.css";
+
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import "owl.carousel/dist/assets/owl.theme.default.css";
+
 import { ConfigProvider } from 'antd';
 import thTh from 'antd/lib/locale/th_TH';
 import React, { useState, useEffect } from 'react'
@@ -110,7 +114,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
           setDefaultSelectedKeys(categories)
         } else {
           if (!categories) {
-            setDefaultSelectedKeys("home")
+            // setDefaultSelectedKeys("home")
             setTitle("หน้าหลัก")
           }
           else {
@@ -180,7 +184,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
                         : <MenuOutlined className={animationZoomHover} />}
                   </div>
                 </Tooltip>
-                <p className="my-auto ml-2 text-2xl text-white">{title}</p>
+                <p className="my-auto ml-2 md:text-3xl text-xl ease-anima text-white">{title}</p>
               </Header>
               <Content
                 className="p-2 site-layout-background"
@@ -191,7 +195,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
                   </ConfigProvider>
                 </AnimatePresence>
               </Content>
-              <Navigator />
+              {/* <Navigator /> */}
             </Layout>
 
           </Layout>
@@ -270,12 +274,14 @@ const TopProgressBar = dynamic(
   },
   { ssr: false },
 );
-const Navigator = dynamic(
-  () => {
-    return import("/components/navigator");
-  },
-  { ssr: false },
-);
+
+
+// const Navigator = dynamic(
+//   () => {
+//     return import("/components/navigator");
+//   },
+//   { ssr: false },
+// );
 
 
 // const typeFood = [

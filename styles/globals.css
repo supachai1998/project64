@@ -3,12 +3,180 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@layer components {
+  .card {
+    background-color: theme('colors.white');
+    border-radius: theme('borderRadius.lg');
+    padding: theme('spacing.6');
+    box-shadow: theme('boxShadow.xl');
+  }
+  /* ... */
+}
+.font-Poppins{
+  font-family: 'Kanit', sans-serif;
+  /* font-family: 'Poppins', sans-serif; */
+}
+.owl-item .ant-image-img{
+  box-shadow: inset -4px -4px 4px rgba(0, 0, 0, 0.2), inset 0px 4px 4px rgba(0, 0, 0, 0.2);
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+.item{
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  margin: 4px;
+  margin-bottom: 10px;
+}
+.ant-image-preview-img{
+  display: inline-flex !important;
+}
+@media only screen and (max-width: 1256px){
+  .ant-steps{
+    display:flex !important;
+    flex-direction: column !important;
+    margin: 10px;
+    padding-left: 16px;
+    width: 100%;
+  }
+  .ant-steps-item-container{
+    
+    padding-bottom: 16px;
+  }
+  .ant-steps-item-active{
+    padding-left: 16px !important;
+  }
+}
+
+
+.mv-10{
+  top: -50px;
+  position: relative;
+}
+.text-10xl{
+  font-size: 20em;
+  text-shadow: 0px 15px 15px rgba(0, 0, 0, 0.75);
+  /* font-family: Poppins; */
+  font-style: normal;
+  font-weight: normal;
+}
+/* thai */
+@font-face {
+  font-family: 'Kanit';
+  font-style: italic;
+  font-weight: 300;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZbdhMWJy.woff2) format('woff2');
+  unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Kanit';
+  font-style: italic;
+  font-weight: 300;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZaxhMWJy.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Kanit';
+  font-style: italic;
+  font-weight: 300;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZa1hMWJy.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Kanit';
+  font-style: italic;
+  font-weight: 300;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZaNhMQ.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* thai */
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcraBGwCYdA.woff2) format('woff2');
+  unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcraaGwCYdA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcrabGwCYdA.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Kanit';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcraVGwA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJbecmNE.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJnecmNE.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJfecg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+.icon-arrow-prev,.icon-arrow-next{
+  font-size: 1.5rem;
+  background-color: black;
+  color:white;
+  position: absolute;
+  padding: 8px 8px;
+  top: 50%;
+  border-radius: 50%;
+  opacity: 0.5;
+  /* width: 10px; */
+}
+.icon-arrow-prev{
+  left: -30px;
+}
+.icon-arrow-next{
+  right: -30px;
+}
 
 /* custom font */
 * {
-    font-family: "Poppins","Prompt" !important;
+  font-family: 'Kanit', sans-serif;
+  /* font-family: 'Poppins', sans-serif; */
+}
+
+.h-fix73{
+  height: 73vh !important;
+}
+/* .title-article{
+  border-bottom: 4px solid #4DA44D;
+} */
+.border-b-green{
+  border-bottom-color: #4DA44D;
 }
 .ease-anima {
   transition: 'all  ease-in-out';
@@ -18,15 +186,7 @@
   @apply rounded-lg  py-1 px-3 shadow-md  transform duration-500 transition-all ease-in-out;
 }
 /* custom curve ant design input */
-.ant-input,
-.ant-input-affix-wrapper,
-.ant-input-password,
-.ant-select-selector,
-.ant-picker,
-.ant-upload,
-.ant-input-number {
-  border-radius: 10px !important;
-}
+
 .ant-input-number{
   @apply w-full !important
 }
@@ -34,6 +194,7 @@
 /* custom curve ant design button */
 .ant-btn{
   border-radius: 10px!important;
+  @apply flex justify-center items-center !important
 }
 
 /* custom fontsize header ant table */
@@ -133,3 +294,10 @@ a {
   background: #000; 
 }
 
+
+
+/* custom curve ant design input */
+.ant-form-item-control-input-content .ant-select .ant-input-number-input .ant-select-selector .ant-input-number .ant-select-selection-item  .ant-select-selector .ant-select-selection-search-input .ant-form-item-control-input .ant-input{
+  border-radius: 10px !important;
+  /* @apply rounded-lg  !important; */
+}
