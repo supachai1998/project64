@@ -6,6 +6,7 @@ import { LinearProgress, Divider } from '@mui/material';
 import { isMobile } from 'react-device-detect';
 import dynamic from 'next/dynamic'
 
+
 const _Ncds = dynamic(() => import('./ncds'))
 const _Food = dynamic(() => import('./food'))
 const _Form = dynamic(() => import('./form'))
@@ -74,6 +75,7 @@ export default function Index() {
         return (
             <div className="w-full h-full min-h-screen flex flex-col">
                 <HeaderAdmin title={title} onSelectPage={onSelectPage} />
+                
                 {title === "โรคไม่ติดต่อเรื้อรัง" ? <_Ncds />
                     : title === "บทความ" ? <_Blogs /> 
                     : title === "อาหาร" ? <_Food /> 

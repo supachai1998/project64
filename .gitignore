@@ -46,3 +46,4 @@ public/foods/*
 .tmp.driveupload
 
 .vscode
+yarn.lock

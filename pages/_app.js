@@ -210,9 +210,13 @@ export default MyApp
 const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
   const [foodType, setFoodType] = useState(null)
   const { status } = useSession()
-  if (status === "authenticated") {
-    setCollapsed(null)
-  }
+  useEffect(()=>{
+    if (status === "authenticated") {
+      setCollapsed(null)
+    }else if(status === "unauthenticated"){
+      setCollapsed(true)
+    }
+  },[status])
   useEffect(() => {
     (async () => {
       const fetchTypeFood = await FetchTypeFood() 
@@ -223,9 +227,9 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
     {status === "authenticated" && <div className="absolute right-0 h-full top-3 ">
       <Button
         icon={<LogoutOutlined style={{ width: "18px", height: "18px" }} />}
-        onClick={() => signOut({ redirect: false })}>ออกจากระบบ</Button>
+        onClick={() => {setCollapsed(true);signOut({ redirect: false })}}>ออกจากระบบ</Button>
     </div>}
-    {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width="13em" collapsedWidth="45" defaultCollapsed={collapsed} collapsed={collapsed}>
+    {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width={`${isMobile ? 15 : 20}em`} collapsedWidth={`${isMobile ? 30 : 45}`} defaultCollapsed={collapsed} collapsed={collapsed}>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >
         {status === "unauthenticated" ? <>
           <Menu.Item key="home" icon={<HomeIcon style={{ width: "18px", height: "18px" }} />}

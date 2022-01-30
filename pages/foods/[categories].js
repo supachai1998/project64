@@ -7,12 +7,12 @@ import dynamic from 'next/dynamic'
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const Topic = dynamic(() => import("/components/foods/topic.js"),
-{ ssr: false })
+    { ssr: false })
 const ContentHeader = dynamic(() => import("/components/foods/contentheader.js"))
 const Ncds = dynamic(() => import("/components/foods/ncds.js"),
-{ ssr: false })
+    { ssr: false })
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
-{ ssr: false })
+    { ssr: false })
 
 
 export default function Index() {
@@ -24,18 +24,18 @@ export default function Index() {
             {name ?
                 <div className="flex flex-col w-full h-full min-h-screen  ">
                     <div className="flex flex-col bg-gray-50 ipad:flex-row relative ">
-                            <CustImage src={"https://sg.fiverrcdn.com/photos/112566478/original/386e485f0d4853746792abe5e592480ec32c41d1.jpg?1527930323"} alt={"0"} width="100%" height="517px" preview={false} /></div>
-                            <div className='absolute w-full text-center h-80 '>
-                                <label className='font-Poppins text-10xl text-white my-auto p-0'>{name}</label>
-                            </div>
-                       
-                            <div className='card mv-10 w-11/12 mx-auto'>
+                        <CustImage src={"https://sg.fiverrcdn.com/photos/112566478/original/386e485f0d4853746792abe5e592480ec32c41d1.jpg?1527930323"} alt={"0"} width="100%" height="517px" preview={false} /></div>
+                    <div className='absolute w-full text-center h-80 '>
+                        <label className='font-Poppins text-10xl text-white my-auto p-0'>{name}</label>
+                    </div>
+
+                    <div className='card mv-10 w-11/12 mx-auto'>
 
 
-                                <ContentHeader className="w-full " headerData={headerData} />
-                            </div>
-                        
-                  
+                        <ContentHeader className="w-full " headerData={headerData} />
+                    </div>
+
+
                     <Ncds ncds={ncds} />
                     <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} headTextColor={"text-green-900"} headLineColor={"bg-green-300"} />
                 </div>
@@ -44,7 +44,7 @@ export default function Index() {
                         {/* <div className="w-full bg-gray-300 sm:h-96 h-52">
                             <CustImage src={"https://s359.kapook.com/pagebuilder/1f12afa5-ed83-4fd6-b9e7-8c670d941668.jpg"} alt={"0"} className="" width="100%" height="100%" preview={false} />
                         </div> */}
-                        
+
                         <Topic raw={tomyum} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
                         <Topic raw={curry} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
                         <Topic raw={tomyum} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />

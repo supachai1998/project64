@@ -8,7 +8,8 @@
     "start": "next start",
     "server": "next build&&next start",
     "lint": "next lint",
-    "localssl": "local-ssl-proxy --source 3001 --target 3000"
+    "localssl": "local-ssl-proxy --source 3001 --target 3000",
+    "db": "yarn prisma studio --port 5566"
   },
   "dependencies": {
     "@emotion/react": "^11.4.1",

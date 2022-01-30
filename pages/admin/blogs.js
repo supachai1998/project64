@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import Board from '../../components/admin/DisplayBoard';
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -26,47 +27,25 @@ export default function Index() {
     }
     useEffect(() => {
         reload()
-    }, [modalAdd])
+        return () =>{setBlogs()}
+    }, [modalAdd,modalEdit,modalView])
     return (
         <div
             className="ease-div flex flex-col gap-4">
-            <Board />
+            <Board data={{}}/>
             <div className="flex justify-between mt-4">
                 <div className="text-xl">ตารางบทความ</div>
-                <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูล</Button>
+                <Button onClick={() => setModalAdd(true)}>เพิ่มโรค</Button>
             </div>
             <ModalAdd setModalAdd={setModalAdd} modalAdd={modalAdd} reload={reload} />
-            <ModalEdit setModalEdit={setModalEdit} modalEdit={modalEdit} reload={reload} />
-            <ModalView setModalView={setModalView} modalView={modalView} reload={reload} />
+            {/* <ModalEdit setModalEdit={setModalEdit} modalEdit={modalEdit} reload={reload} />
+            <ModalView setModalView={setModalView} modalView={modalView} reload={reload} /> */}
             <TableForm blogs={blogs} reload={reload} modalEdit={modalEdit} setModalEdit={setModalEdit} modalView={modalView} setModalView={setModalView} />
         </div>
     )
 }
 
-const Board = () => {
-    return <div className="sm:flex-row flex flex-col flex-wrap mt-4  gap-4 justify-center ">
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-    </div>
-}
+
 
 const TableForm = ({ blogs, reload,
     modalEdit, setModalEdit,
@@ -214,12 +193,13 @@ const TableForm = ({ blogs, reload,
 }
 const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
     const [fileList, setFileList] = useState(null)
+    const [fileListSubBlogs, setFileListSubBlogs] = useState(null)
     const [type, setType] = useState(null)
     const [ncds, setNCDS] = useState()
     const [form] = Form.useForm();
     useEffect(() => {
         form.setFieldsValue();
-    }, [form,modalAdd]);
+    }, [form, modalAdd]);
     useEffect(() => {
         (async () => {
             const data = await fetch('/api/getNCDS').then(resp => resp.json());
@@ -235,38 +215,46 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
     }
 
     const onSubmit = async (val) => {
-        const _tempimage = val?.image?.fileList
-        const _tempsubBlog = val?.subBlog
-        if (Array.isArray(_tempimage) && _tempimage.length > 0 && Array.isArray(_tempsubBlog) && _tempsubBlog.length > 0) {
-            delete val['image']
-            delete val['subBlog']
-            const subBlog = { create: _tempsubBlog }
-            const image = { create: _tempimage.map(({ name }) => ({ name: name })) }
-            val['image'] = image
-            val['subBlog'] = subBlog
-            const res = await fetch(`/api/getBlogs`, {
-                headers: { 'Content-Type': 'application/json', },
-                method: "POST",
-                body: JSON.stringify(val)
-            })
+        console.log(val)
+        // const _tempimage = val?.image?.fileList
+        // const _tempsubBlog = val?.subBlog.map((val) => {
+        //     return {
+        //         ...val,
+        //         // ดึงชื่อไฟล์จาก object image
+        //         image: val.image.file.name
+        //     }
+        // })
+        // if (Array.isArray(_tempimage) && _tempimage.length > 0 && Array.isArray(_tempsubBlog) && _tempsubBlog.length > 0) {
+        //     delete val['image']
+        //     delete val['subBlog']
+        //     console.log(_tempsubBlog)
+        //     const subBlog = { create: _tempsubBlog }
+        //     const image = { create: _tempimage.map(({ name }) => ({ name: name })) }
+        //     val['image'] = image
+        //     val['subBlog'] = subBlog
+        //     const res = await fetch(`/api/getBlogs`, {
+        //         headers: { 'Content-Type': 'application/json', },
+        //         method: "POST",
+        //         body: JSON.stringify(val)
+        //     })
 
-            // console.log('send:', val);
-            if (res.status === 200) {
-                notification.success({
-                    message: "เพิ่มข้อมูลสำเร็จ"
-                })
-                reload()
-                setModalAdd(false)
-            } else notification.error({
-                message: 'ไม่สามารถเพิ่มข้อมูลได้',
-                description: res.message,
-            })
-        } else {
-            notification.error({
-                message: 'ไม่สามารถเพิ่มข้อมูลได้',
-                description: "การป้อนข้อมูลไม่ครบ",
-            })
-        }
+        //     // console.log('send:', val);
+        //     if (res.status === 200) {
+        //         notification.success({
+        //             message: "เพิ่มข้อมูลสำเร็จ"
+        //         })
+        //         reload()
+        //         setModalAdd(false)
+        //     } else notification.error({
+        //         message: 'ไม่สามารถเพิ่มข้อมูลได้',
+        //         description: res.message,
+        //     })
+        // } else {
+        //     notification.error({
+        //         message: 'ไม่สามารถเพิ่มข้อมูลได้',
+        //         description: "การป้อนข้อมูลไม่ครบ",
+        //     })
+        // }
     }
     const onFinishFailed = () => {
 
@@ -276,6 +264,9 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
     }
     const onChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
+    }
+    const onChangeSubBlogs = ({ fileList: newFileList }) => {
+        setFileListSubBlogs(newFileList);
     }
     const onTypeChange = (val) => {
         val !== 1 && setType(val)
@@ -385,25 +376,27 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                                 >
                                     <TextArea rows={4} placeholder="เนื้อความ" />
                                 </Form.Item>
-                                {/* <Form.Item
-                                    name="image"
+                                <Form.Item
+                                    {...field}
+                                    name={[field.name, 'image']}
+                                    fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
-                                    rules={[{ required: true }]}
+                                    // rules={[{ required: true }]}
                                 >
 
                                     <Upload
                                         multiple={true}
                                         accept='image/png,image/jpeg'
-                                        maxCount={5}
+                                        maxCount={1}
                                         action="/api/uploads"
                                         listType="picture"
                                         defaultFileList={[]}
-                                        onChange={onChange}
+                                        // onChange={onChangeSubBlogs}
                                         className="upload-list-inline"
                                     >
-                                        <Button disable={fileList?.length === 1} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
+                                        <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป</Button>
                                     </Upload>
-                                </Form.Item> */}
+                                </Form.Item>
                             </Form.Item>
 
                         ))}
@@ -428,344 +421,344 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
         </Form>
     </Modal>
 }
-const ModalEdit = ({ modalEdit, setModalEdit, reload }) => {
-    const [fileList, setFileList] = useState([])
-    const [type, setType] = useState(null)
-    const [ncds, setNCDS] = useState()
-    const [form] = Form.useForm();
-    useEffect(() => {
-        console.log(modalEdit)
-        form.setFieldsValue(modalEdit);
-        !!modalEdit && setFileList(modalEdit.image.map(({ id, name }) => {
-            return {
-                id: id,
-                status: "done",
-                url: `/uploads/${name}`,
-                name: name
-            }
-        }))
-    }, [form, modalEdit]);
+// const ModalEdit = ({ modalEdit, setModalEdit, reload }) => {
+//     const [fileList, setFileList] = useState([])
+//     const [type, setType] = useState(null)
+//     const [ncds, setNCDS] = useState()
+//     const [form] = Form.useForm();
+//     useEffect(() => {
+//         console.log(modalEdit)
+//         form.setFieldsValue(modalEdit);
+//         !!modalEdit && setFileList(modalEdit.image.map(({ id, name }) => {
+//             return {
+//                 id: id,
+//                 status: "done",
+//                 url: `/uploads/${name}`,
+//                 name: name
+//             }
+//         }))
+//     }, [form, modalEdit]);
 
-    const onOk = () => {
-        setModalEdit(false)
-    }
-    const onCancel = () => {
-        setModalEdit(false)
-    }
+//     const onOk = () => {
+//         setModalEdit(false)
+//     }
+//     const onCancel = () => {
+//         setModalEdit(false)
+//     }
 
-    const onSubmit = async (val) => {
-        const _tempimage = val?.image?.fileList || val?.image
-        const _tempsubBlog = val?.subBlog
-        if (Array.isArray(_tempimage) && _tempimage.length > 0 && Array.isArray(_tempsubBlog) && _tempsubBlog.length > 0) {
-            delete val['image']
-            delete val['subBlog']
-            const subBlog = _tempsubBlog
-            const image = _tempimage.map(({ id, name }) => { return { id: id, name: name } })
-            val['id'] = modalEdit.id
-            val['image'] = image
-            val['subBlog'] = subBlog
-            console.log(val)
-            const res = await fetch(`/api/getBlogs`, {
-                headers: { 'Content-Type': 'application/json', },
-                method: "PATCH",
-                body: JSON.stringify({ old: modalEdit, new: val })
-            })
+//     const onSubmit = async (val) => {
+//         const _tempimage = val?.image?.fileList || val?.image
+//         const _tempsubBlog = val?.subBlog
+//         if (Array.isArray(_tempimage) && _tempimage.length > 0 && Array.isArray(_tempsubBlog) && _tempsubBlog.length > 0) {
+//             delete val['image']
+//             delete val['subBlog']
+//             const subBlog = _tempsubBlog
+//             const image = _tempimage.map(({ id, name }) => { return { id: id, name: name } })
+//             val['id'] = modalEdit.id
+//             val['image'] = image
+//             val['subBlog'] = subBlog
+//             console.log(val)
+//             const res = await fetch(`/api/getBlogs`, {
+//                 headers: { 'Content-Type': 'application/json', },
+//                 method: "PATCH",
+//                 body: JSON.stringify({ old: modalEdit, new: val })
+//             })
 
-            // console.log('send:', val);
-            if (res.status === 200) {
-                notification.success({
-                    message: "แก้ไขข้อมูลสำเร็จ"
-                })
-                reload()
-                setModalEdit(false)
-            } else notification.error({
-                message: 'ไม่สามารถแก้ไขข้อมูลได้',
-                description: res.message,
-            })
-        } else {
-            notification.error({
-                message: 'ไม่สามารถแก้ไขข้อมูลได้',
-                description: "การป้อนข้อมูลไม่ครบ",
-            })
-        }
-    }
-    const onFinishFailed = () => {
+//             // console.log('send:', val);
+//             if (res.status === 200) {
+//                 notification.success({
+//                     message: "แก้ไขข้อมูลสำเร็จ"
+//                 })
+//                 reload()
+//                 setModalEdit(false)
+//             } else notification.error({
+//                 message: 'ไม่สามารถแก้ไขข้อมูลได้',
+//                 description: res.message,
+//             })
+//         } else {
+//             notification.error({
+//                 message: 'ไม่สามารถแก้ไขข้อมูลได้',
+//                 description: "การป้อนข้อมูลไม่ครบ",
+//             })
+//         }
+//     }
+//     const onFinishFailed = () => {
 
-    }
-    const onReset = () => {
-        setFileList(null)
-    }
-    const onChange = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-    }
-    const onTypeChange = (val) => {
-        val !== 1 && setType(val)
-    }
-    return <Modal title={"แก้ไขข้อมูลบทความ"}
-        visible={!!modalEdit ? true : false}
-        okText={<>ตกลง</>}
-        cancelText={<>ยกเลิก</>}
-        onOk={onOk}
-        onCancel={onCancel}
-        width="100%"
-        footer={<></>}>
-        <Form
-            form={form}
-            // initialValues={{}}
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            onFinish={onSubmit}
-            onFinishFailed={onFinishFailed}
-            onReset={onReset}>
-            <Form.Item
-                name="type"
-                label="ประเภท"
-                rules={[{ required: true }]}>
-                <Select
-                    showSearch
-                    placeholder="เลือกประเภทอาหาร"
-                    optionFilterProp="children"
-                    onChange={onTypeChange}
-                    // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {Type.map(({ name_th, name_en }, ind) => <Option key={ind} value={name_en}>{name_th}</Option>)}
-                </Select>
-            </Form.Item>
-            <Form.Item
-                name="name"
-                label="ชื่อบทความ"
-                rules={[{ required: true },]}>
-                <Input placeholder="ชื่อบทความ" />
-            </Form.Item>
-            <Form.Item
-                name="imply"
-                label="บทย่อ"
-                rules={[{ required: true },]}>
-                <TextArea rows={4} placeholder="บทย่อ" />
-            </Form.Item>
-            <Form.Item
-                name="video"
-                label="วิดีโอ"
-                rules={[{ required: false }, {
-                    pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
-                    message: 'ป้อน ที่อยู่(url) ให้ถูกต้อง',
-                }]}>
-                <Input placeholder="https://youtube.com/watch?" />
-            </Form.Item>
-            <Form.Item
-                name="image"
-                label="รูปภาพ"
-                rules={[{ required: true }]}
-            >
+//     }
+//     const onReset = () => {
+//         setFileList(null)
+//     }
+//     const onChange = ({ fileList: newFileList }) => {
+//         setFileList(newFileList);
+//     }
+//     const onTypeChange = (val) => {
+//         val !== 1 && setType(val)
+//     }
+//     return <Modal title={"แก้ไขข้อมูลบทความ"}
+//         visible={!!modalEdit ? true : false}
+//         okText={<>ตกลง</>}
+//         cancelText={<>ยกเลิก</>}
+//         onOk={onOk}
+//         onCancel={onCancel}
+//         width="100%"
+//         footer={<></>}>
+//         <Form
+//             form={form}
+//             // initialValues={{}}
+//             labelCol={{ span: 6 }}
+//             wrapperCol={{ span: 18 }}
+//             onFinish={onSubmit}
+//             onFinishFailed={onFinishFailed}
+//             onReset={onReset}>
+//             <Form.Item
+//                 name="type"
+//                 label="ประเภท"
+//                 rules={[{ required: true }]}>
+//                 <Select
+//                     showSearch
+//                     placeholder="เลือกประเภทอาหาร"
+//                     optionFilterProp="children"
+//                     onChange={onTypeChange}
+//                     // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+//                     filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+//                     {Type.map(({ name_th, name_en }, ind) => <Option key={ind} value={name_en}>{name_th}</Option>)}
+//                 </Select>
+//             </Form.Item>
+//             <Form.Item
+//                 name="name"
+//                 label="ชื่อบทความ"
+//                 rules={[{ required: true },]}>
+//                 <Input placeholder="ชื่อบทความ" />
+//             </Form.Item>
+//             <Form.Item
+//                 name="imply"
+//                 label="บทย่อ"
+//                 rules={[{ required: true },]}>
+//                 <TextArea rows={4} placeholder="บทย่อ" />
+//             </Form.Item>
+//             <Form.Item
+//                 name="video"
+//                 label="วิดีโอ"
+//                 rules={[{ required: false }, {
+//                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
+//                     message: 'ป้อน ที่อยู่(url) ให้ถูกต้อง',
+//                 }]}>
+//                 <Input placeholder="https://youtube.com/watch?" />
+//             </Form.Item>
+//             <Form.Item
+//                 name="image"
+//                 label="รูปภาพ"
+//                 rules={[{ required: true }]}
+//             >
 
-                <Upload
-                    multiple={true}
-                    accept='image/png,image/jpeg'
-                    maxCount={5}
-                    action="/api/uploads"
-                    listType="picture"
-                    fileList={fileList}
-                    onChange={onChange}
-                    className="upload-list-inline"
-                >
-                    <Button disable={fileList?.length === 5} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
-                </Upload>
-            </Form.Item>
-            <Form.List name="subBlog" >
-                {(fields, { add, remove }, { errors }) => (
-                    <>
-                        <Divider />
-                        {!!fields && fields.map((field, ind) => (
-                            <Form.Item
-                                {...fields}
-                                noStyle
-                                shouldUpdate
-                                key={field.key}
-                                required
-                            >
+//                 <Upload
+//                     multiple={true}
+//                     accept='image/png,image/jpeg'
+//                     maxCount={5}
+//                     action="/api/uploads"
+//                     listType="picture"
+//                     fileList={fileList}
+//                     onChange={onChange}
+//                     className="upload-list-inline"
+//                 >
+//                     <Button disable={fileList?.length === 5} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
+//                 </Upload>
+//             </Form.Item>
+//             <Form.List name="subBlog" >
+//                 {(fields, { add, remove }, { errors }) => (
+//                     <>
+//                         <Divider />
+//                         {!!fields && fields.map((field, ind) => (
+//                             <Form.Item
+//                                 {...fields}
+//                                 noStyle
+//                                 shouldUpdate
+//                                 key={field.key}
+//                                 required
+//                             >
 
-                                <Form.Item label={`หัวข้อที่ ${ind + 1}`}><Divider /></Form.Item>
-                                <Form.Item
-                                    {...field}
-                                    label="ชื่อหัวข้อ"
-                                    name={[field.name, 'name']}
-                                    fieldKey={[field.fieldKey, 'name']}
-                                    rules={[{ required: true }]}
-                                >
-                                    <div className="flex gap-3 items-center">
-                                        <Input placeholder="ชื่อหัวข้อ" />
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined onClick={() => remove(field.name)} /></Tooltip>
-                                    </div>
-                                </Form.Item>
-                                <Form.Item
-                                    {...field}
-                                    label="เนื้อความ"
-                                    name={[field.name, 'detail']}
-                                    fieldKey={[field.fieldKey, 'detail']}
-                                    rules={[{ required: true }]}
-                                >
-                                    <TextArea rows={4} placeholder="เนื้อความ" />
-                                </Form.Item>
-                            </Form.Item>
+//                                 <Form.Item label={`หัวข้อที่ ${ind + 1}`}><Divider /></Form.Item>
+//                                 <Form.Item
+//                                     {...field}
+//                                     label="ชื่อหัวข้อ"
+//                                     name={[field.name, 'name']}
+//                                     fieldKey={[field.fieldKey, 'name']}
+//                                     rules={[{ required: true }]}
+//                                 >
+//                                     <div className="flex gap-3 items-center">
+//                                         <Input placeholder="ชื่อหัวข้อ" />
+//                                         <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined onClick={() => remove(field.name)} /></Tooltip>
+//                                     </div>
+//                                 </Form.Item>
+//                                 <Form.Item
+//                                     {...field}
+//                                     label="เนื้อความ"
+//                                     name={[field.name, 'detail']}
+//                                     fieldKey={[field.fieldKey, 'detail']}
+//                                     rules={[{ required: true }]}
+//                                 >
+//                                     <TextArea rows={4} placeholder="เนื้อความ" />
+//                                 </Form.Item>
+//                             </Form.Item>
 
-                        ))}
-                        <div className="flex justify-center">
-                            <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
-                                onClick={() => add()}
-                                type="button">
-                                <PlusOutlined />
-                                <span className="text-blue-900">เพิ่มหัวข้อ</span>
-                            </button>
-                        </div>
-                        <Form.ErrorList errors={errors} />
-                    </>
+//                         ))}
+//                         <div className="flex justify-center">
+//                             <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+//                                 onClick={() => add()}
+//                                 type="button">
+//                                 <PlusOutlined />
+//                                 <span className="text-blue-900">เพิ่มหัวข้อ</span>
+//                             </button>
+//                         </div>
+//                         <Form.ErrorList errors={errors} />
+//                     </>
 
-                )}
-            </Form.List>
+//                 )}
+//             </Form.List>
 
-            <div className="flex justify-end gap-2">
-                <Button htmlType="reset">ล้างค่า</Button>
-                <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
-            </div>
-        </Form>
-    </Modal>
-}
-const ModalView = ({ modalView, setModalView, reload }) => {
-    const [fileList, setFileList] = useState([])
-    const [type, setType] = useState(null)
-    const [ncds, setNCDS] = useState()
-    const [form] = Form.useForm();
+//             <div className="flex justify-end gap-2">
+//                 <Button htmlType="reset">ล้างค่า</Button>
+//                 <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
+//             </div>
+//         </Form>
+//     </Modal>
+// }
+// const ModalView = ({ modalView, setModalView, reload }) => {
+//     const [fileList, setFileList] = useState([])
+//     const [type, setType] = useState(null)
+//     const [ncds, setNCDS] = useState()
+//     const [form] = Form.useForm();
 
-    useEffect(() => {
-        form.setFieldsValue(modalView);
-        if (!!modalView) {
-            setFileList(modalView.image.map(({ id, name }) => {
-                return {
-                    id: id,
-                    status: "done",
-                    url: `/uploads/${name}`,
-                    name: name
-                }
-            }))
-            console.log(modalView)
-            const newState = { ...modalView, type_th: modalView.type === "NCDS" ? "โรคไม่ติดต่อ" : modalView.type === "FOOD" ? "อาหาร" : modalView.type === "ALL" && "ทั้งหมด" }
-            !modalView.type_th && setModalView(newState)
-        }
-    }, [form, modalView, setModalView]);
+//     useEffect(() => {
+//         form.setFieldsValue(modalView);
+//         if (!!modalView) {
+//             setFileList(modalView.image.map(({ id, name }) => {
+//                 return {
+//                     id: id,
+//                     status: "done",
+//                     url: `/uploads/${name}`,
+//                     name: name
+//                 }
+//             }))
+//             console.log(modalView)
+//             const newState = { ...modalView, type_th: modalView.type === "NCDS" ? "โรคไม่ติดต่อ" : modalView.type === "FOOD" ? "อาหาร" : modalView.type === "ALL" && "ทั้งหมด" }
+//             !modalView.type_th && setModalView(newState)
+//         }
+//     }, [form, modalView, setModalView]);
 
-    const onOk = () => {
-        setModalView(false)
-    }
-    const onCancel = () => {
-        setModalView(false)
-    }
+//     const onOk = () => {
+//         setModalView(false)
+//     }
+//     const onCancel = () => {
+//         setModalView(false)
+//     }
 
-    const onFinishFailed = () => {
+//     const onFinishFailed = () => {
 
-    }
-    const onReset = () => {
-        setFileList(null)
-    }
-    const onTypeChange = (val) => {
-        val !== 1 && setType(val)
-    }
-    return <Modal title={"แก้ไขข้อมูลบทความ"}
+//     }
+//     const onReset = () => {
+//         setFileList(null)
+//     }
+//     const onTypeChange = (val) => {
+//         val !== 1 && setType(val)
+//     }
+//     return <Modal title={"แก้ไขข้อมูลบทความ"}
 
-        visible={!!modalView ? true : false}
-        okText={<>ตกลง</>}
-        cancelText={<>ยกเลิก</>}
-        onOk={onOk}
-        onCancel={onCancel}
-        width="100%"
-        footer={<></>}>
-        <Form
-            form={form}
+//         visible={!!modalView ? true : false}
+//         okText={<>ตกลง</>}
+//         cancelText={<>ยกเลิก</>}
+//         onOk={onOk}
+//         onCancel={onCancel}
+//         width="100%"
+//         footer={<></>}>
+//         <Form
+//             form={form}
 
-            // initialValues={{}}
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            onFinish={onCancel}
-            onFinishFailed={onFinishFailed}
-            onReset={onReset}>
-            <Form.Item
-                name="type"
-                label="ประเภท"
-            >
-                <Typography ><span className="text" >{modalView.type_th}</span></Typography>
-            </Form.Item>
-            <Form.Item
-                name="name"
-                label="ชื่อบทความ">
-                <Typography ><span className="text">{modalView.name}</span></Typography>
-            </Form.Item>
-            <Form.Item
-                name="imply"
-                label="บทย่อ">
-                <Typography ><span className="text">{modalView.imply}</span></Typography>
-                {/* <TextArea disabled rows={4} placeholder="บทย่อ" /> */}
-            </Form.Item>
-            <Form.Item
-                name="video"
-                label="วิดีโอ">
-                <Typography ><span className="text">{modalView.video}</span></Typography>
-            </Form.Item>
-            <Form.Item
-                name="image"
-                label="รูปภาพ"
-            >
-                <Upload
-                    listType="picture-card"
-                    fileList={fileList}
-                    disabled
-                />
-            </Form.Item>
-            <Form.List name="subBlog" >
-                {(fields, { add, remove }, { errors }) => (
-                    <>
-                        <Divider />
-                        {!!fields && fields.map((field, ind) => (
-                            <Form.Item
-                                {...fields}
-                                noStyle
-                                shouldUpdate
-                                key={field.key}
-                            >
+//             // initialValues={{}}
+//             labelCol={{ span: 6 }}
+//             wrapperCol={{ span: 18 }}
+//             onFinish={onCancel}
+//             onFinishFailed={onFinishFailed}
+//             onReset={onReset}>
+//             <Form.Item
+//                 name="type"
+//                 label="ประเภท"
+//             >
+//                 <Typography ><span className="text" >{modalView.type_th}</span></Typography>
+//             </Form.Item>
+//             <Form.Item
+//                 name="name"
+//                 label="ชื่อบทความ">
+//                 <Typography ><span className="text">{modalView.name}</span></Typography>
+//             </Form.Item>
+//             <Form.Item
+//                 name="imply"
+//                 label="บทย่อ">
+//                 <Typography ><span className="text">{modalView.imply}</span></Typography>
+//                 {/* <TextArea disabled rows={4} placeholder="บทย่อ" /> */}
+//             </Form.Item>
+//             <Form.Item
+//                 name="video"
+//                 label="วิดีโอ">
+//                 <Typography ><span className="text">{modalView.video}</span></Typography>
+//             </Form.Item>
+//             <Form.Item
+//                 name="image"
+//                 label="รูปภาพ"
+//             >
+//                 <Upload
+//                     listType="picture-card"
+//                     fileList={fileList}
+//                     disabled
+//                 />
+//             </Form.Item>
+//             <Form.List name="subBlog" >
+//                 {(fields, { add, remove }, { errors }) => (
+//                     <>
+//                         <Divider />
+//                         {!!fields && fields.map((field, ind) => (
+//                             <Form.Item
+//                                 {...fields}
+//                                 noStyle
+//                                 shouldUpdate
+//                                 key={field.key}
+//                             >
 
-                                <Form.Item label={`หัวข้อที่ ${ind + 1}`}><Divider /></Form.Item>
-                                <Form.Item
-                                    {...field}
-                                    label="ชื่อหัวข้อ"
-                                    name={[field.name, 'name']}
-                                // fieldKey={[field.fieldKey, 'name']}
-                                >
-                                    <div className="flex gap-3 items-center">
-                                        <Typography ><span className="text">{modalView.subBlog[ind].name}</span></Typography>
-                                    </div>
-                                </Form.Item>
-                                <Form.Item
-                                    {...field}
-                                    label="เนื้อความ"
-                                    name={[field.name, 'detail']}
-                                // fieldKey={[field.fieldKey, 'detail']}
-                                >
-                                    <Typography ><span className="text">{modalView.subBlog[ind].detail}</span></Typography>
-                                </Form.Item>
-                            </Form.Item>
+//                                 <Form.Item label={`หัวข้อที่ ${ind + 1}`}><Divider /></Form.Item>
+//                                 <Form.Item
+//                                     {...field}
+//                                     label="ชื่อหัวข้อ"
+//                                     name={[field.name, 'name']}
+//                                 // fieldKey={[field.fieldKey, 'name']}
+//                                 >
+//                                     <div className="flex gap-3 items-center">
+//                                         <Typography ><span className="text">{modalView.subBlog[ind].name}</span></Typography>
+//                                     </div>
+//                                 </Form.Item>
+//                                 <Form.Item
+//                                     {...field}
+//                                     label="เนื้อความ"
+//                                     name={[field.name, 'detail']}
+//                                 // fieldKey={[field.fieldKey, 'detail']}
+//                                 >
+//                                     <Typography ><span className="text">{modalView.subBlog[ind].detail}</span></Typography>
+//                                 </Form.Item>
+//                             </Form.Item>
 
-                        ))}
-                        <Form.ErrorList errors={errors} />
-                    </>
+//                         ))}
+//                         <Form.ErrorList errors={errors} />
+//                     </>
 
-                )}
-            </Form.List>
+//                 )}
+//             </Form.List>
 
-            <div className="flex justify-end gap-2">
-                <button htmlType="reset" onClick={onCancel}
-                    className="button-cus bg-red-400 text-white hover:bg-red-300">ปิด</button>
-            </div>
-        </Form>
-    </Modal>
-}
+//             <div className="flex justify-end gap-2">
+//                 <button htmlType="reset" onClick={onCancel}
+//                     className="button-cus bg-red-400 text-white hover:bg-red-300">ปิด</button>
+//             </div>
+//         </Form>
+//     </Modal>
+// }
 
 const Type = [
     { name_en: "NCDS", name_th: "โรคไม่ติดต่อ" },

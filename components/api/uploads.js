@@ -10,11 +10,22 @@ export const config = {
     },
 }
 const saveFile = async (file) => {
+    console.log(file)
     const data = fs.readFileSync(file.path);
     fs.writeFileSync(`./public/uploads/${file.name}`, data);
     await fs.unlinkSync(file.path);
     return true;
 };
+const makeid = (length) => {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
+}
 export default async function handler(req, res) {
 
     const { body, method } = req;
@@ -31,6 +42,7 @@ export default async function handler(req, res) {
                         error: "There was an error parsing the files",
                     });
                 }
+
                 await Object.keys(files).forEach(async (key) => {
                     const { name } = files[key]
                     const path = `${saveDir}/${name}`
@@ -40,7 +52,7 @@ export default async function handler(req, res) {
                 });
                 res.status(200).json({ status: "upload file success" })
             })
-        } catch (e) { res.status(500).json({ status: e.message }) }
+        } catch (e) {console.log(e.message); res.status(500).json({ status: e.message }) }
 
     }
 

@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     switch (method) {
       case "POST":
         console.log(body)
+        
         await prisma.blogs.create({
           data: body
         })

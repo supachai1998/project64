@@ -68,18 +68,30 @@ model Ncds {
   id        Int         @id @default(autoincrement())
   name_th   String
   name_en   String
-  imply     String
-  video     String
-  mean      String
-  cause     String
-  reduce    String
-  signs     String
-  sugess    String
-  views     Int
+  imply     String?
+  video     String?
+  mean      String?
+  cause     String?
+  reduce    String?
+  signs     String?
+  sugess    String?
+  ref       Ref[]
+  views     Int?        @default(0)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   images    ImageNCDS[]
   foodncds  FoodNcds[]
+}
+
+model Ref {
+  id      Int     @id @default(autoincrement())
+  url     String
+  Ncds    Ncds?   @relation(fields: [ncdsId], references: [id])
+  ncdsId  Int?
+  Food    Food?   @relation(fields: [foodId], references: [id])
+  foodId  Int?
+  Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
+  blogsId String?
 }
 
 model Food {
@@ -90,7 +102,9 @@ model Food {
   name_en    String
   proceduce  String      @db.Text
   calories   Float
-  nutrition  String
+  detail     String
+  ref        Ref[]
+  ingredient String
   video      String?
   views      Int
   createdAt  DateTime    @default(now())
@@ -109,16 +123,17 @@ model FoodType {
 }
 
 model FoodNcds {
-  id        Int      @id @default(autoincrement())
-  detail    String
-  suggess   Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Ncds   Ncds? @relation(fields: [ncdsId], references: [id])
-  ncdsId Int?
-  food   Food  @relation(fields: [foodId], references: [id])
-  foodId Int
+  id          Int        @id @default(autoincrement())
+  detail      String
+  suggess     Boolean
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  image       ImageFood? @relation(fields: [imageFoodId], references: [id])
+  Ncds        Ncds?      @relation(fields: [ncdsId], references: [id])
+  ncdsId      Int?
+  food        Food       @relation(fields: [foodId], references: [id])
+  foodId      Int
+  imageFoodId String?
 }
 
 model ImageNCDS {
@@ -132,8 +147,9 @@ model ImageFood {
   id   String @id @default(uuid())
   name String
 
-  Food   Food? @relation(fields: [foodId], references: [id])
-  foodId Int?
+  Food     Food?      @relation(fields: [foodId], references: [id])
+  foodId   Int?
+  FoodNcds FoodNcds[]
 }
 
 model ImageBlog {
@@ -159,16 +175,17 @@ model Blogs {
   views     Int?
   createdAt DateTime?   @default(now())
   updatedAt DateTime?   @updatedAt
+  ref       Ref[]
   subBlog   subBlog[]
   image     ImageBlog[]
 }
 
 model subBlog {
-  id      String      @id @default(uuid())
+  id      String  @id @default(uuid())
   name    String
-  detail  String      @db.Text
+  detail  String  @db.Text
   image   String?
-  Blogs   Blogs?      @relation(fields: [blogsId], references: [id])
+  Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
   blogsId String?
 }
 
