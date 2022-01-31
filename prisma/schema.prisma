@@ -69,7 +69,7 @@ model Ncds {
   name_th   String
   name_en   String
   imply     String?     @db.LongText
-  video     String?     
+  video     String?
   cause     String?     @db.LongText
   reduce    String?     @db.LongText
   signs     String?     @db.LongText
@@ -101,9 +101,9 @@ model Food {
   name_en    String
   proceduce  String      @db.LongText
   calories   Float
-  detail     String     @db.LongText
+  detail     String      @db.LongText
   ref        Ref[]
-  ingredient String     @db.LongText
+  ingredient String      @db.LongText
   video      String?
   views      Int
   createdAt  DateTime    @default(now())
