@@ -68,12 +68,11 @@ model Ncds {
   id        Int         @id @default(autoincrement())
   name_th   String
   name_en   String
-  imply     String?
-  video     String?
-  mean      String?
-  cause     String?
-  reduce    String?
-  signs     String?
+  imply     String?     @db.LongText
+  video     String?     
+  cause     String?     @db.LongText
+  reduce    String?     @db.LongText
+  signs     String?     @db.LongText
   sugess    String?
   ref       Ref[]
   views     Int?        @default(0)
@@ -100,11 +99,11 @@ model Food {
   FoodType   FoodType    @relation(fields: [foodTypeId], references: [id])
   name_th    String
   name_en    String
-  proceduce  String      @db.Text
+  proceduce  String      @db.LongText
   calories   Float
-  detail     String
+  detail     String     @db.LongText
   ref        Ref[]
-  ingredient String
+  ingredient String     @db.LongText
   video      String?
   views      Int
   createdAt  DateTime    @default(now())
@@ -124,7 +123,7 @@ model FoodType {
 
 model FoodNcds {
   id          Int        @id @default(autoincrement())
-  detail      String
+  detail      String     @db.LongText
   suggess     Boolean
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
@@ -164,7 +163,7 @@ model Blogs {
   id        String      @id @default(uuid())
   type      Type
   name      String
-  imply     String      @db.Text
+  imply     String      @db.LongText
   approve   Int?        @default(0)
   video     String?
   vote_1    Int?
@@ -183,7 +182,7 @@ model Blogs {
 model subBlog {
   id      String  @id @default(uuid())
   name    String
-  detail  String  @db.Text
+  detail  String  @db.LongText
   image   String?
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
   blogsId String?
