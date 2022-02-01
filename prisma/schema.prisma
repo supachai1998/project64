@@ -73,7 +73,7 @@ model Ncds {
   cause     String?     @db.LongText
   reduce    String?     @db.LongText
   signs     String?     @db.LongText
-  sugess    String?
+  sugess    String?     @db.LongText
   ref       Ref[]
   views     Int?        @default(0)
   createdAt DateTime    @default(now())
@@ -124,7 +124,7 @@ model FoodType {
 model FoodNcds {
   id          Int        @id @default(autoincrement())
   detail      String     @db.LongText
-  suggess     Boolean
+  suggess     Boolean     
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   image       ImageFood? @relation(fields: [imageFoodId], references: [id])
