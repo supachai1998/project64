@@ -145,19 +145,19 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
-  }, [])
+  }, [router])
 
   const handleMenuClick = ({ keyPath }) => {
     // console.log(keyPath)
     // Array(3) [ "report_blogs_food", "report", "admin" ]
 
-    if (keyPath.length >= 2) router.push(`/${keyPath.at(1)}/${keyPath.at(0)}`)
+    if (keyPath.length >= 2) {router.push(`/${keyPath.at(1)}/${keyPath.at(0)}`);setCollapsed(true)}
   }
   const handleSubMenuClick = (name) => {
     setTitle(name)
   }
   const handleMenu = (en, th) => {
-    setTitle(th); router.push(`/${en}`)
+    setTitle(th); router.push(`/${en}`);setCollapsed(true)
 
   }
 
@@ -219,10 +219,10 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
   },[status])
   useEffect(() => {
     (async () => {
-      const fetchTypeFood = await FetchTypeFood() 
-      Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
+      const data = await fetch("/api/getTypeFood").then(res => res.ok && res.json())
+      Array.isArray(data) && setFoodType(data)
     })()
-  }, [])
+  }, [status])
   return <>
     {status === "authenticated" && <div className="absolute right-0 h-full top-3 ">
       <Button
@@ -335,8 +335,3 @@ const typeBlogs = [
 ]
 
 
-const FetchTypeFood = async () => {
-  const req = await fetch("/api/getTypeFood")
-  const data = await req.json()
-  return data
-}

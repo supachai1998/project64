@@ -136,14 +136,14 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
                       <span className="text-gray-900 font-Poppins font-bold text-sm leading-none">กิโลแคลอรี่</span>
                     </div>
 
-                    <div className='flex flex-col text-center justify-end'>
+                    <div className='flex flex-col text-center justify-end '>
 
                       {positive.some(el => {
                         if (el.ncds == "โรคเบาหวาน")
                           return true
                       }) == true ?
                         <>
-                          <span className="text-green-700 font-Poppins leading-none font-bold text-2xl">แนะนำ</span>
+                          <span className="text-green-600 font-Poppins leading-none font-bold text-2xl">แนะนำ</span>
                           <span className="text-gray-500 font-Poppins leading-none font-bold text-xs">สามารถรับประทานได้</span>
                         </>
 

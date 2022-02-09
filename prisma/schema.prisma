@@ -1,16 +1,13 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity", "createMany"]
+}
 
 datasource db {
   provider             = "mysql"
   url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
   referentialIntegrity = "prisma"
-  planetScaleMode      = true
-}
-
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["referentialIntegrity", "createMany"]
 }
 
 model Account {
@@ -53,7 +50,6 @@ model User {
   role          Role      @default(USER)
   accounts      Account[]
   sessions      Session[]
-
 }
 
 model VerificationToken {
@@ -124,7 +120,7 @@ model FoodType {
 model FoodNcds {
   id          Int        @id @default(autoincrement())
   detail      String     @db.LongText
-  suggess     Boolean     
+  suggess     Boolean
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   image       ImageFood? @relation(fields: [imageFoodId], references: [id])
@@ -143,18 +139,16 @@ model ImageNCDS {
 }
 
 model ImageFood {
-  id   String @id @default(uuid())
-  name String
-
+  id       String     @id @default(uuid())
+  name     String
   Food     Food?      @relation(fields: [foodId], references: [id])
   foodId   Int?
   FoodNcds FoodNcds[]
 }
 
 model ImageBlog {
-  id   String @id @default(uuid())
-  name String
-
+  id      String  @id @default(uuid())
+  name    String
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
   blogsId String?
 }

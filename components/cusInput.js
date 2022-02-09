@@ -46,7 +46,7 @@ export default function CusInput({ data, setData ,originData}) {
       {statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
         : <div className="grid grid-cols-1 gap-3 mx-10 row-span-full">
           <div className="grid ">
-            <label className='text-2xl'>ค้นหา</label>
+            <label className='sm:text-2xl text-xl'>ค้นหา</label>
           </div>
           <div className="grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row">
             <Tooltip title="ถ่ายภาพ">
@@ -199,7 +199,8 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
         })
         .catch(error => {
           setLoading(false);
-          noti("error",error.message)
+          console.error(error)
+          noti("error","ไม่สามารถประมวลผลได้")
           setMachinePredict(null)
           setImageSrc([])
         });
@@ -281,7 +282,7 @@ const CustomUpload = ({ setInput }) => {
 
           }
         })
-        .catch(error => { setLoading(false); noti("error",error.message) });
+        .catch(error => { setLoading(false); console.error(error);noti("error","ไม่สามารประมวลผลได้") });
 
     })()
   }
@@ -295,8 +296,8 @@ const CustomUpload = ({ setInput }) => {
   return (
     <>
       <Tooltip title="เลือกภาพถ่ายอาหารที่ต้องการ">
-        <label className="flex items-center justify-center gap-3 px-3 py-1 tracking-wide text-gray-800 uppercase bg-white border border-gray-800 shadow-lg cursor-pointer rounded-2xl hover:border-blue-600 hover:text-blue-600">
-          <svg className="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
+          <svg className="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
           </svg>
           {loading

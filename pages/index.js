@@ -33,7 +33,7 @@ export default function Index() {
   //   // return () => setData([])
   // }, [input])
   return (
-    <motion.div className="flex flex-col w-full h-full min-h-screen gap-3 "
+    <motion.div className="flex flex-col w-full h-full min-h-screen gap-3  sm:mx-auto mx-0"
       initial="hidden"
       animate="visible">
       {/* <Carousel autoplay className="z-0" autoplaySpeed={15000} dotPosition="center">
@@ -53,7 +53,7 @@ export default function Index() {
         </div>
         {loading && input.length > 2 && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>}
       </div>
-      <div className='sm:mx-10'>
+      <div className=' mx-0'>
         <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} />
         <DisplayBlogReadMore data={blogTrends} title={"บทความยอดนิยม"} />
       </div>

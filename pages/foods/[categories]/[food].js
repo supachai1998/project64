@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import { Card, Divider, } from 'antd';
 import dynamic from 'next/dynamic'
+import { useEffect,useState } from 'react';
 
 
 
@@ -19,19 +20,42 @@ const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMor
 
 export default function Index() {
     const router = useRouter()
-    const { categories } = router.query
-
+    const query = router.query
+    const {categories,food} = query
+    const [category, setCategory] = useState(categories)
+    const [data, setData] = useState(null)
+    useEffect(()=>{
+        (async () => {
+            const data_categories = await fetch(`/api/getTypeFood`).then(res => res.ok &&res.json())
+            const data_food = await fetch(`/api/getFood?name=${food}`).then(res => res.ok &&res.json())
+            if(data_categories) {
+                const data = data_categories.find(({name_en})=>name_en === categories)
+                // console.log(data_categories,categories,data)
+                if(data) setCategory(data.name_th)
+            }
+            if(data_food){
+                setData(data_food)
+            }
+        })()
+    },[query])
     return (
-        <div className="mt-3">
-            { categories &&
-                    <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto px-10">
-                        {/* <div className="w-full bg-gray-300 sm:h-96 h-52">
-                            <CustImage src={"https://s359.kapook.com/pagebuilder/1f12afa5-ed83-4fd6-b9e7-8c670d941668.jpg"} alt={"0"} className="" width="100%" height="100%" preview={false} />
-                        </div> */}
-
-                        <_Categories raw={tomyum} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
-
+        <div className="mt-3 min-h-screen">
+            { data ?
+                    <div className="flex flex-col w-full h-full   ">
+                    <div className="flex flex-col bg-gray-50 ipad:flex-row relative ">
+                        <CustImage src={"https://sg.fiverrcdn.com/photos/112566478/original/386e485f0d4853746792abe5e592480ec32c41d1.jpg?1527930323"} alt={"0"} width="100%" height="517px" preview={false} /></div>
+                    <div className='absolute w-full text-center h-80 '>
+                        <label className='font-Poppins text-10xl text-white my-auto p-0'>{food}</label>
                     </div>
+
+                    <div className='card mv-10 w-11/12 mx-auto'>
+                        <ContentHeader className="w-full " headerData={headerData} />
+                    </div>
+
+
+                    <Ncds ncds={ncds} />
+                    <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} headTextColor={"text-green-900"} headLineColor={"bg-green-300"} />
+                </div> : <>data not found</>
             }
         </div>
     )
@@ -145,7 +169,3 @@ const blogTrends = [
     },
 
 ]
-
-
-
-

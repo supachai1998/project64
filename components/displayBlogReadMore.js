@@ -27,18 +27,21 @@ const fadeInUp = {
 };
 const state= {
   responsive:{
-      0: {
-          items: 1,
-      },
-      450: {
-          items: 1,
-      },
-      600: {
-          items: 1,
-      },
-      1000: {
-          items: 3,
-      },
+    0: {
+      items: 1,
+    },
+    450: {
+      items: 1,
+    },
+    750: {
+      items: 2,
+    },
+    1000: {
+      items: 3,
+    },
+    1250: {
+      items: 4,
+    },
   },
 }
 const customIcons = {
@@ -59,7 +62,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
       initial={{ opacity: 0, y: 50, scale: 0.3 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-      className='m-10 mt-0'
+      className='mx-2 md:w-full'
     >
 
       <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl">
