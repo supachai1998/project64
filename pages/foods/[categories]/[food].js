@@ -9,10 +9,8 @@ import ReactPlayer from 'react-player';
 
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
-const Topic = dynamic(() => import("/components/foods/topic.js"),
-    { ssr: false })
-const _Categories = dynamic(() => import("/components/foods/categories.js"),
-    { ssr: false })
+
+
 const Ncds = dynamic(() => import("/components/foods/ncds.js"),
     { ssr: false })
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
@@ -46,7 +44,7 @@ export default function Index() {
                 console.log(data_food)
             })()
         }
-    }, [categories, food, query])
+    }, [categories, data, food, query])
     return (
         <div className="mt-3 min-h-screen">
             {data ?

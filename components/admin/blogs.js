@@ -241,7 +241,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
             delete val['image']
             delete val['subBlog']
             const subBlog = { create: _tempsubBlog }
-            const image = { create: _tempimage.map(({ name }) => ({ name: name })) }
+            const image = { create: _tempimage.map(({ response }) => ({ name: response.name })) }
             val['image'] = image
             val['subBlog'] = subBlog
             const res = await fetch(`/api/getBlogs`, {

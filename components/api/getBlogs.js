@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         await prisma.blogs.create({
           data: body
         })
-        res.status(200).json({ status: true })
+        return res.status(200).json({ status: true })
         break;
       case "DELETE":
 
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
             id: id,
           }
         })
-        res.status(200).json({ status: true })
+        return res.status(200).json({ status: true })
         break;
       case "PATCH":
 
@@ -84,7 +84,7 @@ export default async function handler(req, res) {
               }
             }
           })
-          res.status(200).json({ status: true })
+          return res.status(200).json({ status: true })
         } else {
           await prisma.blogs.update({
             where: {
@@ -92,13 +92,13 @@ export default async function handler(req, res) {
             },
             data: body
           })
-          res.status(200).json({ status: true })
+          return res.status(200).json({ status: true })
         }
         break;
     }
     switch (body) {
       case "type":
-        res.status(200).json([
+        return res.status(200).json([
           { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
         ])
         break;
@@ -111,7 +111,7 @@ export default async function handler(req, res) {
             ref: true
           },
         })
-        !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")
+        if(!!data && data.length > 0) return res.status(200).json(data); else return res.status(404).send("data not found")
         break;
     }
   } catch (e) { console.log(e); res.status(500).send(e) }

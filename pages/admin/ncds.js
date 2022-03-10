@@ -63,7 +63,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
     }
 
     const onSubmit = async (val) => {
-        val['image'] = val?.image?.fileList.map(({name})=>name) //เอาแค่ชื่อไฟล์
+        val['image'] = val?.image?.fileList.map(({response})=>response.name) //เอาแค่ชื่อไฟล์
         console.log(val)
     }
     const onFinishFailed = () => {
@@ -74,6 +74,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
     }
     const onChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
+        console.log(newFileList)
     }
     return <Modal title={"เพิ่มข้อมูลโรคไม่ติดต่อเรื้อรัง"}
         visible={modalAdd}

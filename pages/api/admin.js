@@ -9,8 +9,7 @@ export default async function handler(req, res) {
                 await prisma.user.create({
                     data: body
                 })
-                res.status(200).json({ status: true })
-                break;
+                return res.status(200).json({ status: true })
             case "DELETE":
 
                 await prisma.user.delete({
@@ -18,8 +17,7 @@ export default async function handler(req, res) {
                         id: id,
                     }
                 })
-                res.status(200).json({ status: true })
-                break;
+                return res.status(200).json({ status: true })
             case "PATCH":
 
                 await prisma.user.update({
@@ -28,17 +26,16 @@ export default async function handler(req, res) {
                     },
                     data: body
                 })
-                res.status(200).json({ status: true })
+                return res.status(200).json({ status: true })
 
-                break;
 
             default:
                 const data = await prisma.user.findMany()
-                !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")
+                if (!!data && data.length > 0) return res.status(200).json(data); else return res.status(404).send("data not found")
                 break;
         }
     } catch (error) { 
-        res.status(400).send(error.message)
+        return res.status(400).send(error.message)
     }
 
 
