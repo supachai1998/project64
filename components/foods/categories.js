@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { Button, Tooltip, Card, Input, message } from 'antd';
+import { Card, Input,notification } from 'antd';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from 'react';
@@ -14,39 +14,61 @@ export default function _Categories({ fetchData, categories, placeholder }) {
     const [title_th, setTitle_th] = useState()
     const [title_en, setTitle_en] = useState()
     const [loading, setLoading] = useState(false)
+    const [search_bool, setSearch_bool] = useState(false)
     const refSearchInput = useRef()
     const displaySearch = useRef()
     const router = useRouter()
+    const refreshData= async () =>{
+        const { title_th, title_en, data } = await fetchData(categories)
+        console.log(title_th, title_en, data)
+        setData(data)
+        setTitle_th(title_th)
+        setTitle_en(title_en)
+        setSearch_bool(true)
+    }
     useEffect(() => {
         if (!_data) {
-            (async () => {
-                const { title_th, title_en, data } = await fetchData(categories)
-                console.log(title_th, title_en, data)
-                setData(data)
-                setTitle_th(title_th)
-                setTitle_en(title_en)
-            })()
+            refreshData()
         }
     }, [_data, categories, fetchData])
     const handleSearch = () => {
         const val = refSearchInput.current.state.value
         if (!!val && val.length > 2) {
             setLoading(true)
-            const timer = setTimeout(() => {
+            const timer = setTimeout(async() => {
                 const filter = _data.filter(({ title, detail }) => title.toLowerCase().indexOf(val) > -1 || detail.toString().indexOf(val) > -1)
-                if (filter.length < 1) message.error("ไม่พบข้อมูล")
-                else setData(filter)
+                const _save = _data.filter(({ title, detail }) => !(title.toLowerCase().indexOf(val) > -1 || detail.toString().indexOf(val) > -1 ))
+                if (filter.length < 1) {
+                    // message.error("ไม่พบข้อมูล") จากที่ดึงมารอบแรก จะวิ่งไปหาใหม่
+                     await fetch(`/api/getFood?name=${val}`).then(async res => {
+                        if (res.ok) {
+                            const _ = await res.json()
+                            try {
+                                console.log(_)
+                                const __ = _.map(_data => { return { id: _data.id, title: _data.name_th, detail: _data.calories, imgUrl: _data.image[0].name || null } })
+                                setData([...__, ..._save])
+                            } catch (err) { console.error(err);notification.error({ message: `ไม่สามารถแมพข้อมูลอาหาร${val}` }) }
+                        } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร${val}` })
+                    })
+                }
+                else{
+                    setData([...filter, ..._save])
+                }
                 setLoading(false)
                 displaySearch.current.scrollIntoView()
             }, 1000)
             return () => clearTimeout(timer)
-        } else {
-            setData(data)
-        }
+        } 
     }
     const onChange = () => {
         const val = refSearchInput.current.state.value
-        if (!!val && val.length <= 1) setData(data)
+        if (!!val && val.length <= 1){
+            const timer = setTimeout(async() => {
+            (async () => {
+                refreshData()
+            }, 200)})
+            return () => clearTimeout(timer)
+        }
     }
     if (!!!_data) return <>data not found</>
     return (
@@ -65,7 +87,7 @@ export default function _Categories({ fetchData, categories, placeholder }) {
 
             <div className="gap-1  lg:grid-cols-4 sm:grid sm:grid-cols-2" ref={displaySearch}>
                 {_data && _data.map(({ id, title, detail, imgUrl }, index) => (
-                    <div className='card  p-0  sm:mx-2 lg:mx-5 mt-3 pb-3'>
+                    <div key={index} className='card  p-0  sm:mx-2 lg:mx-5 mt-3 pb-3'>
                         <CusImage className="duration-150 transform " src={imgUrl} alt={"0"} width="100%" height={200} preview={false} />
                         <div className='mx-5 mb-2 lg:mb-10'>
                             <div className=" flex-col text-center mb-0">

@@ -59,10 +59,9 @@ const fetchData = async (categories) => {
     const data = await fetch(`/api/getFood?categories=${id}`).then(async res => {
         if (res.ok) {
             const _ = await res.json()
-            console.log(_)
             try {
-                _ = _.map(data => { return { id: data.id, title: data.name_th, detail: data.calories, imgUrl: data.image[0].name } })
-                return _
+                const __ = _.map(data => { return { id: data.id, title: data.name_th, detail: data.calories, imgUrl: data.image[0].name || null } })
+                return __
             } catch (err) { console.error(err);notification.error({ message: `ไม่สามารถแมพข้อมูลอาหาร${categories}` }) }
         } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร${categories}` })
     })

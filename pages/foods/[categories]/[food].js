@@ -1,7 +1,9 @@
 import { useRouter } from 'next/router'
-import { Card, Divider, } from 'antd';
+import { Card, Divider, Modal, Typography, } from 'antd';
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react';
+import { CloseOutlined, VideoCallOutlined } from '@mui/icons-material';
+import ReactPlayer from 'react-player';
 
 
 
@@ -11,7 +13,6 @@ const Topic = dynamic(() => import("/components/foods/topic.js"),
     { ssr: false })
 const _Categories = dynamic(() => import("/components/foods/categories.js"),
     { ssr: false })
-const ContentHeader = dynamic(() => import("/components/foods/contentheader.js"))
 const Ncds = dynamic(() => import("/components/foods/ncds.js"),
     { ssr: false })
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
@@ -50,14 +51,33 @@ export default function Index() {
         <div className="mt-3 min-h-screen">
             {data ?
                 <div className="flex flex-col w-full h-full   ">
-                    <div className="flex flex-col bg-gray-50 ipad:flex-row relative ">
-                        <CustImage src={"https://sg.fiverrcdn.com/photos/112566478/original/386e485f0d4853746792abe5e592480ec32c41d1.jpg?1527930323"} alt={"0"} width="100%" height="517px" preview={false} /></div>
-                    <div className='absolute w-full text-center h-80 '>
-                        <label className='font-Poppins text-10xl text-white my-auto p-0'>{data.name_th}</label>
+                    <div className="flex flex-col bg-gray-50 ipad:flex-row relative h-96 md:h-super lg:h-very-super ">
+                        <CustImage src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} />
+                        <div className='absolute-center w-full text-center align-middle '>
+                            <p className='text-6xl sm:text-9xl lg:text-super text-shadow  text-white my-auto p-0'>{data.name_th}</p>
+                        </div>
                     </div>
 
-                    <div className='card mv-10 w-11/12 mx-auto'>
-                        <ContentHeader className="w-full " headerData={headerData} />
+
+                    <div className='card mv-10 w-11/12 mx-auto mt-5'>
+                        <div className="flex flex-col w-full px-4 h-96 sm:h-1/4 sm:gap-y-2 gap-y-12  text-center">
+                            <div className="h-1/4">
+                                {/* <p className="pl-1 text-2xl font-thin  border-indigo-700 font-Charm border-l-2">{headerData[2].title}</p> */}
+                                <p className="-mt-2  text-gray-500 text-3xl" ><span className="mr-10">{data.categories}</span></p>
+                            </div>
+                                <hr className="w-1/12 mx-auto border-red-600" />
+                                <div className="h-1/4 mx-auto">
+
+                                    <p className="pr-1 text-2xl font-thin  lg:text-2xl font-Charm">วิธีการทำ</p>
+                                    <Typography className={`pr-2 -mt-2 overflow-auto zm:h-20 text-left`}>
+                                        <span className='text'>{data.proceduce}</span>
+                                    </Typography>
+                                
+                                </div>
+                            <div className='flex justify-end'>
+                                <button href="#" className="w-32 border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50"> <i><VideoCallOutlined className='text-lg' /></i> <span> ดูวีดีโอ</span></button>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -147,3 +167,16 @@ const blogTrends = [
     },
 
 ]
+
+
+const CusModal = ({ handleCancel, content }) => {
+    if (!content){return null}
+    const { videoUrl, title } = content
+    return (
+        <>
+            <Modal title={<div className='flex w-full justify-between '>{title} <CloseOutlined className="button-cus hover:bg-red-200" onClick={()=>handleCancel()}/></div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
+                <div className="h-screen w-full p-0 m-0 "><ReactPlayer url={videoUrl} width="100%" height="100%" /></div>
+            </Modal>
+        </>
+    );
+};

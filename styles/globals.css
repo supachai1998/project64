@@ -53,8 +53,7 @@
   top: -50px;
   position: relative;
 }
-.text-10xl{
-  font-size: 20em;
+.text-shadow{
   text-shadow: 0px 15px 15px rgba(0, 0, 0, 0.75);
   /* font-family: Poppins; */
   font-style: normal;
@@ -339,5 +338,10 @@ a {
 .search-span{
   @apply justify-center text-right text-sm;
 }
-
+.absolute-center{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 /* search ที่เป็นปุ่มๆ */

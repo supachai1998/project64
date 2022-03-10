@@ -5,26 +5,23 @@ import "nprogress/nprogress.css";
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
-import { ConfigProvider, notification } from 'antd';
 import thTh from 'antd/lib/locale/th_TH';
 import React, { useState, useEffect } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
 import { useRouter, } from 'next/router'
 import Head from 'next/head'
-import { Layout, Menu, message, Tooltip, Button } from 'antd';
+import { Layout, Menu, Tooltip, Button , ConfigProvider, notification } from 'antd';
 import {
   MenuOutlined,
   AppleOutlined,
   FormOutlined,
   MedicineBoxOutlined,
   PieChartOutlined,
+  HomeOutlined as HomeIcon,
+  LogoutOutlined as   LogoutOutlined
 } from '@ant-design/icons';
 import { isMobile } from 'react-device-detect';
-import { AnimatePresence } from 'framer-motion';
-import HomeIcon from '@mui/icons-material/Home';
 import dynamic from 'next/dynamic'
-import { LogoutOutlined } from '@mui/icons-material';
-import { Hydrate, QueryClient, QueryClientProvider, useQuery } from 'react-query'
 const { Header, Sider, Content } = Layout;
 React.useLayoutEffect = React.useEffect
 const { SubMenu } = Menu;
@@ -34,7 +31,7 @@ const animationZoomHover = "transition duration-500 ease-in-out transform  hover
 
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
-  const [queryClient] = React.useState(() => new QueryClient())
+  // const [queryClient] = React.useState(() => new QueryClient())
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState("home")
@@ -162,11 +159,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }, [router])
   useEffect(() => {// call api machine learning 
     // set up heroku
-    !ncds && fetch(`/api/getNCDS`)
+    !ncds  && fetch(`/api/getNCDS`)
     .then(async res => res.ok && res.json())
     .then(data => setNCDS(data))
     .catch(err => notification.error({ message: err.message }))
-    fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
+    !ncds && fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
   }, [])
 
   const handleMenuClick = ({ keyPath }) => {
@@ -184,9 +181,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    // <QueryClientProvider client={queryClient}>
 
-      <Hydrate state={pageProps.dehydratedState}>
+    //   <Hydrate state={pageProps.dehydratedState}>
         <SessionProvider session={session}>
           <Layout className="h-full min-h-screen">
             <TopProgressBar />
@@ -211,20 +208,18 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
               <Content
                 className="p-2 site-layout-background"
               >
-                <AnimatePresence exitBeforeEnter>
                   <ConfigProvider locale={thTh}>
                     <Component onClick={() => setCollapsed(true)} {...pageProps} />
                   </ConfigProvider>
-                </AnimatePresence>
               </Content>
               {/* <Navigator /> */}
             </Layout>
 
           </Layout>
         </SessionProvider>
-      </Hydrate>
+    //   </Hydrate>
 
-    </QueryClientProvider>
+    // </QueryClientProvider>
   )
 }
 export default MyApp

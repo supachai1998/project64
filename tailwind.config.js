@@ -37,8 +37,14 @@ module.exports = {
         "1.5/6": "15%",
         "2.5/6": "31%",
       },
+      height:{
+        "super":"70vh",
+        "very-super":"80vh"
+      },
       fontSize: {
-        'xxs': '0.5rem'
+        'xxs': '0.5rem',
+        'mid': '10rem',
+        'super': '15rem'
       },
       // fontFamily: {
       //   "Poppins": ['Poppins', 'sans-serif'],
