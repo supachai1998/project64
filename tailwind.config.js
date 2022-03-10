@@ -38,8 +38,8 @@ module.exports = {
         "2.5/6": "31%",
       },
       height:{
-        "super":"70vh",
-        "very-super":"80vh"
+        "super":"60vh",
+        "very-super":"70vh"
       },
       fontSize: {
         'xxs': '0.5rem',

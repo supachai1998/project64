@@ -2,7 +2,7 @@ import { prisma } from "/prisma/client";
 export default async function handler(req, res) {
     const { body, method } = req;
     const { id, } = body
-    
+    res.setHeader('Content-Type', 'application/json');
     try {
         switch (method) {
             case "POST":

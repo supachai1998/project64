@@ -9,6 +9,7 @@ export const config = {
 }
 
 export default async function handler(req, res) {
+    res.setHeader('Content-Type', 'application/json');
     if (req.method === "GET")  {
         await fetch(`${process.env.NEXT_PUBLIC_PREDICT}`,{method:"GET"})
     }

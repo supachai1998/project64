@@ -1,6 +1,5 @@
 import { prisma } from "/prisma/client";
 import formidable from 'formidable';
-import FormData from 'form-data';
 import fs from 'fs'
 
 
