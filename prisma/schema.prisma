@@ -133,14 +133,14 @@ model FoodNcds {
 
 model ImageNCDS {
   id     String @id @default(uuid())
-  name   String
+  name   String @db.LongText
   Ncds   Ncds?  @relation(fields: [ncdsId], references: [id])
   ncdsId Int?
 }
 
 model ImageFood {
   id       String     @id @default(uuid())
-  name     String
+  name     String     @db.LongText
   Food     Food?      @relation(fields: [foodId], references: [id])
   foodId   Int?
   FoodNcds FoodNcds[]
@@ -148,7 +148,7 @@ model ImageFood {
 
 model ImageBlog {
   id      String  @id @default(uuid())
-  name    String
+  name    String  @db.LongText
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
   blogsId String?
 }

@@ -107,7 +107,8 @@ export default async function handler(req, res) {
         data = await prisma.blogs.findMany({
           include: {
             subBlog: true,
-            image: true
+            image: true,
+            ref: true
           },
         })
         !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")

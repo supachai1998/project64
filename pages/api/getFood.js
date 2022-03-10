@@ -34,16 +34,30 @@ export default async function handler(req, res) {
 
             default:
                 let data = null
-                if(query.name){
-                     data = await prisma.food.findFirst({
-                        where:{id:id}
+                if (query.categories) {
+                    data = await prisma.food.findMany({
+                        where:{foodTypeId:parseInt(query.categories)},
+                        include: {
+                            image: true,
+                        }
                     })
+                }
+                if(query.id){
+                     data = await prisma.food.findFirst({
+                        where:{id:parseInt(query.id)},
+                        include: {
+                            image: true,
+                            FoodNcds : true
+                        }
+                    })
+                   data.id && res.status(200).json(data)
                 }else{
                      data = await prisma.food.findMany()
                 }
                 !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send({
                     query : query.name,
-                    message:"data not found"
+                    message:"data not found",
+                    data : data
                 })
                 break;
         }

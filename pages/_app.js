@@ -5,7 +5,7 @@ import "nprogress/nprogress.css";
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, notification } from 'antd';
 import thTh from 'antd/lib/locale/th_TH';
 import React, { useState, useEffect } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
@@ -39,7 +39,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [collapsed, setCollapsed] = useState(isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState("home")
   const [title, setTitle] = useState('NCDs & Food')
-  const [ncds, setNCDS] = useState([])
+  const [ncds, setNCDS] = useState()
   const [blogs, setBlogs] = useState([
     { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
   ])
@@ -78,32 +78,50 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const toggle = () => { setCollapsed(!collapsed) }
   useEffect(() => {
 
-    // fetch data
-    (async () => {
-      const resNCDS = await fetch(`/api/getNCDS`, { headers: { 'Content-Type': 'application/json', }, })
-      if (resNCDS.status === 200) {
-        const data = await resNCDS.json()
-        setNCDS(data)
-      }
-    })()
-
-    const { asPath, pathname } = router
-    let { name, categories } = router.query
-    const asPathSplit = asPath.split("/")
-    try {
-      if (categories && name) {
-        // console.log(asPath, name, categories)
-        setDefaultSelectedKeys(categories)
-        setTitle(name)
-      } else if (asPathSplit.length === 3) {
-        console.log(asPathSplit, pathname, name, categories)
-      } else {
-        const { key, name } = nameUrl.find(({ url }) => url === asPath)
-        // console.log(key, name, asPath)
-        setDefaultSelectedKeys(key)
-        setTitle(name.replace(/_/g, " "))
-      }
-    } catch (e) { }
+      (async () => {
+        const { asPath, pathname , query } = router
+        let { name, categories,food } = query
+        const asPathSplit = asPath.split("/")
+        const pathNameSplit = pathname.split("/")
+        console.log(query)
+        try {
+          if(food){
+            const name = await fetch(`/api/getFood?id=${food}`).then(async res => {
+              if(res.ok){
+                const data = await res.json()
+                const {name_th} = data
+                return name_th
+              }
+            })
+            setTitle(name)
+            setDefaultSelectedKeys(categories)
+            return;
+          }
+          const para = asPathSplit.at(-1).split("=")
+          const getAfter = para.at(-1).split("?")
+          // console.log(para, pathNameSplit)
+          // หาว่ามี parameter blogs ไหม
+          if (para.at(0) === "id?") {
+            // ดูว่าเป็นหมวดอะไร
+            if (getAfter.at(-1) === "blogs") {
+              const getBlogs = await fetch(`/api/getBlogs?id=${getAfter.at(0)}&select=name`).then(res=>res.ok&&res.json())
+              setTitle(getBlogs.name)
+            }
+          } else if (categories && name) {
+            // console.log(asPath, name, categories)
+            setDefaultSelectedKeys(categories)
+            setTitle(name)
+          } else if (asPathSplit.length === 3) {
+            const namesplit = asPathSplit.split("=")
+            console.log(asPathSplit, pathname, name, categories, namesplit)
+          } else {
+            const { key, name } = nameUrl.find(({ url }) => url === asPath)
+            // console.log(key, name, asPath)
+            setDefaultSelectedKeys(key)
+            setTitle(name.replace(/_/g, " "))
+          }
+        } catch (e) { }
+      })()
     const handleRouteChange = async (url) => {
       try {
         const split = url.trim().split("/")
@@ -136,28 +154,32 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
 
     router.events.on('routeChangeStart', handleRouteChange)
-
-    // call api machine learning 
-    // set up heroku
-    fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
     // setCollapsed(isMobile)
 
     return () => {
       router.events.off('routeChangeStart', handleRouteChange)
     }
   }, [router])
+  useEffect(() => {// call api machine learning 
+    // set up heroku
+    !ncds && fetch(`/api/getNCDS`)
+    .then(async res => res.ok && res.json())
+    .then(data => setNCDS(data))
+    .catch(err => notification.error({ message: err.message }))
+    fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
+  }, [])
 
   const handleMenuClick = ({ keyPath }) => {
     // console.log(keyPath)
     // Array(3) [ "report_blogs_food", "report", "admin" ]
 
-    if (keyPath.length >= 2) {router.push(`/${keyPath.at(1)}/${keyPath.at(0)}`);setCollapsed(true)}
+    if (keyPath.length >= 2) { router.push(`/${keyPath.at(1)}/${keyPath.at(0)}`); setCollapsed(true) }
   }
   const handleSubMenuClick = (name) => {
     setTitle(name)
   }
   const handleMenu = (en, th) => {
-    setTitle(th); router.push(`/${en}`);setCollapsed(true)
+    setTitle(th); router.push(`/${en}`); setCollapsed(true)
 
   }
 
@@ -210,13 +232,13 @@ export default MyApp
 const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
   const [foodType, setFoodType] = useState(null)
   const { status } = useSession()
-  useEffect(()=>{
+  useEffect(() => {
     if (status === "authenticated") {
       setCollapsed(null)
-    }else if(status === "unauthenticated"){
+    } else if (status === "unauthenticated") {
       setCollapsed(true)
     }
-  },[status])
+  }, [status])
   useEffect(() => {
     (async () => {
       const data = await fetch("/api/getTypeFood").then(res => res.ok && res.json())
@@ -227,7 +249,7 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
     {status === "authenticated" && <div className="absolute right-0 h-full top-3 ">
       <Button
         icon={<LogoutOutlined style={{ width: "18px", height: "18px" }} />}
-        onClick={() => {setCollapsed(true);signOut({ redirect: false })}}>ออกจากระบบ</Button>
+        onClick={() => { setCollapsed(true); signOut({ redirect: false }) }}>ออกจากระบบ</Button>
     </div>}
     {status === "unauthenticated" && <Sider trigger={null} collapsible breakpoint="lg" width={`${isMobile ? 15 : 20}em`} collapsedWidth={`${isMobile ? 30 : 45}`} defaultCollapsed={collapsed} collapsed={collapsed}>
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >

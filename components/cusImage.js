@@ -14,7 +14,6 @@ export default function CusImage({ width, height, src,name , className,preview }
             preview={preview}
             fallback="https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png"
             placeholder={
-
                 <div className={"w-full h-full bg-gray-50 flex justify-center"}><CircularProgress className="m-auto"/></div>
               }
         />

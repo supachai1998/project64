@@ -1,45 +1,45 @@
 
 
-import React,{ useState, useEffect ,useRef} from 'react';
-import { Input, message, Button, Tooltip, Modal,Select } from 'antd'
-import { SearchOutlined , CameraOutlined, } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { Input, message, Button, Tooltip, Modal, Select } from 'antd'
+import { SearchOutlined, CameraOutlined, } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
 import CameraEnhanceIcon from '@mui/icons-material/CameraEnhance';
 import CameraswitchIcon from '@mui/icons-material/Cameraswitch';
 import { CircularProgress, LinearProgress } from "@mui/material";
 import Resizer from "react-image-file-resizer";
-import {noti} from '/components/noti'
+import { noti } from '/components/noti'
 
-const {Search} = Input
-export default function CusInput({ data, setData ,originData}) {
+const { Search } = Input
+export default function CusInput({ data, setData, originData }) {
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState(null)
-  const handleSearch = () =>{
+  const handleSearch = () => {
     const val = refSearchInput.current?.state?.value || input
-    if(!!val && val.length > 2) {
-        setLoading(true)
-        const timer  =setTimeout(()=>{
-            const filter =  originData.filter(({title_th})=>title_th.toLowerCase().indexOf(val) > -1  )
-            if(filter.length  < 1 ) noti("error","ไม่พบข้อมูล")
-            else setData(filter)
-            setLoading(false)
-        },1000)
-        refSearchInput.current.state.value = null
-        return () => clearTimeout(timer)
-    }else{
-        setData([])
+    if (!!val && val.length > 2) {
+      setLoading(true)
+      const timer = setTimeout(() => {
+        const filter = originData.filter(({ title_th }) => title_th.toLowerCase().indexOf(val) > -1)
+        if (filter.length < 1) noti("error", "ไม่พบข้อมูล")
+        else setData(filter)
+        setLoading(false)
+      }, 1000)
+      refSearchInput.current.state.value = null
+      return () => clearTimeout(timer)
+    } else {
+      setData([])
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     handleSearch()
-  },[input,setInput])
-  
-  const onChange = () =>{
-      const val = refSearchInput.current.state.value
-      if(!!val && val.length <= 1) setData([]) //remove input to set data
+  }, [input, setInput])
+
+  const onChange = () => {
+    const val = refSearchInput.current.state.value
+    if (!!val && val.length <= 1) setData([]) //remove input to set data
   }
   return (
     <div className="grid w-full rounded-xl">
@@ -53,8 +53,8 @@ export default function CusInput({ data, setData ,originData}) {
               <Button className="z-50" shape="round" icon={<CameraOutlined />} onClick={() => setStatusWebCam(true)} >ถ่ายภาพอาหาร</Button>
             </Tooltip>
             <CustomUpload setInput={setInput} />
-          <Search className="z-0 w-full input search loading with enterButton"  disabled={loading && true} onChange={onChange} onSearch={handleSearch}  maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search" 
-          placeholder={"ชื่ออาหาร , ชื่อโรค , ชื่อบทความ"} ref={refSearchInput}/>
+            <Search className="z-0 w-full input search loading with enterButton" disabled={loading && true} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"
+              placeholder={"ชื่ออาหาร , ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
           </div>
         </div>
       }
@@ -104,7 +104,7 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
     setFacingMode(facingMode === "environment" ? "facing" : "environment")
   }
   const handleError = async (e) => {
-    noti("error",e.message)
+    noti("error", e.message)
     handleCloseCamera()
   }
 
@@ -176,18 +176,18 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
           setLoading(false)
           if (error) {
             setLoading(false);
-            noti("error",error.error)
+            noti("error", error.error)
             setMachinePredict(null)
             setImageSrc([])
           }
           else {
             switch (type) {
               case 'ไม่ใช่อาหาร':
-                noti("error","ไม่ใช่อาหาร")
+                noti("error", "ไม่ใช่อาหาร")
                 setImageSrc([])
                 break;
               case 'ไม่ใช่ภาพ':
-                noti("error","ไม่ใช่ภาพ")
+                noti("error", "ไม่ใช่ภาพ")
                 setImageSrc([])
                 break;
               default:
@@ -200,7 +200,7 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
         .catch(error => {
           setLoading(false);
           console.error(error)
-          noti("error","ไม่สามารถประมวลผลได้")
+          noti("error", "ไม่สามารถประมวลผลได้")
           setMachinePredict(null)
           setImageSrc([])
         });
@@ -266,14 +266,14 @@ const CustomUpload = ({ setInput }) => {
         .then(response => response.json())
         .then(({ type, name, confident, error }) => {
           setLoading(false)
-          if (error) { noti("error",error) }
+          if (error) { noti("error", error) }
           else {
             switch (type) {
               case 'ไม่ใช่อาหาร':
-                noti("error","ไม่ใช่อาหาร")
+                noti("error", "ไม่ใช่อาหาร")
                 break;
               case 'ไม่ใช่ภาพ':
-                noti("error","ไม่ใช่ภาพ")
+                noti("error", "ไม่ใช่ภาพ")
                 break;
               default:
                 setMachinePredict({ name: name, confident: confident, url: url })
@@ -282,7 +282,7 @@ const CustomUpload = ({ setInput }) => {
 
           }
         })
-        .catch(error => { setLoading(false); console.error(error);noti("error","ไม่สามารประมวลผลได้") });
+        .catch(error => { setLoading(false); console.error(error); noti("error", "ไม่สามารประมวลผลได้") });
 
     })()
   }
@@ -313,14 +313,16 @@ const CustomUpload = ({ setInput }) => {
         visible={machinePredict ? true : false}
         onOk={handleOk}
         onCancel={handleCancel}
-        footer={[
-          <Button key="cancel" danger onClick={handleCancel}>
-            ยกเลิก
-          </Button>,
-          <Button key="ok" type="primary" onClick={handleOk}>
-            ตกลง
-          </Button>
-        ]}
+        footer={
+          <div className="flex w-full justify-end">
+            <Button key="cancel" danger onClick={handleCancel}>
+              ยกเลิก
+            </Button>
+            <Button key="ok" type="primary" onClick={handleOk}>
+              ตกลง
+            </Button>
+          </div>
+        }
       >
         {machinePredict &&
           <div className="flex flex-col justify-center">

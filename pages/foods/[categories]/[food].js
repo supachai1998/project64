@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { Card, Divider, } from 'antd';
 import dynamic from 'next/dynamic'
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 
@@ -21,31 +21,39 @@ const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMor
 export default function Index() {
     const router = useRouter()
     const query = router.query
-    const {categories,food} = query
+    const { categories, food } = query
     const [category, setCategory] = useState(categories)
     const [data, setData] = useState(null)
-    useEffect(()=>{
-        (async () => {
-            const data_categories = await fetch(`/api/getTypeFood`).then(res => res.ok &&res.json())
-            const data_food = await fetch(`/api/getFood?name=${food}`).then(res => res.ok &&res.json())
-            if(data_categories) {
-                const data = data_categories.find(({name_en})=>name_en === categories)
-                // console.log(data_categories,categories,data)
-                if(data) setCategory(data.name_th)
-            }
-            if(data_food){
-                setData(data_food)
-            }
-        })()
-    },[query])
+    useEffect(() => {
+        if (categories && food && !data) {
+            (async () => {
+                const data_categories = await fetch(`/api/getTypeFood`).then(res => res.ok && res.json())
+                const data_food = await fetch(`/api/getFood?id=${food}`).then(res => res.ok && res.json())
+                if (data_categories) {
+                    const data = data_categories.find(({ name_en }) => name_en === categories)
+                    // console.log(data_categories,categories,data)
+                    if (data) setCategory(data.name_th)
+                }
+                if (data_food) {
+                    setData(data_food)
+                    // headerData = [
+                    //     {
+                    //         title: "วิธีการทำ",
+                    //         content: "ต้มยำกุ้ง เป็นอาหารไทยภาคกลางประเภทต้มยำ ซึ่งเป็นที่นิยมรับประทานไปทุกภาคในประเทศไทย เป็นอาหารที่รับประทานกับข้าว และ มีรสเปรี้ยวและเผ็ดเป็นหลักผสมเค็มและหวานเล็กน้อย แบ่งออกเป็น 2 ประเภท คือ ต้มยำน้ำใส และ ต้มยำน้ำข้น"
+                    //     },
+                }
+                console.log(data_food)
+            })()
+        }
+    }, [categories, food, query])
     return (
         <div className="mt-3 min-h-screen">
-            { data ?
-                    <div className="flex flex-col w-full h-full   ">
+            {data ?
+                <div className="flex flex-col w-full h-full   ">
                     <div className="flex flex-col bg-gray-50 ipad:flex-row relative ">
                         <CustImage src={"https://sg.fiverrcdn.com/photos/112566478/original/386e485f0d4853746792abe5e592480ec32c41d1.jpg?1527930323"} alt={"0"} width="100%" height="517px" preview={false} /></div>
                     <div className='absolute w-full text-center h-80 '>
-                        <label className='font-Poppins text-10xl text-white my-auto p-0'>{food}</label>
+                        <label className='font-Poppins text-10xl text-white my-auto p-0'>{data.name_th}</label>
                     </div>
 
                     <div className='card mv-10 w-11/12 mx-auto'>
@@ -59,36 +67,6 @@ export default function Index() {
             }
         </div>
     )
-}
-
-
-
-
-
-
-
-
-const tomyum = {
-    title_th: "ต้มยำ", title_en: "soup",
-    data: [
-        { title: "ต้มยำกุ้ง", detail: "343", imgUrl: "https://static.naewna.com/uploads/news/source/561099.jpg" },
-        { title: "ต้มยำไก่", detail: "395.4", imgUrl: "https://blog.samanthasmommy.com/wp-content/uploads/2019/01/klang-food-23161-8-2.jpg" },
-        { title: "ต้มยำปลาทู", detail: "446.5", imgUrl: "https://img-global.cpcdn.com/recipes/d79ae43ed37668f0/1200x630cq70/photo.jpg" },
-        { title: "ต้มยำทะเล", detail: "365", imgUrl: "https://i.ytimg.com/vi/gjm1toMrY8g/maxresdefault.jpg" },
-        { title: "ต้มยำปลานิล", detail: "290", imgUrl: "https://i.ytimg.com/vi/idhojWWMYd0/maxresdefault.jpg" },
-        { title: "ต้มยำปลาแซลมอน", detail: "350", imgUrl: "https://i.pinimg.com/originals/b5/a1/fc/b5a1fc124918bf6edfdf17b90db4abfb.jpg" },
-    ]
-}
-const curry = {
-    title_th: "แกง", title_en: "curry",
-    data: [
-        { title: "แกงส้ม", detail: "120", imgUrl: "https://snpfood.com/wp-content/uploads/2020/01/Highlight-Menu-0025-scaled-1.jpg" },
-        { title: "แกงเนื้อ", detail: "228.91", imgUrl: "https://img.wongnai.com/p/1920x0/2019/08/06/175a94eaab98498dac9a6e266eb5a3bd.jpg" },
-        { title: "แกงพะแนงหมู", detail: "273.9", imgUrl: "https://img.kapook.com/u/pirawan/Cooking1/panang.jpg" },
-        { title: "แกงเขียวหวานเนื้อ", detail: "256.58", imgUrl: "https://img.wongnai.com/p/1920x0/2019/03/18/11e7bbd7bbab421f9e1f2bc6c1d64e59.jpg" },
-        { title: "แกงจืดเต้าหู้หมูสับ", detail: "110", imgUrl: "https://img.wongnai.com/p/1968x0/2019/03/25/16be129786034c1185c4cc0768f61356.jpg" },
-        { title: "แกงเนื้อหน่อไม้", detail: "245", imgUrl: "https://www.maeban.co.th/upfiles/blog/3225_77_22.jpg" },
-    ]
 }
 
 const headerData = [

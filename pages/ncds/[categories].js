@@ -1,6 +1,7 @@
 import { useRouter,createRef,useRef } from 'next/router'
 import { Card, Divider, } from 'antd';
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react';
 
 
 const { Meta } = Card;
@@ -16,8 +17,16 @@ const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMor
 { ssr: false })
 
 export default function Index() {
+    const [blog,setblog] = useState()
     const router = useRouter()
     const { categories, name } = router.query
+    useEffect(()=>{
+        if(name && !blog){
+            (async()=>{
+                const dataBlog = await fetch(`/api/getBlogs?id=${name}`).then(res=>res.ok?res.json():notification.error({message:"Error",description:"ไม่พบข้อมูล"}))
+            })()
+        }
+    },[blog, name])
 
     return (
         <>

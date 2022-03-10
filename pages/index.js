@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Carousel, Divider, Tooltip, Spin, Select } from 'antd';
+import { Carousel, Divider, Tooltip, Spin, Select, notification } from 'antd';
 import router from 'next/router';
 import { motion } from "framer-motion"
 import dynamic from 'next/dynamic'
@@ -8,15 +8,35 @@ const CustImage = dynamic(() => import("/components/cusImage.js"))
 const CusInput = dynamic(() => import("/components/cusInput"))
 
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore"),
-{ ssr: false })
+  { ssr: false })
 const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
-{ ssr: false })
+  { ssr: false })
 
 
 
 export default function Index() {
   const [data, setData] = useState(onSearchTomyum)
+  const [blogs, setBlogs] = useState()
   const [loading, setLoading] = useState(false)
+  // Fetch First Time
+  useEffect(() => {
+    if (!blogs) {
+      (async () => {
+        let data_blogs = await fetch("/api/getBlogs").then(res => res.ok ? res.json() : null)
+        if (data_blogs) {
+          data_blogs = data_blogs.map(item => {
+            const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
+            const avg_vote = ((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote) || -1
+            return { ...item, avg_vote, total_vote }
+          })
+          console.log(data_blogs)
+          setBlogs(data_blogs)
+        } else {
+          notification.error({ message: 'ไม่พบข้อมูลบทความ', })
+        }
+      })()
+    }
+  }, [blogs])
   // useEffect(() => {
   //   if (input && input.length > 2) {
   //     setLoading(true)
@@ -36,13 +56,6 @@ export default function Index() {
     <motion.div className="flex flex-col w-full h-full min-h-screen gap-3  sm:mx-auto mx-0"
       initial="hidden"
       animate="visible">
-      {/* <Carousel autoplay className="z-0" autoplaySpeed={15000} dotPosition="center">
-        {dataBanner.map(({ id, title, detail, ref, imgUrl, categories, title_th, type, intro }, ind) => (
-          <div key={ind} className="relative flex w-full bg-purple-200 h-96 rounded-xl font-Poppins">
-            <CustImage src={imgUrl} alt={title} className="rounded-xl" width="100%" height="100%" preview={false} />
-          </div>
-        ))}
-      </Carousel> */}
       <div className="relative">
         <div className="flex flex-col gap-3 p-3 ">
           <CusInput data={data} setData={setData} originData={onSearchTomyum} />
@@ -55,9 +68,9 @@ export default function Index() {
       </div>
       <div className=' mx-0'>
         <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} />
-        <DisplayBlogReadMore data={blogTrends} title={"บทความยอดนิยม"} />
+        {!!blogs && <DisplayBlogReadMore data={blogs} title={"บทความยอดนิยม"} />}
       </div>
-      
+
     </motion.div>
   )
 }

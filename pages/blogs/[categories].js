@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 
 import DisplayFoodReadMore from './../../components/displayFoodReadMore'
-const Ncds = dynamic(() => import("/components/ncds/ncds_more.js"),
+const Ncds = dynamic(() => import("/components/ncds/ncds_more_index.js"),
 { ssr: false })
 const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
 { ssr: false })
@@ -18,7 +18,7 @@ export default function Index() {
             {name ? <>
             แสดงบทความ {name}
             </>
-            :categories ?<div className='mx-10'>
+            :categories ?<div className='lg:mx-10'>
             <Ncds ncds={ncds} />
             <DisplayBlogReadMore className="h-fix73" data={blogTrends} title={`บทความ`} />
             <DisplayFoodReadMore className="h-fix73" data={blogTrends} title={`อาหาร`} />
@@ -28,6 +28,22 @@ export default function Index() {
     )
 }
 const ncds = [
+  {
+      ncds: "โรคเบาหวาน",
+      because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+      imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
+      videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+      suggess: true,
+      ref: "https://www.poonrada.com/sickness/detail/87",
+  },
+  {
+      ncds: "ความดันโลหิตสูง",
+      because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
+      // videoUrl: "https://youtu.be/FdOOBcN0Ws8",
+      imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
+      suggess: false,
+      ref: "https://www.poonrada.com/sickness/detail/87",
+  },
   {
       ncds: "โรคเบาหวาน",
       because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
@@ -43,7 +59,7 @@ const ncds = [
       imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
       suggess: false,
       ref: "https://www.poonrada.com/sickness/detail/87",
-  }
+  },
 
 ]
 const blogTrends = [

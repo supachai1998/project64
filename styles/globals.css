@@ -12,6 +12,9 @@
   }
   /* ... */
 }
+
+
+
 .font-Poppins{
   font-family: 'Kanit', sans-serif;
   /* font-family: 'Poppins', sans-serif; */
@@ -180,11 +183,12 @@
 }
 .ease-anima {
   transition: 'all  ease-in-out';
-  @apply transform duration-500 transition-all ease-in-out;
+  @apply transform transition-transform  ease-in-out;
 }
 .button-cus {
   @apply rounded-lg  py-1 px-3 shadow-md  transform duration-500 transition-all ease-in-out;
 }
+
 /* custom curve ant design input */
 
 .ant-input-number{
@@ -301,3 +305,39 @@ a {
   border-radius: 10px !important;
   /* @apply rounded-lg  !important; */
 }
+
+.ytp-cued-thumbnail-overlay .ytp-cued-thumbnail-overlay-image {
+  @apply rounded-lg  !important;
+}
+
+
+
+/* card */
+.card-header-top{
+  @apply mt-4 text-xl md:text-4xl mb-0 font-bold  transition transform w-full text-center;
+}
+.card-header{
+  @extend  .ease-anima;
+  @extend  .title-article;
+  @apply text-xl  md:text-2xl lg:text-3xl pb-0 truncate mb-2 hover:text-gray-800 ;
+}
+
+/* card */
+
+
+/* search ที่เป็นปุ่มๆ */
+.search-div-top-1{
+  @apply w-full flex justify-end;
+}
+.search-div-top-2{
+  @apply flex lg:w-1/3;
+}
+.search-search{
+  /* .input .search .loading with enterButton; */
+  @apply lg:w-1/4   rounded-md;
+}
+.search-span{
+  @apply justify-center text-right text-sm;
+}
+
+/* search ที่เป็นปุ่มๆ */
