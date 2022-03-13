@@ -36,6 +36,9 @@ export default async function handler(req, res) {
 
             default:
                 let data = null
+                const { select } = query
+                let {id} = query
+                id = parseInt(query.id)
                 if (query.categories) {
                     data = await prisma.food.findMany({
                         where: { foodTypeId: parseInt(query.categories) },
@@ -52,18 +55,31 @@ export default async function handler(req, res) {
                             image: true,
                             FoodNcds: true
                         }
-                    })
-                    if (!!data & data.length) return res.status(200).json(data)
-                }
-                if (query.id) {
-                    data = await prisma.food.findFirst({
-                        where: { id: parseInt(query.id) },
+                    }) || await prisma.food.findMany({
+                        where: { name_en: { contains: query.name } },
                         include: {
                             image: true,
                             FoodNcds: true
                         }
                     })
-                    if(data.id)  return res.status(200).json(data)
+                    if (!!data & data.length) return res.status(200).json(data)
+                }
+                if (query.id) {
+                    if (select) {
+                        data = await prisma.food.findFirst({
+                            where: { id: id },
+                            select: { [select]: true }
+                        })
+                        if (!!data) return res.status(200).json(data)
+                    }
+                    data = await prisma.food.findFirst({
+                        where: { id: id },
+                        include: {
+                            image: true,
+                            FoodNcds: true
+                        }
+                    })
+                    if (data.id) return res.status(200).json(data)
                 } else {
                     data = await prisma.food.findMany()
                 }

@@ -4,7 +4,6 @@ import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
 
 import router from 'next/router';
 import dynamic from 'next/dynamic'
-import { motion } from 'framer-motion';
 const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
   ssr: false,
 });
@@ -55,12 +54,7 @@ const { OptGroup, Option } = Select
 
 export default function DisplayBlogReadMore({ data, title, headTextColor, headLineColor }) {
   return (
-    <motion.div
-      variants={fadeInUp}
-      positionTransition
-      initial={{ opacity: 0, y: 50, scale: 0.3 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+    <div
       className='md:w-full pl-3 pr-4 sm:px-0 md:mx-2'
     >
 
@@ -123,12 +117,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
             avg_vote,
             total_vote
           }, index) => (
-            <motion.div
-              variants={fadeInUp}
-              positionTransition
-              initial={{ opacity: 0, y: 50, scale: 0.3 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
+            <div
               key={id + index + Math.random()}
               className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
               <div className="relative w-full" >
@@ -141,7 +130,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
                   <div className="grid grid-cols-1 w-full h-10 p-6 overflow-hidden text-gray-900 rounded-2xl ">
                     <div className="flex justify-between">
                       <p className="text-lg text-green-700 font-Charm ">โรคสามารถทานได้</p>
-                      <Tooltip title="อ่านต่อ"><a onClick={() => router.push(`/blogs/${type.toLowerCase()}/id?=${id}?${type.toLowerCase()}`)} className="text-purple-600 duration-1000 animate-pulse rounded-xl">อ่านต่อ</a></Tooltip>
+                      <Tooltip title="อ่านต่อ"><a onClick={() => router.push(`/blogs/${type.toLowerCase()}/${id}`)} className="text-purple-600 duration-1000 animate-pulse rounded-xl">อ่านต่อ</a></Tooltip>
                     </div>
                     {positive.map(({ ncds, because }, index) => (
                       <div key={index + Math.random()} className="mt-1">
@@ -151,7 +140,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
                   <div className="flex flex-col w-full h-full p-6 overflow-hidden text-gray-900 rounded-2xl">
                     <div className="flex justify-between">
                       <p className="text-lg text-red-700 font-Charm">โรคที่ควรเลี่ยง</p>
-                      <Tooltip title="อ่านต่อ"><a onClick={() => router.push(`/blogs/${type.toLowerCase()}/id?=${id}?${type.toLowerCase()}`)} className="text-purple-600 duration-1000 animate-pulse rounded-xl">อ่านต่อ</a></Tooltip>
+                      <Tooltip title="อ่านต่อ"><a onClick={() => router.push(`/blogs/${type.toLowerCase()}/${id}`)} className="text-purple-600 duration-1000 animate-pulse rounded-xl">อ่านต่อ</a></Tooltip>
                     </div>
                     {nagative.map(({ ncds, because }, index) => (
                       <div key={index + Math.random()} className="pr-3 mt-1 h-20 overflow-hidden hover:overflow-scroll" >
@@ -175,21 +164,21 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
                     <p className=" mt-1 sm:mx-5 break-words overflow-hidden text-lg md:text-md h-20">{imply}...</p>
                     <hr className='mb-2 ' />
                     <div className="flex justify-center ">
-                      <a onClick={() => router.push(`/blogs/${type.toLowerCase()}/id?=${id}?${type.toLowerCase()}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                      <a onClick={() => router.push(`/blogs/${type.toLowerCase()}/${id}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
                     </div>
                   </div>
                 }
               </div>
 
 
-            </motion.div>
+            </div>
           ))}
         </OwlCarousel>
         <div className='flex justify-end text-lg '>
           <a href="#" className='text-right text-gray-500 hover:text-black sm:mt-0 -mt-10'>อ่านทั้งหมด</a>
         </div>
       </div>
-    </motion.div>
+    </div>
 
   )
 

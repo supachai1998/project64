@@ -21,20 +21,7 @@ export default function Index() {
   // Fetch First Time
   useEffect(() => {
     if (!blogs) {
-      (async () => {
-        let data_blogs = await fetch("/api/getBlogs").then(res => res.ok ? res.json() : null)
-        if (data_blogs) {
-          data_blogs = data_blogs.map(item => {
-            const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
-            const avg_vote = ((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote) || -1
-            return { ...item, avg_vote, total_vote }
-          })
-          console.log(data_blogs)
-          setBlogs(data_blogs)
-        } else {
-          notification.error({ message: 'ไม่พบข้อมูลบทความ', })
-        }
-      })()
+      getBlog(setBlogs)
     }
   }, [blogs])
   // useEffect(() => {
@@ -73,6 +60,15 @@ export default function Index() {
 
     </motion.div>
   )
+}
+
+const getBlog = async (fx,para="") => {
+    let data_blogs = await fetch("/api/getBlogs"+`/${para}`).then(res => res.ok ? res.json() : null)
+    if (data_blogs) {
+      fx(data_blogs)
+    } else {
+      notification.error({ message: 'ไม่พบข้อมูลบทความ', })
+    }
 }
 
 const dataBanner = [

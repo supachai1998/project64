@@ -27,7 +27,7 @@ export default function _Categories({ fetchData, categories, placeholder }) {
         setSearch_bool(true)
     }
     useEffect(() => {
-        if (!_data) {
+        if (!_data && categories) {
             refreshData()
         }
     }, [_data, categories, fetchData])
@@ -70,7 +70,7 @@ export default function _Categories({ fetchData, categories, placeholder }) {
             return () => clearTimeout(timer)
         }
     }
-    if (!!!_data) return <>data not found</>
+    if (!!!_data) return <>ไม่พบข้อมูล</>
     return (
         <>
 

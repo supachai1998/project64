@@ -161,7 +161,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
                   <hr className="mb-2" />
 
                   <div className="flex justify-center py-8">
-                    <a onClick={() => router.push(`/${type}/${categories}/${id}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50">อ่านต่อ</a>
+                    <a onClick={() => router.push(`/${type}/${categories}/${id}` )} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50">อ่าน</a>
                   </div>
                 </div>
                   :
@@ -182,7 +182,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
                     <p className="pr-3 mt-1 break-words overflow-hidden text-lg md:text-md h-20">{intro}...</p>
                     <hr className='mb-2' />
                     <div className="flex justify-center">
-                      <a onClick={() => router.push(`/${type}/${categories}/${id}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50">อ่านต่อ</a>
+                      <a onClick={() => router.push(`/${type}/${categories}/${id}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50">อ่าน</a>
                     </div>
                   </div>
                 }

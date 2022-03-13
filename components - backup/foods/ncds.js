@@ -111,7 +111,7 @@ const Ncds = ({ ncds }) => {
                                             <div className="text-sm stroke-current ">{suggess ? <ThumbUpAlt className="text-green-600" /> : <ThumbDownAlt className="text-red-600" />}</div>
                                         </div>
                                         <div> {because} </div>
-                                        {videoUrl && <Button className="max-w-sm md:mx-auto" onClick={() => showModal(ncds, videoUrl)} > แสดงวีดีโอ </Button>}
+                                        {videoUrl && <Button className="max-w-sm md:mx-auto" onClick={() => showModal(ncds, videoUrl)} > ดูวิดีโอ </Button>}
                                     </div>
                                 </>
                                 :

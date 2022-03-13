@@ -76,11 +76,11 @@ const Ncds = ({ ncds }) => {
     }
     if (!data) return null
     return (
-        <div className="w-full h-full px-10">
+        <div className="w-full h-auto sm:px-5">
             <div className="flex justify-center text-center ">
-                <span className="w-full text-2xl font-Charm">โรคติดต่อไม่เรื้อรัง</span>
+                <span className="w-full text-2xl">โรคติดต่อไม่เรื้อรัง</span>
             </div>
-            <div className="grid h-full gap-4 p-6 mt-3 md:grid-cols-3 mx-10">
+            <div className="grid h-auto gap-4 px-6 mt-3 md:grid-cols-3 sm:mx-5">
                 {data.map(({ ncds,
                     because,
                     suggess,
@@ -89,11 +89,11 @@ const Ncds = ({ ncds }) => {
                     ref, }, index) => (
                     <>
                         {suggess &&
-                            <div key={index} className="flex flex-col w-full h-full gap-5  p-0  rounded-xl bg-gray-50 grid-cols-3 ">
+                            <div key={index} className="flex flex-col w-full h-11/12 gap-5  p-0  rounded-xl bg-gray-50 grid-cols-3 ">
                                 <>
                                     {/* {console.log(suggess)} */}
-                                    {imgUrl && <div className="w-full h-96 md:w-full "><CusImage src={imgUrl} alt={ref} className="w-full h-full  " width="100%" height="100%" preview={false} /></div>}
-                                    <div className="flex flex-col w-full h-full gap-3 px-5 pb-5 text-center mt-5">
+                                    <div className="w-full h-96 md:w-full "><CusImage className="rounded-md" src={imgUrl} alt={ref}  width="100%" height="100%" preview={false} /></div>
+                                    <div className="flex flex-col w-full h-11/12 gap-3 px-5  text-center mt-5">
                                         <div className="flex flex-col  ">
                                             <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
@@ -104,8 +104,9 @@ const Ncds = ({ ncds }) => {
                                                 แนะนำ
                                             </label>
                                         </div>
-                                        <div className=''> {because} </div>
-                                        {videoUrl && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(ncds, videoUrl)}  ><VideoCameraOutlined /> แสดงวีดีโอ </a>}
+                                        <div className='h-20 overflow-hidden'> {because}... </div>
+                                        {videoUrl &&<hr className='mb-2 border-t'/>}
+                                        <div className="flex justify-center mb-4">{videoUrl && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(ncds, videoUrl)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
                                     </div>
                                 </>
                             </div>
@@ -120,11 +121,11 @@ const Ncds = ({ ncds }) => {
                     ref, }, index) => (
                     <>
                         {!suggess &&
-                            <div key={index} className="flex flex-col w-full h-full gap-5  p-0  rounded-xl bg-gray-50 grid-cols-3 ">
+                            <div key={index} className="flex flex-col w-full h-11/12 gap-5  p-0  rounded-xl bg-gray-50 grid-cols-3 ">
                                 <>
                                     {/* {console.log(suggess)} */}
-                                    {imgUrl && <div className="w-full h-96 md:w-full "><CusImage src={imgUrl} alt={ref} className="w-full h-full  " width="100%" height="100%" preview={false} /></div>}
-                                    <div className="flex flex-col w-full h-full gap-3 px-5 pb-5 text-center mt-5">
+                                    <div className="w-full h-96 md:w-full "> <CusImage className="rounded-md" src={imgUrl} alt={ref}  width="100%" height="100%" preview={false} /></div>
+                                    <div className="flex flex-col w-full h-11/12 gap-3 px-5  text-center mt-5">
                                         <div className="flex flex-col  ">
                                             <span className="text-4xl text-gray-800 font-Charm "> Hiabetes </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
@@ -135,8 +136,9 @@ const Ncds = ({ ncds }) => {
                                                 ไม่แนะนำ
                                             </label>
                                         </div>
-                                        <div className=''> {because} </div>
-                                        {videoUrl && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(ncds, videoUrl)}  ><VideoCameraOutlined /> แสดงวีดีโอ </a>}
+                                        <div className='h-20 overflow-hidden'> {because}... </div>
+                                        {videoUrl &&<hr className='mb-2 border-t'/>}
+                                        <div className="flex justify-center mb-4 h-11/12">{videoUrl && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(ncds, videoUrl)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
                                     </div>
                                 </>
                             </div>

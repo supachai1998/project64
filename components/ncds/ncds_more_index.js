@@ -5,6 +5,7 @@ import { useState, useRef, useEffect, createRef } from 'react';
 import ReactPlayer from 'react-player';
 
 import { VideoCameraOutlined } from '@ant-design/icons';
+import { useRouter, } from 'next/router'
 
 
 const { Option, OptGroup } = Select
@@ -15,6 +16,8 @@ import { noti } from '../noti';
 import { ThumbDownAlt, ThumbUpAlt } from '@mui/icons-material';
 
 const Ncds = ({ ncds }) => {
+    const router = useRouter()
+    const query = router.query
     const [data, setData] = useState(ncds || null)
     const [loading, setLoading] = useState(false)
     const [contentModal, setContentModal] = useState(null);

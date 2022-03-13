@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react';
 import { CloseOutlined, VideoCallOutlined } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
+import { LinearProgress } from '@mui/material';
 
 
 
@@ -23,7 +24,9 @@ export default function Index() {
     const { categories, food } = query
     const [category, setCategory] = useState(categories)
     const [data, setData] = useState(null)
+    const [Loading, setLoading] = useState(null)
     useEffect(() => {
+        setLoading(true)
         if (categories && food && !data) {
             (async () => {
                 const data_categories = await fetch(`/api/getTypeFood`).then(res => res.ok && res.json())
@@ -44,20 +47,22 @@ export default function Index() {
                 console.log(data_food)
             })()
         }
+        setLoading(false)
     }, [categories, data, food, query])
+    if (Loading) return <LinearProgress />
     return (
-        <div className="mt-3 min-h-screen">
+        <div className="-mt-1 min-h-screen bg-gray-100">
             {data ?
                 <div className="flex flex-col w-full h-full   ">
-                    <div className="flex flex-col bg-gray-50 ipad:flex-row relative h-96 md:h-super lg:h-very-super ">
-                        <CustImage src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} />
+                    <div className="flex  flex-col bg-gray-100 ipad:flex-row relative h-96 md:h-super lg:h-very-super ">
+                        <div className='sm:w-10/12 mx-auto flex h-full rounded-md'><CustImage className="rounded-md" src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} /></div>
                         <div className='absolute-center w-full text-center align-middle '>
-                            <p className='text-6xl sm:text-9xl lg:text-super text-shadow  text-white my-auto p-0'>{data.name_th}</p>
+                            <p className='text-6xl sm:text-9xl lg:text-9xl text-shadow  text-white my-auto p-0'>{data.name_th}</p>
                         </div>
                     </div>
 
 
-                    <div className='card mv-10 w-11/12 mx-auto mt-5'>
+                    <div className='card mv-10 w-11/12 mx-auto mt-5 sm:w-8/12'>
                         <div className="flex flex-col w-full px-4 h-96 sm:h-1/4 sm:gap-y-2 gap-y-12  text-center">
                             <div className="h-1/4">
                                 {/* <p className="pl-1 text-2xl font-thin  border-indigo-700 font-Charm border-l-2">{headerData[2].title}</p> */}
@@ -73,7 +78,7 @@ export default function Index() {
                                 
                                 </div>
                             <div className='flex justify-end'>
-                                <button href="#" className="w-32 border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50"> <i><VideoCallOutlined className='text-lg' /></i> <span> ดูวีดีโอ</span></button>
+                                <button href="#" className="w-32 border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50"> <i><VideoCallOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
                             </div>
                         </div>
                     </div>

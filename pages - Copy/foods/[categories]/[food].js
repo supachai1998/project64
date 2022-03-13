@@ -75,7 +75,7 @@ export default function Index() {
                                 
                                 </div>
                             <div className='flex justify-end'>
-                                <button href="#" className="w-32 border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50"> <i><VideoCallOutlined className='text-lg' /></i> <span> ดูวีดีโอ</span></button>
+                                <button href="#" className="w-32 border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50"> <i><VideoCallOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
                             </div>
                         </div>
                     </div>

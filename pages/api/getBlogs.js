@@ -4,7 +4,6 @@ export default async function handler(req, res) {
   const { body, method, query } = req;
   let data = null
   let { id } = body
-  console.log(id)
   res.setHeader('Content-Type', 'application/json');
   try {
     switch (method) {
@@ -105,20 +104,29 @@ export default async function handler(req, res) {
         break;
 
       default:
-        if (query.id) {
+        const { select, id } = query
+        if (id) {
           if (!query.select) {
             data = await prisma.blogs.findFirst({
-              where: { id: query.id }
+              where: { id: id }
             })
-          }else{
-            const {select} = query
+          } else {
             data = await prisma.blogs.findFirst({
-              where: { id: query.id },
-              select : {[select] : true}
+              where: { id: id },
+              select: { [select]: true }
             })
           }
-          console.log(data)
-          data && res.status(200).json(data)
+        }
+        else if (query.type) {
+          data = await prisma.blogs.findMany({
+            where: { type: query.type },
+            include: {
+              subBlog: true,
+              image: true,
+              ref: true
+            },
+          })
+          // console.log(data,query.type)
         } else {
           data = await prisma.blogs.findMany({
             include: {
@@ -128,8 +136,20 @@ export default async function handler(req, res) {
             },
           })
         }
-        !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send("data not found")
-        break;
+
+        if (!Array.isArray(data)) {
+          const total_vote = data.vote_1 + data.vote_2 + data.vote_3 + data.vote_4 + data.vote_5
+          const avg_vote = parseFloat(((1 * data.vote_1 + 2 * data.vote_2 + 3 * data.vote_3 + 4 * data.vote_4 + 5 * data.vote_5) / total_vote).toFixed(2)) || -1
+          return res.status(200).json({ ...data, total_vote, avg_vote })
+        } else if (Array.isArray(data) && data.length > 0) {
+          data = data.map(item => {
+            const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
+            const avg_vote = parseFloat(((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote).toFixed(2)) || -1
+            return { ...item, avg_vote, total_vote }
+          })
+          return res.status(200).json(data) 
+        }
     }
-  } catch (e) { console.log(e); res.status(500).send(e) }
+    return res.status(404).send({ error: "data not found" ,query:query }) 
+  } catch (e) { console.log(e);return res.status(500).send(e) }
 }

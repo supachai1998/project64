@@ -77,37 +77,27 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
       (async () => {
         const { asPath, pathname , query } = router
-        let { name, categories,food } = query
+        let { name, categories,food,blog } = query
         const asPathSplit = asPath.split("/")
-        const pathNameSplit = pathname.split("/")
+        
         console.log(query)
         try {
-          if(food){
-            const name = await fetch(`/api/getFood?id=${food}`).then(async res => {
-              if(res.ok){
-                const data = await res.json()
-                const {name_th} = data
-                return name_th
-              }
-            })
-            setTitle(name)
+          if(!!food){
+            const _food = await fetch(`/api/getFood?id=${food}&select=name_th`).then(async res => res.ok && res.json())
+            setTitle(_food.name_th || "")
             setDefaultSelectedKeys(categories)
             return;
           }
-          const para = asPathSplit.at(-1).split("=")
-          const getAfter = para.at(-1).split("?")
-          // console.log(para, pathNameSplit)
-          // หาว่ามี parameter blogs ไหม
-          if (para.at(0) === "id?") {
-            // ดูว่าเป็นหมวดอะไร
-            if (getAfter.at(-1) === "blogs") {
-              const getBlogs = await fetch(`/api/getBlogs?id=${getAfter.at(0)}&select=name`).then(res=>res.ok&&res.json())
-              setTitle(getBlogs.name)
-            }
-          } else if (categories && name) {
+
+          if (!!blog) {
+            const _blog = await fetch(`/api/getBlogs?id=${blog}&select=name`).then(res=>res.ok&&res.json())
+            setTitle(`บทความ${_blog.name || ""}`)
+            setDefaultSelectedKeys(`${categories}`)
+            return;
+          }
+          if (categories) {
             // console.log(asPath, name, categories)
             setDefaultSelectedKeys(categories)
-            setTitle(name)
           } else if (asPathSplit.length === 3) {
             const namesplit = asPathSplit.split("=")
             console.log(asPathSplit, pathname, name, categories, namesplit)
@@ -170,13 +160,13 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     // console.log(keyPath)
     // Array(3) [ "report_blogs_food", "report", "admin" ]
 
-    if (keyPath.length >= 2) { router.push(`/${keyPath.at(1)}/${keyPath.at(0)}`); setCollapsed(true) }
+    if (keyPath.length >= 2) { router.push(`/${keyPath.at(1)}/${keyPath.at(0)}` ); setCollapsed(true) }
   }
   const handleSubMenuClick = (name) => {
     setTitle(name)
   }
   const handleMenu = (en, th) => {
-    setTitle(th); router.push(`/${en}`); setCollapsed(true)
+    setTitle(th); router.push(`/${en}` ); setCollapsed(true)
 
   }
 
