@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
-const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
+const ContentHeader = dynamic(() => import("/components/ncds/contentheader"))
 const Topic = dynamic(() => import("/components/ncds/topic.js"),
 { ssr: false })
 const Content = dynamic(() => import("/components/ncds/content.js"),
@@ -17,20 +17,21 @@ const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMor
 { ssr: false })
 
 export default function Index() {
-    const [blog,setblog] = useState()
+    const [NCDS,setNCDS] = useState()
     const router = useRouter()
     const { categories, ncds } = router.query
     useEffect(()=>{
-        if(ncds && !blog){
+        if(ncds && !NCDS){
             (async()=>{
-                const dataBlog = await fetch(`/api/getBlogs?id=${ncds}`).then(res=>res.ok?res.json():notification.error({message:"Error",description:"ไม่พบข้อมูล"}))
+                const dataNCDS = await fetch(`/api/getNCDS?id=${ncds}`).then(res=>res.ok?res.json():notification.error({message:"Error",description:"ไม่พบข้อมูล"}))
+                setNCDS(dataNCDS)
             })()
         }
-    },[blog, ncds])
+    },[NCDS, ncds])
 
     return (
         <>
-            {name ?
+            {NCDS ?
                 <div className="flex flex-col w-full h-auto min-h-screen gap-4 my-auto">
                     
                     <div className="flex flex-col bg-gray-50 ipad:flex-row gap-y-1">
