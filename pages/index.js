@@ -4,6 +4,7 @@ import router from 'next/router';
 import { motion } from "framer-motion"
 import dynamic from 'next/dynamic'
 import { noti } from '/components/noti.js';
+import BestFood from '../components/BestFood';
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const CusInput = dynamic(() => import("/components/cusInput"))
 
@@ -54,7 +55,8 @@ export default function Index() {
         {loading && input.length > 2 && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>}
       </div>
       <div className=' mx-0'>
-        <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} />
+        <BestFood/>
+        {/* <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} /> */}
         {!!blogs && <DisplayBlogReadMore data={blogs} title={"บทความยอดนิยม"} />}
       </div>
 
@@ -137,40 +139,6 @@ const onSearchTomyum = [
     title_th: "ต้มยำกุ้ง",
     title_en: "tom yum kung",
     cal: 343,
-    positive: [
-      {
-        ncds: "โรคเบาหวาน",
-        intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-        because: "สามารถทานได้ แต่ควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล"
-      },
-      {
-        ncds: "โรคถุงลมโป่งพอง",
-        intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-        because: "สามารถทานได้"
-      },
-      {
-        ncds: "โรคมะเร็ง",
-        intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-        because: "สามารถทานได้ ในปริมาณที่จำกัด"
-      },
-    ],
-    nagative: [
-      {
-        ncds: "โรคความดันโลหิตสูง",
-        intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-        because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-      },
-      {
-        ncds: "โรคหลอดเลือดสมอง",
-        intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-        because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-      },
-      {
-        ncds: "โรคอ้วนลงพุง",
-        intro: "ข้อความเกริ่นนำ ....(ไม่เกิน 50 ตัวอักษร)",
-        because: "มีปริมาณไขมันในกุ้งปริมาณมาก ควรหลีกเลี่ยงส่วนประกอบที่มีไขมัน"
-      },
-    ],
     imgUrl: "https://www.jmthaifood.com/wp-content/uploads/2020/01/%E0%B8%95%E0%B9%89%E0%B8%A1%E0%B8%A2%E0%B8%B3%E0%B8%81%E0%B8%B8%E0%B9%89%E0%B8%87-1.jpg",
   },
   {

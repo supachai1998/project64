@@ -121,7 +121,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
               key={id + index + Math.random()}
               className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
               <div className="relative w-full" >
-                {image && <CustImage src={image[0]} alt={id} className="" width="100%" height="200px" preview={false} />}
+                {image && <CustImage src={image[0].name} alt={id} className="" width="100%" height="200px" preview={false} />}
                 {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>}
                 {calories && <Tooltip title="ปริมาณแคลอรี่"><p className="absolute bottom-0 left-0 p-2 text-xs text-left bg-opacity-60 bg-gray-50 sm:text-sm rounded-xl">{calories} KgCal</p></Tooltip>}
               </div>

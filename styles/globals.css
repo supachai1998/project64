@@ -13,7 +13,18 @@
   /* ... */
 }
 
+/* ใช้กับแนะนำ/ไม่แนะนำอาหารกับโรคไม่ติดต่อ */
 
+.card-suggession {
+  @apply flex flex-col w-full h-full gap-5  p-0  rounded-xl bg-gray-50 grid-cols-4 
+}
+.card-suggession-image {
+  @apply w-full h-96 md:w-full !important
+}
+.card-suggestion-header-content {
+  @apply flex flex-col w-full h-5/6 gap-3 px-5  text-center mt-5
+}
+/* -------------- */
 
 .font-Poppins{
   font-family: 'Kanit', sans-serif;
@@ -30,6 +41,13 @@
 }
 .ant-image-preview-img{
   display: inline-flex !important;
+}
+.food-content-body{
+  text-overflow: ellipsis;
+  @apply w-full h-full pl-4 text-lg  whitespace-pre-line truncate break-all  text-left
+}
+.food-content-header{
+  @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left  lg:text-3xl
 }
 @media only screen and (max-width: 1256px){
   .ant-steps{

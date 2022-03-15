@@ -6,12 +6,10 @@ import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
 import router from 'next/router';
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion';
-import { isMobile } from 'react-device-detect';
 const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
   ssr: false,
 });
 
-var show_ncds = 0;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const easing = [0.6, -0.05, 0.01, 0.99];
 const state = {
@@ -58,7 +56,7 @@ const customIcons = {
 const { OptGroup, Option } = Select
 var ck_ncds = false
 export default function DisplayFoodReadMore({ data, title, headTextColor, headLineColor }) {
-
+  if(!data || !Array.isArray(data) || data.length < 1) return null
   return (
     <motion.div
       variants={fadeInUp}
@@ -74,7 +72,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
         <p className={headTextColor + " card-header-top"}>{title}</p>
         <span className=' w-full text-right mb-4 border-b border-b-green' >
           <a href="#" className='hover:text-gray-500 text-black'>
-            อาหารความที่เกี่ยวข้องกับโรคเบาหวาน
+            พบ {data.length} รายการ
           </a>
         </span>
         {/* <div className={headLineColor + " w-full  h-0.5 transition-all duration-75 transform ease-in animate-pulse"}></div> */}
@@ -121,7 +119,6 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
 
               <div className="relative w-full" >
                 <CustImage src={imgUrl} alt={title_th} className="" width="100%" height="200px" preview={false} />
-
               </div>
               <div className={title ? "w-full h-full flex flex-col  p-1 " : "w-full h-full flex flex-col  "}>
                 {positive && nagative ? <div className="flex flex-col">
@@ -161,7 +158,7 @@ export default function DisplayFoodReadMore({ data, title, headTextColor, headLi
                   <hr className="mb-2" />
 
                   <div className="flex justify-center py-8">
-                    <a onClick={() => router.push(`/${type}/${categories}/${id}` )} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50">อ่าน</a>
+                    <a onClick={() => router.push(`/${type}/${categories}/${id}`)} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50">อ่าน</a>
                   </div>
                 </div>
                   :

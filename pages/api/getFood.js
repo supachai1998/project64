@@ -36,14 +36,28 @@ export default async function handler(req, res) {
 
             default:
                 let data = null
-                const { select } = query
-                let {id} = query
+                const { select, BestFood } = query
+                let { id } = query
                 id = parseInt(query.id)
+                if (BestFood) {
+                    data = await prisma.food.findMany({
+                        orderBy: [
+                            { views: 'desc', },
+                            { calories: 'asc', },
+                        ],
+                        include: {
+                            image: true,
+                            ref : true,
+                        }
+                    })
+                    if (!!data && data.length > 0) return res.status(200).json(data)
+                }
                 if (query.categories) {
                     data = await prisma.food.findMany({
                         where: { foodTypeId: parseInt(query.categories) },
                         include: {
                             image: true,
+                            ref : true,
                         }
                     })
                     if (!!data && data.length > 0) return res.status(200).json(data)
@@ -53,12 +67,14 @@ export default async function handler(req, res) {
                         where: { name_th: { contains: query.name } },
                         include: {
                             image: true,
+                            ref : true,
                             FoodNcds: true
                         }
                     }) || await prisma.food.findMany({
                         where: { name_en: { contains: query.name } },
                         include: {
                             image: true,
+                            ref : true,
                             FoodNcds: true
                         }
                     })
@@ -76,6 +92,7 @@ export default async function handler(req, res) {
                         where: { id: id },
                         include: {
                             image: true,
+                            ref : true,
                             FoodNcds: true
                         }
                     })

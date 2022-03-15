@@ -11,7 +11,7 @@ export default function CusImage({ width, height, src,name , className,preview }
             alt={name}
             width={width}
             height={height}
-            src={src || "/static/images/no-image.png"}
+            src={src || "https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png"}
             preview={preview}
             fallback="https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png"
             placeholder={

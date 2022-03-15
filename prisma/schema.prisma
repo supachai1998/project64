@@ -75,7 +75,7 @@ model Ncds {
   views     Int?        @default(0)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  image    ImageNCDS[]
+  image     ImageNCDS[]
   foodncds  FoodNcds[]
 }
 
@@ -122,6 +122,7 @@ model FoodNcds {
   id          Int        @id @default(autoincrement())
   detail      String     @db.LongText
   suggess     Boolean
+  video       String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   image       ImageFood? @relation(fields: [imageFoodId], references: [id])
