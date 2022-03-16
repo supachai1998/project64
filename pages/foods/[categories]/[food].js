@@ -58,7 +58,7 @@ export default function Index() {
             {data ?
                 <div className="flex flex-col w-full h-full   ">
                     <div className="flex  flex-col bg-gray-100 ipad:flex-row relative h-96 md:h-super lg:h-very-super ">
-                        <div className='sm:w-10/12 mx-auto flex h-full rounded-md'><CustImage className="rounded-md" src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} /></div>
+                        <div className='sm:w-10/12 mx-auto flex h-full '><CustImage className="sm:rounded-md" src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} /></div>
                         <div className='absolute-center w-full text-center align-middle '>
                             <p className='text-6xl sm:text-9xl lg:text-9xl text-shadow  text-white my-auto p-0'>{data.name_th}</p>
                         </div>
@@ -69,27 +69,27 @@ export default function Index() {
                         <div className="flex flex-col w-full px-4 h-full    text-center">
                             <p className="sm:text-4xl text-3xl font-bold text-green-800 ">{data.calories} กิโลแคลอรี่</p>
                             <div className="w-full ">
-                                <p className='food-content-body'>{data.detail}</p>
+                                <p className='food-content-body'>{data.detail.replace("<br/>", "\n")}</p>
                                 <p className="food-content-header">วิธีการทำ</p>
-                                <p className='food-content-body'>{data.proceduce.replace("\n", "\n")}</p>
+                                <p className='food-content-body'>{data.proceduce.replace("<br/>", "\n")}</p>
                                 <p className="food-content-header">ส่วนผสม</p>
-                                <p className='food-content-body'>{data.ingredient}</p>
+                                <p className='food-content-body'>{data.ingredient.replace("<br/>", "\n")}</p>
 
                             </div>
-                            <div className='flex justify-end'>
-                                <button href="#" className="w-32 text-lg border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
-                            </div>
-                            <div className="flex gap-2 ">
-                                {data.ref && data.ref.length > 0 && data.ref.map(({url}, index) =>
-                                    <a href={url}  target="_blank" key={index} className='text-left no-underline text-black' rel="noreferrer">อ้างอิง {index+1}</a>
-                                )}
+                            <div className='flex justify-between items-center'>
+                                <div className="flex gap-2 ">
+                                    {data.ref && data.ref.length > 0 && data.ref.map(({ url }, index) =>
+                                        <a href={url} target="_blank" key={index} className='text-left no-underline text-black' rel="noreferrer">{index === data.ref.length -1 ? `อ้างอิง ${index + 1}` : `อ้างอิง ${index + 1},`}</a>
+                                    )}
+                                </div>
+                                <button href="#" className="w-32 text-lg border  rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
                             </div>
                         </div>
                     </div>
 
 
                     <NCDS ncds={data.FoodNcds} />
-                    <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} headTextColor={"text-green-900"} headLineColor={"bg-green-300"} />
+                    <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} />
                 </div> : <>data not found</>
             }
             {content && <CusModal handleCancel={handleCancel} content={content} />}

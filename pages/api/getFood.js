@@ -47,7 +47,7 @@ export default async function handler(req, res) {
                         ],
                         include: {
                             image: true,
-                            ref : true,
+                            ref: true,
                         }
                     })
                     if (!!data && data.length > 0) return res.status(200).json(data)
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
                         where: { foodTypeId: parseInt(query.categories) },
                         include: {
                             image: true,
-                            ref : true,
+                            ref: true,
                         }
                     })
                     if (!!data && data.length > 0) return res.status(200).json(data)
@@ -67,14 +67,14 @@ export default async function handler(req, res) {
                         where: { name_th: { contains: query.name } },
                         include: {
                             image: true,
-                            ref : true,
+                            ref: true,
                             FoodNcds: true
                         }
                     }) || await prisma.food.findMany({
                         where: { name_en: { contains: query.name } },
                         include: {
                             image: true,
-                            ref : true,
+                            ref: true,
                             FoodNcds: true
                         }
                     })
@@ -92,8 +92,22 @@ export default async function handler(req, res) {
                         where: { id: id },
                         include: {
                             image: true,
-                            ref : true,
-                            FoodNcds: true
+                            ref: true,
+                            FoodNcds: {
+                                include: {
+                                    image: {
+                                        select: {
+                                            name: true
+                                        }
+                                    },
+                                    Ncds: {
+                                        select: {
+                                            name_th: true,
+                                            name_en: true,
+                                        }
+                                    },
+                                }
+                            }
                         }
                     })
                     if (data.id) return res.status(200).json(data)

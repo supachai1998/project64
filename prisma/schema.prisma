@@ -1,7 +1,9 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider          = "prisma-client-js"
   // previewFeatures = ["referentialIntegrity", "createMany"]
-  previewFeatures = ["referentialIntegrity"]
+  previewFeatures   = ["referentialIntegrity"]
+  planetScaleMode   = true
+  enable_direct_ddl = false
 }
 
 datasource db {
@@ -9,6 +11,7 @@ datasource db {
   url                  = env("DATABASE_URL")
   shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
   referentialIntegrity = "prisma"
+
 }
 
 model Account {
@@ -87,7 +90,7 @@ model Ref {
   Food    Food?   @relation(fields: [foodId], references: [id])
   foodId  Int?
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
-  blogsId String?
+  blogsId Int?
 }
 
 model Food {
@@ -130,18 +133,18 @@ model FoodNcds {
   ncdsId      Int?
   food        Food       @relation(fields: [foodId], references: [id])
   foodId      Int
-  imageFoodId String?
+  imageFoodId Int?
 }
 
 model ImageNCDS {
-  id     String @id @default(uuid())
+  id     Int    @id @default(autoincrement())
   name   String @db.LongText
   Ncds   Ncds?  @relation(fields: [ncdsId], references: [id])
   ncdsId Int?
 }
 
 model ImageFood {
-  id       String     @id @default(uuid())
+  id       Int        @id @default(autoincrement())
   name     String     @db.LongText
   Food     Food?      @relation(fields: [foodId], references: [id])
   foodId   Int?
@@ -149,14 +152,14 @@ model ImageFood {
 }
 
 model ImageBlog {
-  id      String  @id @default(uuid())
+  id      Int     @id @default(autoincrement())
   name    String  @db.LongText
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
-  blogsId String?
+  blogsId Int?
 }
 
 model Blogs {
-  id        String      @id @default(uuid())
+  id        Int         @id @default(autoincrement())
   type      Type
   name      String
   imply     String      @db.LongText
@@ -176,12 +179,12 @@ model Blogs {
 }
 
 model subBlog {
-  id      String  @id @default(uuid())
+  id      Int     @id @default(autoincrement())
   name    String
   detail  String  @db.LongText
   image   String?
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id])
-  blogsId String?
+  blogsId Int?
 }
 
 enum Role {

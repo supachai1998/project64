@@ -16,7 +16,7 @@
 /* ใช้กับแนะนำ/ไม่แนะนำอาหารกับโรคไม่ติดต่อ */
 
 .card-suggession {
-  @apply flex flex-col w-full h-full gap-5  p-0  rounded-xl bg-gray-50 grid-cols-4 
+  @apply mx-3 my-3 rounded-xl bg-gray-50 grid-cols-4  shadow-md
 }
 .card-suggession-image {
   @apply w-full h-96 md:w-full !important
@@ -32,8 +32,9 @@
 }
 .owl-item .ant-image-img{
   box-shadow: inset -4px -4px 4px rgba(0, 0, 0, 0.2), inset 0px 4px 4px rgba(0, 0, 0, 0.2);
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
 }
+
 .item{
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   margin: 4px;
@@ -44,7 +45,7 @@
 }
 .food-content-body{
   text-overflow: ellipsis;
-  @apply w-full h-full pl-4 text-lg  whitespace-pre-line truncate break-all  text-left
+  @apply w-full h-full pl-4 text-lg  whitespace-pre-line truncate break-words  text-left
 }
 .food-content-header{
   @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left  lg:text-3xl
@@ -315,12 +316,15 @@ a {
   background: #000; 
 }
 
-
+.ant-select .ant-select-selector{
+  border-radius: 10px !important;
+  @apply mt-1
+}
 
 /* custom curve ant design input */
-.ant-form-item-control-input-content .ant-select .ant-input-number-input .ant-select-selector .ant-input-number .ant-select-selection-item  .ant-select-selector .ant-select-selection-search-input .ant-form-item-control-input .ant-input{
+.ant-form-item-control-input-content  .ant-input-number-input  .ant-input-number .ant-form-item-control-input .ant-input{
   border-radius: 10px !important;
-  /* @apply rounded-lg  !important; */
+  @apply rounded-md  !important;
 }
 
 .ytp-cued-thumbnail-overlay .ytp-cued-thumbnail-overlay-image {

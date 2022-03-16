@@ -1,26 +1,22 @@
 import { useRouter } from 'next/router'
 import { Card, Divider, notification, } from 'antd';
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react';
 
 
 
 const { Meta } = Card;
-// const CustImage = dynamic(() => import("/components/cusImage.js"))
-// const Topic = dynamic(() => import("/components/foods/topic.js"),
-//     { ssr: false })
-// const ContentHeader = dynamic(() => import("/components/foods/contentheader.js"))
-// const Ncds = dynamic(() => import("/components/foods/ncds.js"),
-//     { ssr: false })
-// const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
-//     { ssr: false })
 const _Categories = dynamic(() => import("/components/foods/categories.js"),
     { ssr: false })
 
 
 export default function Index() {
+    const [_data, setData] = useState()
     const router = useRouter()
     const { categories } = router.query
-
+    useEffect(()=>{
+        return () => setData()
+    },[categories])
     return (
         <div className="mt-3">
             {categories &&
@@ -29,7 +25,7 @@ export default function Index() {
                             <CustImage src={"https://s359.kapook.com/pagebuilder/1f12afa5-ed83-4fd6-b9e7-8c670d941668.jpg"} alt={"0"} className="" width="100%" height="100%" preview={false} />
                         </div> */}
 
-                    <_Categories fetchData={fetchData} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
+                    <_Categories _data={_data} setData={setData} fetchData={fetchData} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
 
                 </div>
             }

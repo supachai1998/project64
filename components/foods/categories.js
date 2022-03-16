@@ -8,9 +8,9 @@ const { Meta } = Card
 const { Search } = Input;
 const CusImage = dynamic(() => import('./../cusImage.js'));
 
-export default function _Categories({ fetchData, categories, placeholder }) {
+export default function _Categories({ fetchData, categories, placeholder,_data, setData }) {
 
-    const [_data, setData] = useState()
+    
     const [title_th, setTitle_th] = useState()
     const [title_en, setTitle_en] = useState()
     const [loading, setLoading] = useState(false)
@@ -19,12 +19,14 @@ export default function _Categories({ fetchData, categories, placeholder }) {
     const displaySearch = useRef()
     const router = useRouter()
     const refreshData= async () =>{
+        setLoading(true)
         const { title_th, title_en, data } = await fetchData(categories)
         console.log(title_th, title_en, data)
         setData(data)
         setTitle_th(title_th)
         setTitle_en(title_en)
         setSearch_bool(true)
+        setLoading(false)
     }
     useEffect(() => {
         if (!_data && categories) {
@@ -70,6 +72,7 @@ export default function _Categories({ fetchData, categories, placeholder }) {
             return () => clearTimeout(timer)
         }
     }
+    if (loading) return <>กำลังดึงข้อมูล</>
     if (!!!_data) return <>ไม่พบข้อมูล</>
     return (
         <>
