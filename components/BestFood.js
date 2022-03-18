@@ -29,7 +29,7 @@ export default function BestFood() {
         (async () => {
             if (!_data) {
                 const data = await fetchData()
-                setData([...data])
+                !!data && setData([...data])
                 console.log(data)
             }
         })()

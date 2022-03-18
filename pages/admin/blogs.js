@@ -16,23 +16,18 @@ export default function Index() {
     const [modalView, setModalView] = useState(false)
     const [blogs, setBlogs] = useState([])
     const reload = async () => {
-        const reqBlogs = await fetch("/api/getBlogs").then(res => res.status === 200 && res.json())
-        const newBlogs = reqBlogs.map((val) => {
-            const totalvote = val.vote_1 + val.vote_2 + val.vote_3 + val.vote_4 + val.vote_5
-            const avg = totalvote / 5
-            return { ...val, totalvote, avg }
-        })
-        // console.log(newBlogs)
-        setBlogs(!!newBlogs && newBlogs.length > 0 && newBlogs || [])
+        const reqBlogs = await fetch("/api/getBlogs")
+            .then(res => res.status === 200 && res.json())
+            .then(data => setBlogs(!!data && data.length > 0 && data || []))
+            .catch(err => console.log(err))
     }
     useEffect(() => {
         reload()
-        return () =>{setBlogs()}
-    }, [modalAdd,modalEdit,modalView])
+        return () => setBlogs() 
+    }, [modalAdd, modalEdit, modalView])
     return (
-        <div
-            className="ease-div flex flex-col gap-4">
-            <Board data={{}}/>
+        <div className="ease-div flex flex-col gap-4 w-full">
+            <Board data={{}} />
             <div className="flex justify-between mt-4">
                 <div className="text-xl">ตารางบทความ</div>
                 <Button onClick={() => setModalAdd(true)}>เพิ่มโรค</Button>
@@ -56,7 +51,7 @@ const TableForm = ({ blogs, reload,
             title: 'ประเภทบทความ',
             dataIndex: 'type',
             key: 'type',
-            width: '10%',
+            
             render: val => <Paragraph >
                 {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "ทั้งหมด"}
             </Paragraph>
@@ -65,14 +60,14 @@ const TableForm = ({ blogs, reload,
             title: 'ชื่อบทความ',
             dataIndex: 'name',
             key: 'name',
-            width: '20%',
+            
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
             title: 'บทย่อ',
             dataIndex: 'imply',
             key: 'imply',
-            width: '20%',
+            
             render: val => <Tooltip title={val}><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
@@ -91,7 +86,7 @@ const TableForm = ({ blogs, reload,
             title: 'การอนุมัติ',
             dataIndex: 'approve',
             key: 'approve',
-            width: '10%',
+            
             render: (val, source) => <button className="w-full ml-3 mb-2" onClick={() => showConfirmApprove(source)}>
                 {val === 1 ? <Tooltip title="อนุมัติ">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +108,7 @@ const TableForm = ({ blogs, reload,
             title: 'การจัดการ',
             dataIndex: '',
             key: '',
-            width: '20%',
+            
             render: val => <div className="flex flex-wrap gap-2">
                 <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(val)}>ดู</button>
                 <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
@@ -188,7 +183,7 @@ const TableForm = ({ blogs, reload,
         });
     }
     return <div>
-        <Table dataSource={blogs} columns={columns} />
+        <Table size='small' tableLayout='auto'  dataSource={blogs} columns={columns} />
     </div>
 }
 const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
@@ -381,7 +376,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                                     name={[field.name, 'image']}
                                     fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
-                                    // rules={[{ required: true }]}
+                                // rules={[{ required: true }]}
                                 >
 
                                     <Upload

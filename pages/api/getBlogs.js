@@ -104,8 +104,20 @@ export default async function handler(req, res) {
         break;
 
       default:
-        const { select, id } = query
-        if (id) {
+        const { select, id, BestBlog } = query
+        if (BestBlog) {
+          data = await prisma.blogs.findMany({
+            orderBy: [
+              { views: 'desc', },
+            ],
+            include: {
+              image: true,
+              ref: true,
+            },
+            take: 5,
+          })
+        }
+        else if (id) {
           if (!query.select) {
             data = await prisma.blogs.findFirst({
               where: { id: id }
@@ -119,7 +131,7 @@ export default async function handler(req, res) {
         }
         else if (query.type) {
           data = await prisma.blogs.findMany({
-            where: { type: query.type },
+            where: { type: query.type.toUpperCase() },
             include: {
               subBlog: true,
               image: true,
@@ -147,9 +159,9 @@ export default async function handler(req, res) {
             const avg_vote = parseFloat(((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote).toFixed(2)) || -1
             return { ...item, avg_vote, total_vote }
           })
-          return res.status(200).json(data) 
+          return res.status(200).json(data)
         }
     }
-    return res.status(404).send({ error: "data not found" ,query:query }) 
-  } catch (e) { console.log(e);return res.status(500).send(e) }
+    return res.status(404).send({ error: "data not found", query: query })
+  } catch (e) { console.log(e); return res.status(500).send(e) }
 }

@@ -322,7 +322,7 @@ a {
 }
 
 /* custom curve ant design input */
-.ant-form-item-control-input-content  .ant-input-number-input  .ant-input-number .ant-form-item-control-input .ant-input{
+.ant-form-item-control-input-content .ant-form-item-control-input  .ant-input-number-input  .ant-input-number .ant-form-item-control-input .ant-input{
   border-radius: 10px !important;
   @apply rounded-md  !important;
 }
@@ -331,7 +331,9 @@ a {
   @apply rounded-lg  !important;
 }
 
-
+.admin-bg{
+  background-image: url("https://th.jobsdb.com/th-th/wp-content/uploads/sites/3/2021/09/remote_content-2.png");
+}
 
 /* card */
 .card-header-top{
@@ -367,3 +369,12 @@ a {
   transform: translate(-50%, -50%);
 }
 /* search ที่เป็นปุ่มๆ */
+
+.ant-input-wrapper input {
+  border-radius: 10px !important;
+}
+
+/* table ant */
+.ant-table-title {
+  @apply bg-gray-900 text-white
+}

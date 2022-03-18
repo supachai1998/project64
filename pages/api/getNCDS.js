@@ -25,30 +25,14 @@ export default async function handler(req, res) {
         res.status(200).json({ status: true })
         break;
       case "PATCH":
-
         // console.log(dataOld)
         if (!id) {
           data = body.new
           const dataOld = body.old
           id = dataOld.id
-          const { subBlog, image } = data
-          delete data['subBlog']
+          const { ref, image } = data
           delete data['image']
-          // console.log( image)
-          const createSubncds = subBlog.filter(val => !val.id)
-          const updateSubncds = subBlog.map(val => {
-            if (val.id) {
-              return {
-                where: { id: val.id },
-                data: { name: val.name, detail: val.detail, image: val.image }
-              }
-            }
-          })
-          const deleteSubncds = dataOld.subBlog.map(val => {
-            if (subBlog.every(val2 => val.id !== val2.id)) {
-              return { id: val.id }
-            }
-          })
+          delete data['ref']
           const createImage = image.filter(val => !val.id)
           const updateImage = image.map(val => {
             if (val.id) {
@@ -66,25 +50,42 @@ export default async function handler(req, res) {
               }
             }
           })
-          // const _createSubncds = createSubncds.length > 0 && {createMany : createSubncds}
+          // console.log()
+          const createRef = ref.filter(val => !val.id)
+          const updateRef = ref.map(val => {
+            if (val.id) {
+              return {
+                where: { id: val.id },
+                data: { url: val.url }
+              }
+            }
+          })
+          const deleteRef = dataOld.ref.filter(val => {
+            if (ref.every(val2 => val.id !== val2.id)) {
+              return {
+                where: { id: val.id },
+                data: { url: val.url }
+              }
+            }
+          })
 
           await prisma.ncds.update({
             where: { id: id },
             data: {
               ...data,
-              subBlog: {
-                ...(createSubncds.length > 0) && { create: createSubncds },
-                ...(updateSubncds.length > 0) && { updateMany: updateSubncds },
-                ...(deleteSubncds.length > 0) && { deleteMany: deleteSubncds }
-              },
               image: {
                 ...(createImage.length > 0) && { create: createImage },
                 ...(updateImage.length > 0) && { updateMany: updateImage },
                 ...(deleteImage.length > 0) && { deleteMany: deleteImage }
+              },
+              ref: {
+                ...(createRef.length > 0) && { create: createRef },
+                ...(updateRef.length > 0) && { updateMany: updateRef },
+                ...(deleteRef.length > 0) && { deleteMany: deleteRef }
               }
             }
           })
-          res.status(200).json({ status: true })
+          return res.status(200).json({ status: true })
         } else {
           await prisma.ncds.update({
             where: {
@@ -104,11 +105,18 @@ export default async function handler(req, res) {
         break;
 
       default:
-        const { select, id } = query
+        let { select, id } = query
+        id = id ? parseInt(id) : null
         if (id) {
           if (!query.select) {
             data = await prisma.ncds.findFirst({
-              where: { id: id }
+              where: { id: id },
+              include:{
+                image : true,
+                foodncds : true,
+                relationBlog : true,
+                ref : true,
+              }
             })
           } else {
             data = await prisma.ncds.findFirst({
@@ -144,4 +152,4 @@ export default async function handler(req, res) {
     return res.status(404).send({ error: "data not found", query: query })
   } catch (e) { console.log(e); return res.status(500).send(e) }
 }
-  
+

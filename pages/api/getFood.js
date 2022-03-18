@@ -12,7 +12,6 @@ export default async function handler(req, res) {
                     data: body
                 })
                 return res.status(200).json({ status: true })
-                break;
             case "DELETE":
 
                 await prisma.food.delete({
@@ -21,7 +20,6 @@ export default async function handler(req, res) {
                     }
                 })
                 return res.status(200).json({ status: true })
-                break;
             case "PATCH":
 
                 await prisma.food.update({
@@ -32,7 +30,6 @@ export default async function handler(req, res) {
                 })
                 return res.status(200).json({ status: true })
 
-                break;
 
             default:
                 let data = null
@@ -48,7 +45,8 @@ export default async function handler(req, res) {
                         include: {
                             image: true,
                             ref: true,
-                        }
+                        },
+                        take:5,
                     })
                     if (!!data && data.length > 0) return res.status(200).json(data)
                 }
@@ -119,7 +117,6 @@ export default async function handler(req, res) {
                     message: "data not found",
                     data: data
                 })
-                break;
         }
     } catch (e) { return res.status(400).json({ message: "bad request", error: e.message }) }
 }

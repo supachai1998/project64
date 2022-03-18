@@ -12,11 +12,8 @@ const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMor
   { ssr: false })
 const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
   { ssr: false })
-
-
-
 export default function Index() {
-  const [data, setData] = useState(onSearchTomyum)
+  const [data, setData] = useState()
   const [blogs, setBlogs] = useState()
   const [loading, setLoading] = useState(false)
   // Fetch First Time
@@ -25,21 +22,7 @@ export default function Index() {
       getBlog(setBlogs)
     }
   }, [blogs])
-  // useEffect(() => {
-  //   if (input && input.length > 2) {
-  //     setLoading(true)
-  //     const time = setTimeout(() => {
-  //       setLoading(false)
-  //       input === "ต้มยำ" || input === "spicy prawn soup"
-  //         ? setData(onSearchTomyum)
-  //         : noti("error",`ไม่พบข้อมูล`)
-  //     }, 1000);
-  //     return () => clearTimeout(time)
-  //   }else{
-  //     setData([])
-  //   }
-  //   // return () => setData([])
-  // }, [input])
+
   return (
     <motion.div className="flex flex-col w-full h-full min-h-screen gap-3  sm:mx-auto mx-0"
       initial="hidden"
@@ -47,15 +30,12 @@ export default function Index() {
       <div className="relative">
         <div className="flex flex-col gap-3 p-3 ">
           <CusInput data={data} setData={setData} originData={onSearchTomyum} />
-          {!loading && !!data && data.length > 0 && <>
-
-            <DisplayFoodReadMore data={data} title={"ผลการค้นหา"} />
-          </>}
+          {!loading && !!data && data.length > 0 && <DisplayFoodReadMore data={data} title={"ผลการค้นหา"} />}
         </div>
         {loading && input.length > 2 && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>}
       </div>
       <div className=' mx-0'>
-        <BestFood/>
+        <BestFood />
         {/* <DisplayFoodReadMore data={onSearchTomyum} title={"อาหารยอดนิยม"} /> */}
         {!!blogs && <DisplayBlogReadMore data={blogs} title={"บทความยอดนิยม"} />}
       </div>
@@ -64,13 +44,13 @@ export default function Index() {
   )
 }
 
-const getBlog = async (fx,para="") => {
-    let data_blogs = await fetch("/api/getBlogs"+`/${para}`).then(res => res.ok ? res.json() : null)
-    if (data_blogs) {
-      fx(data_blogs)
-    } else {
-      notification.error({ message: 'ไม่พบข้อมูลบทความ', })
-    }
+const getBlog = async (fx, para = "") => {
+  let data_blogs = await fetch("/api/getBlogs" + `/${para}`).then(res => res.ok ? res.json() : null)
+  if (data_blogs) {
+    fx(data_blogs)
+  } else {
+    notification.error({ message: 'ไม่พบข้อมูลบทความ', })
+  }
 }
 
 const dataBanner = [

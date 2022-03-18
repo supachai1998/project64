@@ -49,7 +49,7 @@ const customIcons = {
   5: <SmileOutlined className="text-green-600" />,
 };
 
-export default function Owl_Carousel({ title,link,info_top, info_down, children,margin }) {
+export default function Owl_Carousel({ title, link, info_top, info_down, children, margin }) {
   return (
     <div
       className='md:w-full pl-3 pr-4 sm:px-0 md:mx-2 '
@@ -57,11 +57,11 @@ export default function Owl_Carousel({ title,link,info_top, info_down, children,
 
       {title && info_top && <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl">
         {title && <p className={"card-header-top"}>{title}</p>}
-        {info_top &&<span className=' w-full text-right mb-4 border-b border-b-green hover:text-gray-500 text-black' >
-            {info_top}
+        {info_top && <span className=' w-full text-right mb-4 border-b border-b-green hover:text-gray-500 text-black' >
+          {info_top}
         </span>}
       </div>}
-      <div className={margin !==0 ? "sm:m-10 mt-0 m-2" : "mt-0"}>
+      <div className={margin !== 0 ? "sm:m-10 mt-0 m-2" : "mt-0"}>
         <OwlCarousel
           loop={false}
           items={3}
@@ -80,8 +80,8 @@ export default function Owl_Carousel({ title,link,info_top, info_down, children,
           margin={1} >
           {children}
         </OwlCarousel>
-        {link &&<div className='flex justify-end text-lg sm:mt-0  mt-10'>
-          <a href='#' className='text-right text-gray-500 hover:text-black sm:mt-0 -mt-10' onClick={()=>router.push(`/${link}`)}>{info_down}</a>
+        {link && <div className='flex justify-end text-lg sm:mt-0  mt-10'>
+          <a href='#' className='text-right text-gray-500 hover:text-black sm:mt-0 -mt-10' onClick={() => router.push(`/${link}`)}>{info_down}</a>
         </div>}
       </div>
     </div>

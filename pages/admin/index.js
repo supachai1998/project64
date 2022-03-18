@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react'
 import { Form, Input, Button, message, Select } from 'antd';
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router';
-import { LinearProgress, Divider } from '@mui/material';
-import { isMobile } from 'react-device-detect';
 import dynamic from 'next/dynamic'
-
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 const _Ncds = dynamic(() => import('./ncds'))
 const _Food = dynamic(() => import('./food'))
@@ -16,18 +14,24 @@ const _Report_blogs_ncds = dynamic(() => import('./report_blogs_ncds/index'))
 
 export default function Index() {
     const { status } = useSession()
-
+    
     const { router } = useRouter()
-
+    
     const [title, setTitle] = useState("จัดการข้อมูล")
     
     const onSelectPage = (_title) => {
         setTitle(_title)
+        localStorage?.setItem('page', _title) 
     }
-
     useEffect(() => {
-        onSelectPage("โรคไม่ติดต่อเรื้อรัง")
-    },[])
+        if (typeof window !== 'undefined') {
+          localStorage?.setItem('title', "ผู้ดูแลระบบ")
+          localStorage?.setItem('keys', "admin") 
+          const _page = localStorage?.getItem('page') 
+          setTitle(_page)
+        }
+    }, [])
+
 
     const onFinish = ({ user }) => {
         const { email, password } = user
@@ -64,10 +68,10 @@ export default function Index() {
     //         </div>
     //     )
     // } 
-     if (status === "loading") {
+    if (status === "loading") {
         return (
             <div className="min-h-screen">
-                <LinearProgress />
+                กำลังดึงข้อมูล
             </div>
         )
     }
@@ -75,34 +79,38 @@ export default function Index() {
         return (
             <div className="w-full h-full min-h-screen flex flex-col">
                 <HeaderAdmin title={title} onSelectPage={onSelectPage} />
-                
+
                 {title === "โรคไม่ติดต่อเรื้อรัง" ? <_Ncds />
-                    : title === "บทความ" ? <_Blogs /> 
-                    : title === "อาหาร" ? <_Food /> 
-                    : title === "แบบประเมินโรค" ? <_Form /> 
-                    : title === "รายงานแบบประเมินโรค" ? <_Report_blogs_food /> 
-                    : title === "รายงานบทความ" ? <_Report_blogs_ncds /> 
-                    : <></>
+                    : title === "บทความ" ? <_Blogs />
+                        : title === "อาหาร" ? <_Food />
+                            : title === "แบบประเมินโรค" ? <_Form />
+                                : title === "รายงานแบบประเมินโรค" ? <_Report_blogs_food />
+                                    : title === "รายงานบทความ" && <_Report_blogs_ncds />
                 }
             </div>
         )
     }
     // admin authentication
+    const layout = {
+        labelCol: { span: 7 },
+        // wrapperCol: { span: 20 },
+    };
     return (
         <div className="w-full h-full min-h-screen">
-            <div className="w-full h-auto p-6 m-6 mx-auto duration-300 transform lg:w-1/2 bg-gray-50">
-                <Form name="login" autoComplete="off" validateMessages={validateMessages} onFinish={onFinish} >
+            <div className="lg:w-1/4 mx-auto  h-auto p-6 m-6 rounded-lg ease-anima  bg-gray-50 ">
+                <Form name="login" autoComplete="off" validateMessages={validateMessages} onFinish={onFinish}
+                    {...layout}>
                     <Form.Item name={['user', 'email']} label="อีเมล" rules={[{ required: true }]}>
-                        <Input placeholder="exam@email.com" />
+                        <Input placeholder="exam@email.com" prefix={<UserOutlined />} />
                     </Form.Item>
-                    <Form.Item name={['user', 'password']} label="รหัสผ่าน" rules={[{ required: true }]}>
-                        <Input.Password placeholder="password" />
+                    <Form.Item name={['user', 'password']} label="รหัสผ่าน" rules={[{ required: true }]} >
+                        <Input.Password placeholder="password" prefix={<LockOutlined />} />
                     </Form.Item>
-                    <Form.Item >
-                        <Button type="primary" htmlType="submit" className="float-right" >
+                    <div className="flex justify-end w-full">
+                        <Button type="primary" htmlType="submit"  >
                             เข้าสู่ระบบ
                         </Button>
-                    </Form.Item>
+                    </div>
                 </Form>
             </div>
         </div>
@@ -113,12 +121,12 @@ const { Option } = Select
 const HeaderAdmin = ({ title, onSelectPage }) => {
     return (
         <div className=" flex flex-col w-full  gap-4 m-2">
-            <span className="text-xl duration-500 transform md:text-4xl">{title}</span>
-            <div className="flex   gap-2 flex-warp">
-                <Button  onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button >
-                <Button  onClick={() => onSelectPage("บทความ")}>บทความ</Button >
-                <Button  onClick={() => onSelectPage("อาหาร")}>อาหาร</Button >
-                <Button  onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</Button >
+            <span className="text-xl duration-500 transform md:text-2xl">{title}</span>
+            <div className="flex flex-auto flex-wrap w-full gap-4 items-center">
+                <Button onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button >
+                <Button onClick={() => onSelectPage("บทความ")}>บทความ</Button >
+                <Button onClick={() => onSelectPage("อาหาร")}>อาหาร</Button >
+                <Button onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</Button >
                 <Select
                     className="w-36 rounded"
                     placeholder="รายงาน"
@@ -127,7 +135,7 @@ const HeaderAdmin = ({ title, onSelectPage }) => {
                     <Option key="รายงานบทความ" >บทความ</Option>
                 </Select>
             </div>
-            <Divider />
+            <hr />
         </div>
     )
 }

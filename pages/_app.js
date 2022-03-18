@@ -42,7 +42,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   ])
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Perform localStorage action
       const _title = localStorage?.getItem('title') || ""
       setTitle(_title)
     }
@@ -50,8 +49,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }, [title])
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Perform localStorage action
-      const keys = localStorage?.getItem('keys') || "home"
+      const keys = localStorage?.getItem('keys') || "/"
        setDefaultSelectedKeys(keys)
     }
 
@@ -71,11 +69,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const handleMenuClick = (val) => {
     // console.log(keyPath)
     // Array(3) [ "report_blogs_food", "report", "admin" ]
-    console.log(val)
     localStorage.setItem('keys', val.key);
     setDefaultSelectedKeys(val.key);
     if(val.keyPath.length > 1){
-      router.push(`/${val.keyPath[1]}/${val.keyPath[0].split("_")[0]}`)
+      router.push(`/${val.keyPath[1]}/${val.keyPath[0].split("_")[1]}`)
     }
   }
   const handleSubMenuClick = (name) => {
@@ -161,25 +158,25 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >
         {status === "unauthenticated" ? <>
           <Menu.Item key="/" icon={<HomeIcon style={{ width: "18px", height: "18px" }} />}
-            onClick={() => { handleMenu('', 'หน้าหลัก') }}>หน้าหลัก</Menu.Item>
+            onClick={() => { handleMenu('', 'ใส่ใจโรคไม่ติดต่อเรื้อรัง (NCDs Care)') }}>หน้าหลัก</Menu.Item>
           <SubMenu key="ncds" icon={<MedicineBoxOutlined />} title="โรคไม่ติดต่อเรื้อรัง">
-            {!!ncds && ncds.map(({ name_en, name_th },index) =>
-              <Menu.Item key={`${name_en}_${index}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+            {!!ncds && ncds.map(({ id,name_en, name_th },index) =>
+              <Menu.Item key={`ncds_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="form" icon={<MedicineBoxOutlined />} title="แบบประเมินโรค">
-            {!!ncds && ncds.map(({ name_en, name_th },index) =>
-              <Menu.Item key={`${name_en}_${index}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+            {!!ncds && ncds.map(({ id,name_en, name_th },index) =>
+              <Menu.Item key={`form_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="foods" icon={<AppleOutlined />} title="ประเภทอาหาร" >
-            {!!foodType && foodType?.map(({ name_en, name_th },index) =>
-              <Menu.Item key={`${name_en}_${index}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+            {!!foodType && foodType?.map(({ id,name_en, name_th },index) =>
+              <Menu.Item key={`foods_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="blogs" icon={<FormOutlined />} title="บทความ">
-            {!!blogs && blogs.map(({ name_en, name_th },index) =>
-              <Menu.Item key={`${name_en}_${index}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+            {!!blogs && blogs.map(({ id,name_en, name_th },index) =>
+              <Menu.Item key={`blogs_${name_en.toLowerCase()}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
         </>

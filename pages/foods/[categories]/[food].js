@@ -1,20 +1,25 @@
 import { useRouter } from 'next/router'
-import { Card, Divider, Modal, Typography, } from 'antd';
+import { Card, Modal, } from 'antd';
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react';
-import { VideoCameraOutlined, CloseOutlined } from '@ant-design/icons';
-import ReactPlayer from 'react-player';
+import { VideoCameraOutlined } from '@ant-design/icons';
+
 
 
 
 const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
-
+const ReactPlayer = dynamic(() => import('react-player'), {
+    ssr: false,
+});
 
 const NCDS = dynamic(() => import("/components/foods/ncds.js"),
     { ssr: false })
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
+const BestBlog = dynamic(() => import("/components/BestBlog.js"),
     { ssr: false })
+const BestFood = dynamic(() => import("/components/BestFood.js"),
+    { ssr: false })
+
 
 
 export default function Index() {
@@ -79,7 +84,7 @@ export default function Index() {
                             <div className='flex justify-between items-center'>
                                 <div className="flex gap-2 ">
                                     {data.ref && data.ref.length > 0 && data.ref.map(({ url }, index) =>
-                                        <a href={url} target="_blank" key={index} className='text-left no-underline text-black' rel="noreferrer">{index === data.ref.length -1 ? `อ้างอิง ${index + 1}` : `อ้างอิง ${index + 1},`}</a>
+                                        <a href={url} target="_blank" key={index} className='text-left no-underline text-black' rel="noreferrer">{index === data.ref.length - 1 ? `อ้างอิง ${index + 1}` : `อ้างอิง ${index + 1},`}</a>
                                     )}
                                 </div>
                                 <button href="#" className="w-32 text-lg border  rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
@@ -89,7 +94,8 @@ export default function Index() {
 
 
                     <NCDS ncds={data.FoodNcds} />
-                    <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} />
+                    <BestFood />
+                    <BestBlog />
                 </div> : <>data not found</>
             }
             {content && <CusModal handleCancel={handleCancel} content={content} />}
@@ -99,76 +105,12 @@ export default function Index() {
 
 
 
-const ncds = [
-    {
-        name_th: "โรคเบาหวาน",
-        detail: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-        imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
-        video: "https://youtu.be/FdOOBcN0Ws8",
-        suggess: true,
-        ref: "https://www.poonrada.com/sickness/detail/87",
-    },
-    {
-        name_th: "ความดันโลหิตสูง",
-        detail: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-        // video: "https://youtu.be/FdOOBcN0Ws8",
-        imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
-        suggess: false,
-        ref: "https://www.poonrada.com/sickness/detail/87",
-    },
-    {
-        name_th: "โรคถุงลมโป่งพอง",
-        detail: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-        video: "https://youtu.be/FdOOBcN0Ws8",
-        suggess: true,
-        ref: "https://www.poonrada.com/sickness/detail/87",
-    },
-    {
-        name_th: "โรคหลอดเลือดสมอง",
-        detail: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-        // video: "https://youtu.be/FdOOBcN0Ws8",
-        suggess: false,
-        ref: "https://www.poonrada.com/sickness/detail/87",
-    },
-    {
-        name_th: "โรคอ้วนลงพุง",
-        detail: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-        video: "https://youtu.be/FdOOBcN0Ws8",
-        suggess: true,
-        ref: "https://www.poonrada.com/sickness/detail/87",
-    },
-    {
-        name_th: "โรคมะเร็ง",
-        detail: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-        // video: "https://youtu.be/FdOOBcN0Ws8",
-        suggess: false,
-        ref: "https://www.poonrada.com/sickness/detail/87",
-    },
-
-]
-
-
-
-const blogTrends = [
-    {
-        id: 0,
-        type: "blogs",
-        categories: "blogs_food",
-        title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
-        title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-        detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
-        ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
-        imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-    },
-
-]
-
 
 const CusModal = ({ handleCancel, content }) => {
     if (!content) return null
     const { name_th, video } = content
     return (
-        <Modal title={<div className='flex w-full justify-between text-2xl '>{name_th} <CloseOutlined className="button-cus hover:bg-red-200" onClick={() => handleCancel()} /></div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
+        <Modal title={<div className='flex w-full justify-between text-2xl '>{name_th} </div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={true}>
             <div className="h-96 sm:h-screen w-full p-0 m-0 "><ReactPlayer url={video} width="100%" height="100%" /></div>
         </Modal>
     );

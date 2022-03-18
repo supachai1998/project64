@@ -45,7 +45,8 @@ const fetchData = async (categories) => {
         if (res.ok) {
             const data = await res.json()
             if (data) {
-                const findCatetory = data.find(item => item.name_en.toUpperCase().trim() === categories.toUpperCase().trim())
+                console.log(data)
+                const findCatetory = data.find(item => item.id === parseInt(categories))
 
                 return { id: findCatetory.id, title_th: findCatetory.name_th, title_en: findCatetory.name_en }
             }

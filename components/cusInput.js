@@ -17,21 +17,23 @@ export default function CusInput({ data, setData, originData }) {
   const [statusWebCam, setStatusWebCam] = useState(false)
   const [loading, setLoading] = useState(false)
   const [input, setInput] = useState(null)
-  const handleSearch = () => {
+  const handleSearch =async () => {
     const val = refSearchInput.current?.state?.value || input
     if (!!val && val.length > 2) {
       setLoading(true)
-      const timer = setTimeout(() => {
-        const filter = originData.filter(({ title_th }) => title_th.toLowerCase().indexOf(val) > -1)
-        if (filter.length < 1) noti("error", "ไม่พบข้อมูล")
-        else setData(filter)
-        setLoading(false)
-      }, 1000)
+      const data = await fetch(`/api/superSearch?txt=${val}`).then(res => res.ok && res.json())
+      console.log(data)
+      if (!data) noti("error", "ไม่พบข้อมูล")
+      else setData(data)
+      setLoading(false)
       refSearchInput.current.state.value = null
-      return () => clearTimeout(timer)
     } else {
-      setData([])
+      const time = setTimeout(async () => {
+        setData([])
+      }, 1000);
+      return () => clearTimeout(time)
     }
+
   }
   useEffect(() => {
     handleSearch()
@@ -49,11 +51,20 @@ export default function CusInput({ data, setData, originData }) {
             <label className='sm:text-2xl text-xl'>ค้นหา</label>
           </div>
           <div className="grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row">
+
             <Tooltip title="ถ่ายภาพ">
-              <Button className="z-50" shape="round" icon={<CameraOutlined />} onClick={() => setStatusWebCam(true)} >ถ่ายภาพอาหาร</Button>
+              <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
+                <CameraOutlined />
+                {loading
+                  ? <LinearProgress className="w-20" />
+                  : <>
+                    <button onClick={() => setStatusWebCam(true)} >ถ่ายภาพอาหาร</button>
+                  </>}
+              </label>
             </Tooltip>
+
             <CustomUpload setInput={setInput} />
-            <Search className="z-0 w-full input search loading with enterButton" disabled={loading && true} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"
+            <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"
               placeholder={"ชื่ออาหาร , ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
           </div>
         </div>

@@ -1,24 +1,49 @@
 
-import { Tooltip, Divider, Rate, Select } from 'antd';
+import { Tooltip, Divider, Rate, Select, notification } from 'antd';
 
-import router from 'next/router';
+import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic'
 import Owl_Carousel from './Owl_Carousel';
-
+import {useState ,useEffect} from 'react'
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 
 
-export default function DisplayBlogReadMore({ data, title, headTextColor, headLineColor }) {
-  if (!data && !Array.isArray(data) && data.length <= 0) return null
+export default function DisplayBlogReadMore() {
+  const [_data, setData] = useState()
+  const [loading, setLoading] = useState(false)
+
+  const router = useRouter()
+  const fetchData = async () => {
+      setLoading(true)
+      const data = await fetch(`/api/getBlogs?BestBlog=${true}`).then(async res => {
+          if (res.ok) {
+              const _ = await res.json()
+              return _
+          } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร` })
+      })
+
+      setLoading(false)
+      return data
+  }
+  useEffect(() => {
+      (async () => {
+          if (!_data) {
+              const data = await fetchData()
+              !!data && setData([...data])
+              console.log(data)
+          }
+      })()
+  }, [_data])
+  if (!_data && !Array.isArray(_data) ) return null
   return (
     <Owl_Carousel
-      title={title}
+      title="บทความยอดนิยม"
       link="/blog"
-      info_top={`พบ ${data.length} รายการ`}
+      info_top={`พบ ${_data.length} รายการ`}
       info_down={`อ่านทั้งหมด`}
     >
       <>
-        {data.map(({
+        {_data.map(({
           id,
           type,
           name,
@@ -45,7 +70,7 @@ export default function DisplayBlogReadMore({ data, title, headTextColor, headLi
                   <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' ></div>
                 </div>
                 <div className="flex justify-between mb-4 m-4 ml-0  pr-5 pl-5">
-                  <Tooltip title={`คะแนนโหวต ${avg_vote}/${5}`} ><Rate disabled allowHalf  defaultValue={avg_vote} /> </Tooltip>
+                  <Tooltip title={`คะแนนโหวต ${avg_vote}/${5}`} ><Rate disabled defaultValue={avg_vote} /> </Tooltip>
                   <div className='flex flex-col '>
                     <span className="text-gray-500 leading-none font-bold">โหวต</span>
                     <span className="text-gray-900 font-bold text-lg leading-none">{total_vote}</span>

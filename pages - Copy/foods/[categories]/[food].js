@@ -3,7 +3,6 @@ import { Card, Divider, Modal, Typography, } from 'antd';
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react';
 import { CloseOutlined, VideoCallOutlined } from '@mui/icons-material';
-import ReactPlayer from 'react-player';
 
 
 
@@ -11,13 +10,14 @@ const { Meta } = Card;
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const Topic = dynamic(() => import("/components/foods/topic.js"),
     { ssr: false })
-const _Categories = dynamic(() => import("/components/foods/categories.js"),
-    { ssr: false })
-const Ncds = dynamic(() => import("/components/foods/ncds.js"),
-    { ssr: false })
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
-    { ssr: false })
 
+const BestBlog = dynamic(() => import("/components/BestBlog.js"),
+    { ssr: false })
+const BestFood = dynamic(() => import("/components/BestFood.js"),
+    { ssr: false })
+const ReactPlayer = dynamic(() => import('react-player'), {
+    ssr: false,
+});
 
 export default function Index() {
     const router = useRouter()
@@ -65,15 +65,15 @@ export default function Index() {
                                 {/* <p className="pl-1 text-2xl font-thin  border-indigo-700 font-Charm border-l-2">{headerData[2].title}</p> */}
                                 <p className="-mt-2  text-gray-500 text-3xl" ><span className="mr-10">{data.categories}</span></p>
                             </div>
-                                <hr className="w-1/12 mx-auto border-red-600" />
-                                <div className="h-1/4 mx-auto">
+                            <hr className="w-1/12 mx-auto border-red-600" />
+                            <div className="h-1/4 mx-auto">
 
-                                    <p className="pr-1 text-2xl font-thin  lg:text-2xl font-Charm">วิธีการทำ</p>
-                                    <Typography className={`pr-2 -mt-2 overflow-auto zm:h-20 text-left`}>
-                                        <span className='text'>{data.proceduce}</span>
-                                    </Typography>
-                                
-                                </div>
+                                <p className="pr-1 text-2xl font-thin  lg:text-2xl font-Charm">วิธีการทำ</p>
+                                <Typography className={`pr-2 -mt-2 overflow-auto zm:h-20 text-left`}>
+                                    <span className='text'>{data.proceduce}</span>
+                                </Typography>
+
+                            </div>
                             <div className='flex justify-end'>
                                 <button href="#" className="w-32 border  rounded-3xl bg-white p-3 hover:text-black shadow-lg shadow-cyan-500/50"> <i><VideoCallOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
                             </div>
@@ -81,8 +81,8 @@ export default function Index() {
                     </div>
 
 
-                    <Ncds ncds={ncds} />
-                    <DisplayFoodReadMore data={blogTrends} title={`บทความ ${name}`} headTextColor={"text-green-900"} headLineColor={"bg-green-300"} />
+                    <BestFood />
+                    <BestBlog />
                 </div> : <>data not found</>
             }
         </div>
@@ -170,11 +170,11 @@ const blogTrends = [
 
 
 const CusModal = ({ handleCancel, content }) => {
-    if (!content){return null}
+    if (!content) { return null }
     const { videoUrl, title } = content
     return (
         <>
-            <Modal title={<div className='flex w-full justify-between '>{title} <CloseOutlined className="button-cus hover:bg-red-200" onClick={()=>handleCancel()}/></div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
+            <Modal title={<div className='flex w-full justify-between '>{title} <CloseOutlined className="button-cus hover:bg-red-200" onClick={() => handleCancel()} /></div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
                 <div className="h-screen w-full p-0 m-0 "><ReactPlayer url={videoUrl} width="100%" height="100%" /></div>
             </Modal>
         </>
