@@ -119,7 +119,7 @@ export default async function handler(req, res) {
             default:
 
                 const { select, BestFood } = query
-                id = parseInt(query.id)
+                id = parseInt(query.id) || null
                 if (BestFood) {
                     data = await prisma.food.findMany({
                         orderBy: [
@@ -132,7 +132,7 @@ export default async function handler(req, res) {
                         },
                         take: 5,
                     })
-                    if (!!data && data.length > 0) return res.status(200).json(data)
+                    if (!!data && data.length > 0) {return res.status(200).json(data)} else {return res.status(404).json([])}
                 }
                 if (query.categories) {
                     data = await prisma.food.findMany({
@@ -142,7 +142,7 @@ export default async function handler(req, res) {
                             ref: true,
                         }
                     })
-                    if (!!data && data.length > 0) return res.status(200).json(data)
+                    if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
                 }
                 if (query.name) {
                     data = await prisma.food.findMany({
@@ -179,8 +179,8 @@ export default async function handler(req, res) {
                                 include: {
                                     ncds: {
                                         select: {
-                                            name_th : true,
-                                            name_en : true,
+                                            name_th: true,
+                                            name_en: true,
                                             image: {
                                                 select: { name: true }
                                             }
@@ -208,9 +208,9 @@ export default async function handler(req, res) {
                             }
                         }
                     })
-                    if (!!data & data.length > 0) return res.status(200).json(data)
+                    if (!!data & data.length > 0) {return res.status(200).json(data)}else{return res.status(404).json([])}
                 }
-                if (!!data && data.length > 0) return res.status(200).json(data);
+                if (!!data && data.length > 0) return res.status(200).json(data) 
                 else return res.status(404).send({
                     query: query.name,
                     message: "data not found",

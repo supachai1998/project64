@@ -43,13 +43,7 @@ export default function Index() {
                 }
                 if (data_food) {
                     setData(data_food)
-                    // headerData = [
-                    //     {
-                    //         title: "วิธีการทำ",
-                    //         content: "ต้มยำกุ้ง เป็นอาหารไทยภาคกลางประเภทต้มยำ ซึ่งเป็นที่นิยมรับประทานไปทุกภาคในประเทศไทย เป็นอาหารที่รับประทานกับข้าว และ มีรสเปรี้ยวและเผ็ดเป็นหลักผสมเค็มและหวานเล็กน้อย แบ่งออกเป็น 2 ประเภท คือ ต้มยำน้ำใส และ ต้มยำน้ำข้น"
-                    //     },
                 }
-                console.log(data_food)
             })()
         }
         setLoading(false)
@@ -96,7 +90,7 @@ export default function Index() {
                     <NCDS ncds={data.FoodNcds} />
                     <BestFood />
                     <BestBlog />
-                </div> : <>data not found</>
+                </div> : <>ไม่พบข้อมูล</>
             }
             {content && <CusModal handleCancel={handleCancel} content={content} />}
         </div>

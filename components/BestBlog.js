@@ -19,7 +19,7 @@ export default function DisplayBlogReadMore() {
           if (res.ok) {
               const _ = await res.json()
               return _
-          } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร` })
+          } else notification.error({ message: `ไม่สามารถดึงข้อมูลบทความ` })
       })
 
       setLoading(false)
