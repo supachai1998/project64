@@ -87,19 +87,19 @@ const Suggess_true = ({ data, showModal }) => {
                     signs,
                     suggess,
                     image,
-                    Ncds,
+                    ncds,
                     ref, }, index) => (
                     <>
 
                         {suggess &&
                             <div key={index} className="card-suggession">
                                 <>
-                                    {image && <div className=""><CusImage className="rounded-md w-full h-full" src={image.name} alt={ref} width="100%" height="100%" preview={false} /></div>}
+                                    <CusImage className="rounded-md w-full h-full" src={ncds?.image?.at(0).name} alt={ref} width="100%" height="100%" preview={false} />
                                     <div className="card-suggestion-header-content">
                                         <div className="flex flex-col  ">
-                                            <span className="card-header"> {Ncds.name_th} </span>
+                                            <span className="card-header"> {ncds?.name_th} </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
-                                            <span className="text-sm font-thin text-gray-800 "> {Ncds.name_en} </span>
+                                            <span className="text-sm font-thin text-gray-800 "> {ncds?.name_en} </span>
                                         </div>
                                         <div className='text-green-500 text-2xl '>
                                             แนะนำ
@@ -135,19 +135,19 @@ const Suggess_false = ({ data, showModal }) => {
                     signs,
                     suggess,
                     image,
-                    Ncds,
+                    ncds,
                     ref, }, index) => (
                     <>
                         {!suggess &&
                             <div key={index} className="card-suggession">
                                 <>
 
-                                    {image && <div className=""> <CusImage className="rounded-md" src={image.name} alt={ref} width="100%" height="100%" preview={false} /></div>}
+                                    <CusImage className="rounded-md" src={ncds?.image?.at(0).name} alt={ref} width="100%" height="100%" preview={false} />
                                     <div className="card-suggestion-header-content">
                                         <div className="flex flex-col  ">
-                                            <span className="card-header"> {Ncds.name_th} </span>
+                                            <span className="card-header"> {ncds?.name_th} </span>
                                             <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' />
-                                            <span className="text-sm font-thin text-gray-800 "> {Ncds.name_en} </span>
+                                            <span className="text-sm font-thin text-gray-800 "> {ncds?.name_en} </span>
                                         </div>
                                         <div className='text-red-500 text-2xl '>
                                             ไม่แนะนำ

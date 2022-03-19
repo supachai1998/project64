@@ -13,8 +13,7 @@ export default async function handler(req, res) {
         await prisma.ncds.create({
           data: body
         })
-        res.status(200).json({ status: true })
-        break;
+        return res.status(200).json({ status: true })
       case "DELETE":
 
         await prisma.ncds.delete({
@@ -22,8 +21,8 @@ export default async function handler(req, res) {
             id: id,
           }
         })
-        res.status(200).json({ status: true })
-        break;
+        return res.status(200).json({ status: true })
+        
       case "PATCH":
         // console.log(dataOld)
         if (!id) {
@@ -93,16 +92,14 @@ export default async function handler(req, res) {
             },
             data: body
           })
-          res.status(200).json({ status: true })
+          return res.status(200).json({ status: true })
         }
-        break;
     }
     switch (body) {
       case "type":
-        res.status(200).json([
+        return res.status(200).json([
           { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
         ])
-        break;
 
       default:
         let { select, id } = query

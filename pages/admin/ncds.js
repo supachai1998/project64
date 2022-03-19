@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
@@ -12,7 +12,7 @@ const ellipsis = {
     rows: 3,
     expandable: false,
 }
-
+const Context = createContext()
 export default function Index() {
     const [modalAdd, setModalAdd] = useState(false)
     const [modalEdit, setModalEdit] = useState(false)
@@ -31,26 +31,38 @@ export default function Index() {
     }
     useEffect(() => {
         reload()
-        // return () => { setNcds() }
-    }, [modalAdd, modalEdit, modalView])
+        return () => { setNcds() }
+    }, [])
     return (
         <div
             className="ease-div flex flex-col gap-4">
             <Board data={{}} />
-            <Spin spinning={loading}>
-                <div className="flex justify-end mt-4 mb-2">
-                    <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูล</Button>
-                </div>
-                <ModalAdd setModalAdd={setModalAdd} modalAdd={modalAdd} reload={reload} />
-                <ModalEdit setModalEdit={setModalEdit} modalEdit={modalEdit} reload={reload} />
-                <ModalView setModalView={setModalView} modalView={modalView} reload={reload} />
-
-                <TableForm data={ncds} loading={loading} reload={reload} modalEdit={modalEdit} setModalEdit={setModalEdit} modalView={modalView} setModalView={setModalView} />
-            </Spin>
+            {/* <Spin spinning={loading}> */}
+            <div className="flex justify-end mt-4 mb-2">
+                <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูล</Button>
+            </div>
+            <Context.Provider value={{
+                reload,
+                modalAdd,
+                modalEdit,
+                modalView,
+                setModalAdd,
+                setModalEdit,
+                setModalView,
+                loading,
+                ncds,
+            }}>
+                <ModalAdd />
+                <ModalEdit />
+                <ModalView />
+                <TableForm />
+            </Context.Provider>
+            {/* </Spin> */}
         </div>
     )
 }
-const ModalView = ({ setModalView, modalView, reload }) => {
+const ModalView = () => {
+    const { setModalView, modalView, reload } = useContext(Context)
     const onCancel = () => {
         setModalView(false)
     }
@@ -78,21 +90,24 @@ const ModalView = ({ setModalView, modalView, reload }) => {
     </Modal>
 
 }
-const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
+
+const ModalAdd = () => {
+    const { modalAdd, setModalAdd, reload } = useContext(Context)
     const [fileList, setFileList] = useState(null)
     const [form] = Form.useForm();
     useEffect(() => {
         form.setFieldsValue();
     }, [form, modalAdd]);
-    useEffect(() => {
-
-    }, []);
 
     const onCancel = () => {
         setModalAdd(false)
     }
 
     const onSubmit = async (val) => {
+        if (!val.ref) {
+            notification.error({ message: "กรุณาเพิ่มแหล่งอ้างอิง" })
+            return
+        }
         const _tempimage = val?.image?.fileList.map(({ response }) => response.name) //เอาแค่ชื่อไฟล์
         const image = { create: _tempimage.map(val => { return { name: val } }) }
         val['image'] = image
@@ -100,7 +115,6 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
         val['ref'] = ref
         console.log(val)
         const res = await fetch(`/api/getNCDS`, {
-            headers: { 'Content-Type': 'application/json', },
             method: "POST",
             body: JSON.stringify(val)
         })
@@ -108,10 +122,13 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                 if (res.ok) {
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     setModalAdd(false)
+                    fetch(`/api/uploads?name=ncds`)
                     reload()
+                } else {
+                    notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
                 }
             })
-            .catch(err => notification.error({ message: "ไม่สามารถเพิ่มข้อมูลได้", description: err.message }))
+
 
     }
     const onFinishFailed = () => {
@@ -130,10 +147,12 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
         cancelText={<>ยกเลิก</>}
         onOk={onSubmit}
         onCancel={onCancel}
-        width="100%"
+        width="90%"
         footer={<></>}>
         <Form
             form={form}
+            scrollToFirstError={true}
+            labelWrap={true}
             // initialValues={{}}
             labelCol={{ span: 4 }}
             // wrapperCol={{ span: 18 }}
@@ -144,7 +163,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                 name="name_th"
                 label="ชื่อโรคภาษาไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F ]+$/,
+                    pattern: /^[\u0E00-\u0E7F0-9 ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ชื่อโรคภาษาไทย" />
@@ -153,7 +172,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                 name="name_en"
                 label="ชื่อโรคภาษาอังกฤษ"
                 rules={[{ required: true }, {
-                    pattern: /^[a-zA-Z ]+$/,
+                    pattern: /^[a-zA-Z0-9 ]+$/,
                     message: 'กรอกภาษาอังกฤษ',
                 }]}>
                 <Input placeholder="ชื่อโรคภาษาอังกฤษ" />
@@ -195,7 +214,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน ที่อยู่(url) ให้ถูกต้อง',
                 }]}>
-                <Input placeholder="https://youtube.com/watch?" />
+                <Input placeholder="https://www.youtube.com/watch?v=" />
             </Form.Item>
             <Form.Item
                 name="image"
@@ -213,7 +232,7 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button disable={fileList?.length === 5} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
+                    <Button disable={fileList && fileList?.length >= 5 && true} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="ref" >
@@ -232,15 +251,15 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
                                 <Form.Item
                                     {...field}
-                                    label={`แหล่งอ้างอิงที่ ${ind + 1}`}
+                                    label={<div className="flex gap-3 items-center">
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip><> แหล่งอ้างอิงที่ {ind + 1}</>
+                                    </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
                                     rules={[{ required: true }]}
                                 >
-                                    <div className="flex gap-3 items-center">
-                                        <Input placeholder="แหล่งอ้างอิง" />
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined onClick={() => remove(field.name)} /></Tooltip>
-                                    </div>
+                                    <Input placeholder="แหล่งอ้างอิง" />
+
                                 </Form.Item>
                             </Form.Item>
 
@@ -267,7 +286,8 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
 }
 
 
-const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
+const ModalEdit = () => {
+    const { setModalEdit, modalEdit, reload } = useContext(Context);
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
     useEffect(() => {
@@ -316,12 +336,13 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
         })
             .then(res => {
                 if (res.ok) {
-                    notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
+                    notification.success({ message: "แก้ไขข้อมูลเรียบร้อย" })
+                    fetch(`/api/uploads?name=ncds`)
                     setModalEdit(false)
                     reload()
                 }
             })
-            .catch(err => notification.error({ message: "ไม่สามารถเพิ่มข้อมูลได้", description: err.message }))
+            .catch(err => notification.error({ message: "ไม่สามารถแก้ไขข้อมูลได้", description: err.message }))
 
     }
     const onFinishFailed = () => {
@@ -345,6 +366,8 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
         footer={<></>}>
         <Form
             form={form}
+            scrollToFirstError={true}
+            labelWrap={true}
             initialValues={{}}
             labelCol={{ span: 4 }}
             // wrapperCol={{ span: 18 }}
@@ -355,7 +378,7 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
                 name="name_th"
                 label="ชื่อโรคภาษาไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F ]+$/,
+                    pattern: /^[\u0E00-\u0E7F0-9 ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ชื่อโรคภาษาไทย" />
@@ -364,7 +387,7 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
                 name="name_en"
                 label="ชื่อโรคภาษาอังกฤษ"
                 rules={[{ required: true }, {
-                    pattern: /^[a-zA-Z ]+$/,
+                    pattern: /^[a-zA-Z0-9 ]+$/,
                     message: 'กรอกภาษาอังกฤษ',
                 }]}>
                 <Input placeholder="ชื่อโรคภาษาอังกฤษ" />
@@ -424,7 +447,7 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button disable={fileList?.length === 5} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
+                    <Button disable={fileList && fileList?.length >= 5 && true} className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/5)</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="ref" >
@@ -444,7 +467,7 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined onClick={() => remove(field.name)} /></Tooltip><> แหล่งอ้างอิงที่ {ind + 1}</>
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip><> แหล่งอ้างอิงที่ {ind + 1}</>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -476,12 +499,41 @@ const ModalEdit = ({ setModalEdit, modalEdit, reload }) => {
     </Modal>
 }
 
+const showConfirmDel = async (val, reload) => {
 
-const TableForm = ({ data, reload,
-    modalEdit, setModalEdit,
-    modalView, setModalView,
-loading }) => {
+    confirm({
+        title: <>คุณต้องการจะลบบทความ</>,
+        content: <p>{val.name_th}({val.name_en})</p>,
+        okText: "ตกลง",
+        cancelText: "ยกเลิก",
+        async onOk() {
+            const res = await fetch("/api/getNCDS", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify(val)
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                fetch(`/api/uploads?name=ncds`)
+                await reload()
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
+            }
+        },
+        onCancel() { },
+    });
+}
 
+const TableForm = () => {
+    const { ncds, reload,
+        modalEdit, setModalEdit,
+        modalView, setModalView,
+        loading } = useContext(Context)
     const columns = [
         {
             title: <Paragraph align="center" >ชื่อโรค</Paragraph>,
@@ -514,79 +566,19 @@ loading }) => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(data[index])}>ดู</button>
-                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(data[index])}>แก้ไข</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(data[index])}>ลบ</button>
+                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(ncds[index])}>ดู</button>
+                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(ncds[index])}>แก้ไข</button>
+                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(ncds[index], reload)}>ลบ</button>
             </div>,
         },
 
     ];
-    const showConfirmDel = async (val) => {
-        confirm({
-            title: <>คุณต้องการจะลบบทความ</>,
-            content: <p>{val.name_th}({val.name_en})</p>,
-            okText: "ตกลง",
-            cancelText: "ยกเลิก",
-            async onOk() {
-                const res = await fetch("/api/getNCDS", {
-                    headers: { 'Content-Type': 'application/json', },
-                    method: "DELETE",
-                    body: JSON.stringify(val)
-                })
-                if (res.status === 200) {
-                    notification.success({
-                        message: 'ลบข้อมูลสำเร็จ',
-                    })
-                    await reload()
-                } else {
-                    notification.error({
-                        message: 'ไม่สามารถลบข้อมูลได้',
-                        description: 'ไม่สามารถติดต่อ server ',
-                    })
-                }
-            },
-            onCancel() { },
-        });
-    }
-    const showConfirmApprove = async (val) => {
-        const { approve } = val
-        const th_approve = approve === 0 ? "รอการอนุมัติ" : approve === 1 ? "อนุมัติ" || approve === 2 : "ไม่อนุมัติ"
-        const th_request = approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"
-        const preData = { id: val.id, approve: approve === 0 ? 1 : approve === 1 ? 2 || approve === 2 : 1 }
-        console.log(val)
-        confirm({
-            title: `คุณต้องการจะ${approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"}`,
-            content: <div>
-                <p>หัวข้อ : {val.name}</p>
-                <p>สถานะ : {th_approve}</p>
-            </div>,
-            okText: th_request,
-            cancelText: "ยกเลิก",
-            async onOk() {
-                const res = await fetch("/api/getNCDS", {
-                    headers: { 'Content-Type': 'application/json', },
-                    method: "PATCH",
-                    body: JSON.stringify(preData)
-                })
-                if (res.status === 200) {
-                    notification.success({
-                        message: `${th_request}สำเร็จ`,
-                    })
-                    await reload()
-                } else {
-                    notification.error({
-                        message: `${th_request}ไม่สำเร็จ`,
-                        description: 'ไม่สามารถติดต่อ server ',
-                    })
-                }
-            },
-            onCancel() { },
-        });
-    }
+
+
     return <div>
-        <Table size='small' tableLayout='auto' dataSource={data} columns={columns}
+        <Table size='small' tableLayout='auto' dataSource={ncds} columns={columns}
             title={() => <div className="flex items-center gap-2">ตารางโรคไม่ติดต่อเรื้อรัง
-                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={()=>reload()} >
+                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>

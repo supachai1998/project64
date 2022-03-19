@@ -24,12 +24,42 @@ const saveFile = async (file, name) => {
     await fs.unlinkSync(file.path);
 };
 
+const removeFile = async (dir) => {
+    const files = fs.readdirSync(dir)
+    let db_name = []
+    let data = await prisma.imageNCDS.findMany({
+        where: { name: { in: files } },
+        select: { name: true },
+    })
+    db_name = [...db_name, ...data]
+    data = await prisma.imageFood.findMany({
+        where: { name: { in: files } },
+        select: { name: true },
+    })
+    db_name = [...db_name, ...data]
+    data = await prisma.imageBlog.findMany({
+        where: { name: { in: files } },
+        select: { name: true },
+    })
+    db_name = [...db_name, ...data]
+    for (const file of files) {
+        if (!(db_name.map(v => v.name).indexOf(file) > -1)) {
+            await fs.unlink(`${dir}/${file}`, function (err) {
+                console.log(`${dir}/${file} deleted!`);
+            });
+        }
+    }
+    return true
+}
 
 export default async function handler(req, res) {
+    const saveDir = "./public/uploads"
 
-    const { body, method } = req;
-    if (method === "POST") {
-        const saveDir = "./public/uploads"
+    const { body, method, query } = req;
+    if (method === "GET") {
+        removeFile(saveDir) && res.status(200).json({ status: true })
+    }
+    else if (method === "POST") {
         const form = new formidable.IncomingForm();
         form.uploadDir = saveDir;
         if (!fs.existsSync(saveDir)) {
@@ -38,6 +68,7 @@ export default async function handler(req, res) {
         form.keepExtensions = true;
         form.keepFilenames = true;
         try {
+
             (async () => {
                 await form.parse(req, async (err, fields, files) => {
                     if (err) {
@@ -52,10 +83,12 @@ export default async function handler(req, res) {
                             const _name = `${makeid(15)}.${ext[ext.length - 1]}`
                             // await formdata.append([key], fs.createReadStream(path));
                             await saveFile(files.file, _name);
-                            res.status(200).json({name:_name})
+                            res.status(200).json({ name: _name })
                         }
                     })()
                 })
+
+
             })()
         } catch (e) { console.log(e); return res.status(500).json({ status: e.message }) }
 

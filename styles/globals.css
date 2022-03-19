@@ -235,8 +235,9 @@
 }
 
 /* custom title right to left */
-.ant-form-item-label {
+.ant-form-item-label > label {
   text-align: left !important;
+  font-size: 0.875rem !important;
 }
 
 html,

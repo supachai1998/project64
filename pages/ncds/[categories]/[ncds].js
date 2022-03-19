@@ -27,8 +27,11 @@ export default function Index() {
                 setNCDS(dataNCDS)
             })()
         }
+        
     }, [NCDS, ncds])
-
+    useEffect(()=>{
+        return () => setNCDS()
+    },[categories])
     return (
         <>
             {NCDS &&

@@ -1,13 +1,15 @@
 import { prisma } from "/prisma/client";
 
 export default async function handler(req, res) {
+    let { body, method, query } = req;
+    let { id } = body
+    let data = null
     try {
-        const { body, method, query } = req;
-        const { id } = body
         res.setHeader('Content-Type', 'application/json');
 
         switch (method) {
             case "POST":
+                body = JSON.parse(body)
                 await prisma.food.create({
                     data: body
                 })
@@ -21,20 +23,102 @@ export default async function handler(req, res) {
                 })
                 return res.status(200).json({ status: true })
             case "PATCH":
+                body = JSON.parse(body)
+                data = body.new
+                const dataOld = body.old
+                id = dataOld.id
+                const { ref, image, FoodNcds } = data
+                delete data['image']
+                delete data['ref']
+                delete data['FoodNcds']
+                const createImage = image.filter(val => !val.id)
+                const updateImage = image.map(val => {
+                    if (val.id) {
+                        return {
+                            where: { id: val.id },
+                            data: { name: val.name }
+                        }
+                    }
+                })
+                const deleteImage = dataOld.image.filter(val => {
+                    if (image.every(val2 => val.id !== val2.id)) {
+                        return {
+                            where: { id: val.id },
+                            data: { name: val.name }
+                        }
+                    }
+                })
+                const createRef = ref.filter(val => !val.id)
+                const updateRef = ref.map(val => {
+                    if (val.id) {
+                        return {
+                            where: { id: val.id },
+                            data: { url: val.url }
+                        }
+                    }
+                })
+                const deleteRef = dataOld.ref.filter(val => {
+                    if (ref.every(val2 => val.id !== val2.id)) {
+                        return {
+                            where: { id: val.id },
+                            data: { url: val.url }
+                        }
+                    }
+                })
+                const createFoodNcds = FoodNcds.filter(val => !val.id)
+                const updateFoodNcds = FoodNcds.map(val => {
+                    if (val.id) {
+                        return {
+                            where: { id: val.id },
+                            data: {
+                                detail: val.detail,
+                                suggess: val.suggess,
+                                video: val.video,
+                            }
+                        }
+                    }
+                })
+                const deleteFoodNcds = dataOld.FoodNcds.filter(val => {
+                    if (FoodNcds.every(val2 => val.id !== val2.id)) {
+                        return {
+                            where: { id: val.id },
+                            data: {
+                                detail: val.detail,
+                                suggess: val.suggess,
+                                video: val.video,
+                            }
+                        }
+                    }
+                })
 
                 await prisma.food.update({
-                    where: {
-                        id: id,
-                    },
-                    data: body
+                    where: { id: id },
+                    data: {
+                        ...data,
+                        image: {
+                            ...(createImage.length > 0) && { create: createImage },
+                            ...(updateImage.length > 0) && { updateMany: updateImage },
+                            ...(deleteImage.length > 0) && { deleteMany: deleteImage }
+                        },
+                        ref: {
+                            ...(createRef.length > 0) && { create: createRef },
+                            ...(updateRef.length > 0) && { updateMany: updateRef },
+                            ...(deleteRef.length > 0) && { deleteMany: deleteRef }
+                        },
+                        FoodNcds: {
+                            ...(createFoodNcds.length > 0) && { create: createFoodNcds },
+                            ...(updateFoodNcds.length > 0) && { updateMany: updateFoodNcds },
+                            ...(deleteFoodNcds.length > 0) && { deleteMany: deleteFoodNcds }
+                        }
+                    }
                 })
                 return res.status(200).json({ status: true })
 
 
+
             default:
-                let data = null
+
                 const { select, BestFood } = query
-                let { id } = query
                 id = parseInt(query.id)
                 if (BestFood) {
                     data = await prisma.food.findMany({
@@ -46,7 +130,7 @@ export default async function handler(req, res) {
                             image: true,
                             ref: true,
                         },
-                        take:5,
+                        take: 5,
                     })
                     if (!!data && data.length > 0) return res.status(200).json(data)
                 }
@@ -76,7 +160,7 @@ export default async function handler(req, res) {
                             FoodNcds: true
                         }
                     })
-                    if (!!data & data.length) return res.status(200).json(data)
+                    if (!!data & data.length > 0) return res.status(200).json(data)
                 }
                 if (query.id) {
                     if (select) {
@@ -93,12 +177,28 @@ export default async function handler(req, res) {
                             ref: true,
                             FoodNcds: {
                                 include: {
-                                    image: {
+                                    ncds: {
                                         select: {
-                                            name: true
+                                            name_th : true,
+                                            name_en : true,
+                                            image: {
+                                                select: { name: true }
+                                            }
                                         }
                                     },
-                                    Ncds: {
+                                }
+                            }
+                        }
+                    })
+                    if (data.id) return res.status(200).json(data)
+                } else {
+                    data = await prisma.food.findMany({
+                        include: {
+                            image: true,
+                            ref: true,
+                            FoodNcds: {
+                                include: {
+                                    ncds: {
                                         select: {
                                             name_th: true,
                                             name_en: true,
@@ -108,15 +208,14 @@ export default async function handler(req, res) {
                             }
                         }
                     })
-                    if (data.id) return res.status(200).json(data)
-                } else {
-                    data = await prisma.food.findMany()
+                    if (!!data & data.length > 0) return res.status(200).json(data)
                 }
-                if (!!data && data.length > 0) return res.status(200).json(data); else return res.status(404).send({
+                if (!!data && data.length > 0) return res.status(200).json(data);
+                else return res.status(404).send({
                     query: query.name,
                     message: "data not found",
                     data: data
                 })
         }
-    } catch (e) { return res.status(400).json({ message: "bad request", error: e.message }) }
+    } catch (e) { console.log(e); return res.status(400).json({ message: "bad request", error: e.message }) }
 }

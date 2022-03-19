@@ -86,7 +86,7 @@ model Ncds {
 model Ref {
   id      Int    @id @default(autoincrement())
   url     String
-  Ncds    Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  ncds    Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   ncdsId  Int?
   Food    Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
   foodId  Int?
@@ -106,7 +106,7 @@ model Food {
   ref          Ref[]
   ingredient   String         @db.LongText
   video        String?
-  views        Int
+  views        Int?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   FoodNcds     FoodNcds[]
@@ -124,24 +124,24 @@ model FoodType {
 }
 
 model FoodNcds {
-  id          Int        @id @default(autoincrement())
-  detail      String     @db.LongText
-  suggess     Boolean
-  video       String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  ncdsId      Int?
-  imageFoodId Int?
-  foodId      Int
-  image       ImageFood? @relation(fields: [imageFoodId], references: [id], onDelete: Cascade)
-  Ncds        Ncds?      @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
-  food        Food       @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  detail    String   @db.LongText
+  suggess   Boolean
+  video     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ncdsId    Int?
+  // imageFoodId Int?
+  foodId    Int
+  // image       ImageFood? @relation(fields: [imageFoodId], references: [id], onDelete: Cascade)
+  ncds      Ncds?    @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  food      Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
 }
 
 model ImageNCDS {
   id     Int    @id @default(autoincrement())
   name   String @db.LongText
-  Ncds   Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  ncds   Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   ncdsId Int?
 }
 
@@ -150,7 +150,7 @@ model ImageFood {
   name     String     @db.LongText
   Food     Food?      @relation(fields: [foodId], references: [id], onDelete: Cascade)
   foodId   Int?
-  FoodNcds FoodNcds[]
+  // FoodNcds FoodNcds[]
 }
 
 model ImageBlog {
@@ -182,9 +182,9 @@ model Blogs {
 }
 
 model relationBlog {
-  id      Int    @id @default(autoincrement())
-  Ncds    Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
-  Foods   Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  id      Int   @id @default(autoincrement())
+  ncds    Ncds? @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  Foods   Food? @relation(fields: [foodId], references: [id], onDelete: Cascade)
   Blogs   Blogs @relation(fields: [blogsId], references: [id], onDelete: Cascade)
   blogsId Int
   foodId  Int?

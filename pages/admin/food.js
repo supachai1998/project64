@@ -1,122 +1,219 @@
-import { useState, useEffect } from 'react';
-import { Button, Table, Divider, Select, Modal, Form, Input, Upload, notification, InputNumber } from 'antd'
-import { UploadOutlined } from '@ant-design/icons';
+import { useState, useEffect, createContext, useContext } from 'react';
+import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
+import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import Board from '../../components/admin/DisplayBoard';
+import CusImage from '/components/cusImage';
+import ReactPlayer from 'react-player';
+const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
-// import ImgCrop from 'antd-img-crop';
 const { Option } = Select
-function Index() {
-    const [modalAddFood, setModalAddFood] = useState(false)
-    const [modalAddType, setModalAddType] = useState(false)
+const ellipsis = {
+    rows: 3,
+    expandable: false,
+}
+const Context = createContext()
 
+function Index() {
+    const [modalAdd, setModalAdd] = useState(false)
+    const [modalAddType, setModalAddType] = useState(false)
+    const [modalEdit, setModalEdit] = useState(false)
+    const [modalView, setModalView] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [food, setFood] = useState()
+    const reload = async () => {
+        setLoading(true)
+        await fetch("/api/getFood").then(async res => {
+            if (res.status === 200) {
+                const data = await res.json()
+                setFood(data)
+            }
+        })
+        setLoading(false)
+    }
+    useEffect(() => {
+        reload()
+        return () => setFood()
+    }, [])
     return (
         <div
             className="ease-div flex flex-col gap-4">
-            <Board />
+            {/* <Board /> */}
             <div className="flex justify-between mt-4">
-                <div className="text-xl">ตารางอาหาร</div>
+                <div className="text-xl"></div>
                 <div className="flex gap-3">
                     <Button onClick={() => setModalAddType(true)}>จัดการประเภทอาหาร</Button>
-                    <Button onClick={() => setModalAddFood(true)}>เพิ่มข้อมูลอาหาร</Button>
+                    <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูลอาหาร</Button>
                 </div>
             </div>
-            <ModalAddFood setModalAddFood={setModalAddFood} modalAddFood={modalAddFood} />
-            <ModalManageType setModalAddType={setModalAddType} modalAddType={modalAddType} />
-            <CusTable />
+            <Context.Provider value={{
+                reload,
+                modalAdd, setModalAdd,
+                modalEdit, setModalEdit,
+                modalView, setModalView,
+                modalAddType, setModalAddType,
+                loading,
+                food,
+            }}>
+                <ModalView />
+                <ModalAdd />
+                <ModalEdit />
+                <ModalManageType />
+                <TableForm />
+            </Context.Provider>
         </div>
     )
 }
 
 export default Index;
 
-const Board = () => {
-    return <div className="sm:flex-row flex flex-col flex-wrap mt-4  gap-4 justify-center ">
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-        <div className="text-center shadow-md rounded-md bg-pink-200 p-10 flex-col">
-            <div className="text-4xl">ABC</div>
-            <div>ABC</div>
-        </div>
-    </div>
-}
 
-const CusTable = () => {
+
+
+const TableForm = () => {
+    const { food, reload,
+        setModalEdit,
+        setModalView,
+        loading } = useContext(Context)
+
+    const columns = [
+        {
+            title: <Paragraph align="center" >ชื่ออาหาร</Paragraph>,
+            dataIndex: 'name_th',
+            key: 'name_th',
+            render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
+        },
+        {
+            title: <Paragraph align="center" >คำอธิบาย</Paragraph>,
+            dataIndex: 'detail',
+            key: 'detail',
+            width: '30%',
+            render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
+        },
+        {
+            title: <Paragraph align="center" >จำนวนอ้างอิง</Paragraph>,
+            dataIndex: 'ref',
+            key: 'ref',
+            render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
+        },
+        {
+            title: <Paragraph align="center" >จำนวนอาหาร</Paragraph>,
+            dataIndex: 'FoodNcds',
+            key: 'FoodNcds',
+            render: val => <Tooltip><Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph></Tooltip>
+        },
+        {
+            title: <Paragraph align="center" >การจัดการ</Paragraph>,
+            dataIndex: '',
+            key: '',
+
+            render: (text, val, index) => <div className="flex flex-wrap gap-2">
+                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(food[index])}>ดู</button>
+                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(food[index])}>แก้ไข</button>
+                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(food[index], reload)}>ลบ</button>
+            </div>,
+        },
+
+    ];
+
 
     return <div>
-        <Table />
+        <Table size='small' tableLayout='auto' dataSource={food} columns={columns}
+            title={() => <div className="flex items-center gap-2">ตารางอาหาร
+                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                </button>
+                </Tooltip>
+            </div>}
+            footer={() => 'Footer'} />
     </div>
 }
-
-const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
+const ModalAdd = () => {
+    const { modalAdd, setModalAdd, reload } = useContext(Context)
     const [foodType, setFoodType] = useState(null)
-    const [fileList, setFileList] = useState([{
-        // "name": "xxx.png",
-        // "status": "done",
-        // "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-        // "thumbUrl": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    }])
+    const [fileList, setFileList] = useState()
+    const [ncds, setNcds] = useState()
     const [form] = Form.useForm();
 
     useEffect(() => {
         form.setFieldsValue();
-    }, [form, foodType]);
+    }, [form, modalAdd]);
 
     useEffect(() => {
         (async () => {
-            if (modalAddFood) {
+            if (modalAdd) {
                 const fetchTypeFood = await FetchTypeFood()
                 Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
+                const fetchNCDS = await FetchNCDS()
+                Array.isArray(fetchNCDS) && setNcds(fetchNCDS)
             }
         })()
-    }, [modalAddFood])
-    const onOk = () => {
-        setModalAddFood(false)
+    }, [modalAdd])
+    const onOk = async (val) => {
+        if (!val.ref) {
+            notification.error({ message: "กรุณาเพิ่มแหล่งอ้างอิง" })
+            return
+        } else if (!val.FoodNcds) {
+            notification.error({ message: "กรุณาเพิ่มโรคไม่ติดต่อ" })
+            return
+        }
+        val["image"] = {
+            create: val?.image?.fileList.map(({ response }) => { return { name: response.name } })
+        }
+        val["FoodNcds"] = { create: [...val["FoodNcds"]] }
+        val["ref"] = { create: [...val["ref"]] }
+        val["calories"] = parseFloat(val["calories"])
+        const res = await fetch(`/api/getFood`, {
+            method: "POST",
+            body: JSON.stringify(val)
+        })
+            .then(res => {
+                if (res.ok) {
+                    notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
+                    setModalAdd(false)
+                    fetch(`/api/uploads?name=food`)
+                    reload()
+                } else {
+                    notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
+                }
+            })
     }
     const onCancel = () => {
-        setModalAddFood(false)
+        setModalAdd(false)
     }
     const onChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
-        console.log(fileList)
     }
-    const onReset=()=>{
+
+    const onReset = () => {
         setFileList(null)
     }
-    return <Modal title={"เพิ่มข้อมูลอาหาร"}
-        visible={modalAddFood}
+    return <Modal
+        title={"เพิ่มข้อมูลอาหาร"}
+        visible={modalAdd}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
         footer={<></>}
+
         // onOk={onOk}
         onCancel={onCancel}
-        width={1000}>
+        width="90%"
+    >
         <Form
             form={form}
-            destroyOnClose={true}
             // initialValues={valUser}
-            labelCol={{ span: 8 }}
-            wrapperCol={{ span: 18 }}
+            labelCol={{ span: 3 }}
             onFinish={onOk}
             onReset={onReset}
+            scrollToFirstError={true}
+            labelWrap={true}
         // onFinishFailed={onCancel}
         >
 
             <Form.Item
-                name="TypeFood"
+                name="foodTypeId"
                 label="ประเภท"
                 rules={[{ required: true }]}>
                 <Select
@@ -125,7 +222,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                     optionFilterProp="children"
                     // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
                     filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
+                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item
@@ -147,30 +244,38 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                 <Input placeholder="ภาษาอังกฤษ" />
             </Form.Item>
             <Form.Item
+                name="detail"
+                label="คำอธิบาย"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder="ใช้ในการอธิบายถึงอาหารนั้นๆ" />
+            </Form.Item>
+            <Form.Item
                 name="proceduce"
                 label="วิธีการทำ"
                 rules={[{ required: true },]}>
-                <TextArea rows={4} placeholder="วิธีการทำ 1. 2. 3." />
+                <TextArea rows={4} placeholder={"วิธีการทำ \n1.\n2.\n3."} />
+            </Form.Item>
+            <Form.Item
+                name="ingredient"
+                label="ส่วนผสม"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder={"ส่วนผสม \n1.\n2.\n3."} />
             </Form.Item>
             <Form.Item
                 name="calories"
                 label="ปริมาณพลังงาน"
-                rules={[{ required: true },{
+                rules={[{ required: true }, {
                     pattern: /^[0-9.]+$/,
                     message: 'ป้อนตัวเลข',
                 }]}>
                 <InputNumber min="0" max="10000" step="0.01" stringMode placeholder="ปริมาณพลังงาน (Kilo Calories)" />
             </Form.Item>
-            <Form.Item
-                name="nutrition"
-                label="คุณค่าทางโภชนาการ"
-                rules={[{ required: true },]}>
-                <TextArea rows={4} placeholder="ประโยชน์" />
-            </Form.Item>
+
             <Form.Item
                 name="video"
                 label="ที่อยู่วิดีโอ"
-                rules={[{ required: true },{
+                className='ml-10'
+                rules={[{ required: true }, {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน url ให้ถูกต้อง',
                 }]}>
@@ -180,6 +285,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
+                className='ml-10'
                 rules={[{ required: true }]}
             >
 
@@ -193,17 +299,464 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList.length : 0 }/1)</Button>
+                    <Button className="w-full" disabled={fileList && fileList.length > 0 && true} icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList.length : 0}/1)</Button>
                 </Upload>
             </Form.Item>
-            <div className="flex justify-end gap-2">
+            <Form.List name="FoodNcds" >
+                {(fields, { add, remove }, { errors }) => (
+                    <>
+                        <Divider />
+                        {!!fields && fields.map((field, ind) => (
+                            <Form.Item
+                                {...fields}
+                                noStyle
+                                shouldUpdate
+                                key={field.key}
+                                required
+                            >
+
+                                {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+                                <Form.Item
+                                    {...field}
+                                    labelCol={{ span: 0 }}
+                                    label={""}
+                                    rules={[{ required: true }]}
+                                >
+                                    {ind !== 0 && <hr />}
+                                    <div className="flex gap-3 items-center  justify-center py-2">
+                                        <div className="text-lg"> โรคที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip>
+                                    </div>
+
+                                </Form.Item>
+                                <Form.Item
+                                    {...field}
+                                    label="เลือกโรค"
+                                    name={[field.name, 'ncdsId']}
+                                    fieldKey={[field.fieldKey, 'ncdsId']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Select>
+                                        {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="คำแนะนำ"
+                                    name={[field.name, 'suggess']}
+                                    fieldKey={[field.fieldKey, 'suggess']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Select>
+                                        <Option key={true} value={true}>สามารถรับประทานได้</Option>
+                                        <Option key={false} value={false}>ไม่แนะนำให้รับประทาน</Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="คำอธิบาย"
+                                    name={[field.name, 'detail']}
+                                    fieldKey={[field.fieldKey, 'detail']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input placeholder="เช่น สาเหตุที่สามารถทานได้ หรือ ไม่แนะนำให้รับประทาน" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="วิดีโอ"
+                                    name={[field.name, 'video']}
+                                    fieldKey={[field.fieldKey, 'video']}
+                                    rules={[{ required: false }, {
+                                        pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
+                                        message: 'ป้อน url ให้ถูกต้อง',
+                                    }]}
+                                >
+                                    <Input placeholder="https://youtube.com/watch?" />
+                                </Form.Item>
+                            </Form.Item>
+
+                        ))}
+                        <div className="flex justify-center ">
+                            <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+                                onClick={() => add()}
+                                type="button">
+                                <PlusOutlined />
+                                <span className="text-blue-900">เพิ่มโรคที่สามารถทานได้หรือไม่ได้</span>
+                            </button>
+                        </div>
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                )}
+            </Form.List>
+            <Form.List name="ref" >
+                {(fields, { add, remove }, { errors }) => (
+                    <>
+                        <Divider />
+                        {!!fields && fields.map((field, ind) => (
+                            <Form.Item
+                                {...fields}
+                                noStyle
+                                shouldUpdate
+                                key={field.key}
+                                required
+                            >
+
+                                {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+                                <Form.Item
+                                    {...field}
+                                    label={<div className="flex gap-3 items-center">
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                    </div>}
+                                    name={[field.name, 'url']}
+                                    fieldKey={[field.fieldKey, 'url']}
+                                    rules={[{ required: true }]}
+                                >
+
+                                    <Input placeholder="แหล่งอ้างอิง" />
+
+                                </Form.Item>
+                            </Form.Item>
+
+                        ))}
+                        <div className="flex justify-center ">
+                            <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+                                onClick={() => add()}
+                                type="button">
+                                <PlusOutlined />
+                                <span className="text-blue-900">เพิ่มแหล่งอ้างอิง</span>
+                            </button>
+                        </div>
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                )}
+            </Form.List>
+            <div className="flex justify-end gap-2 sm:mt-0 mt-3">
                 <Button htmlType="reset">ล้างค่า</Button>
                 <Button type="primary" htmlType="submit">เพิ่มข้อมูล</Button>
             </div>
         </Form>
     </Modal>
 }
-const ModalManageType = ({ modalAddType, setModalAddType }) => {
+const ModalEdit = () => {
+    const { modalEdit, setModalEdit, reload } = useContext(Context)
+    const [foodType, setFoodType] = useState(null)
+    const [fileList, setFileList] = useState()
+    const [ncds, setNcds] = useState()
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        form.setFieldsValue(modalEdit);
+        !!modalEdit  && setFileList(modalEdit.image.map(({ id, name }) => {
+            return {
+                id: id,
+                status: "done",
+                url: `/uploads/${name}`,
+                name: name
+            }
+        }))
+    }, [form, modalEdit]);
+
+    useEffect(() => {
+        (async () => {
+            if (modalEdit) {
+                const fetchTypeFood = await FetchTypeFood()
+                Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
+                const fetchNCDS = await FetchNCDS()
+                Array.isArray(fetchNCDS) && setNcds(fetchNCDS)
+            }
+        })()
+    }, [modalEdit])
+    const onOk = async (val) => {
+        if (!val.ref) {
+            notification.error({ message: "กรุณาเพิ่มแหล่งอ้างอิง" })
+            return
+        } else if (!val.FoodNcds) {
+            notification.error({ message: "กรุณาเพิ่มโรคไม่ติดต่อ" })
+            return
+        }
+        let _tempimage = []
+        
+        if (val?.image?.fileList) {
+            for (const i in val.image.fileList) {
+                const fL = val.image.fileList[i]
+                fL.response ? _tempimage.push({ name: fL.response.name }): _tempimage.push({ ...fL })
+
+            }
+        }
+        else { _tempimage = val?.image }
+        val["id"] = modalEdit.id
+        val['image'] = _tempimage
+        val["calories"] = parseFloat(val["calories"])
+        const res = await fetch(`/api/getFood`, {
+            method: "PATCH",
+            body: JSON.stringify({ old: modalEdit, new: val })
+        })
+            .then(res => {
+                if (res.ok) {
+                    notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
+                    setModalEdit(false)
+                    reload()
+                    fetch(`/api/uploads`)
+                } else {
+                    notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
+                }
+            })
+    }
+    const onCancel = () => {
+        setModalEdit(false)
+    }
+    const onChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+    }
+
+    const onReset = () => {
+        setFileList(null)
+    }
+    return <Modal
+        title={"แก้ไขข้อมูลอาหาร"}
+        visible={modalEdit}
+        okText={<>ตกลง</>}
+        cancelText={<>ยกเลิก</>}
+        footer={<></>}
+
+        onOk={onOk}
+        onCancel={onCancel}
+        width="90%"
+    >
+        <Form
+            form={form}
+            // initialValues={valUser}
+            labelCol={{ span: 3 }}
+            onFinish={onOk}
+            onReset={onReset}
+            scrollToFirstError={true}
+            labelWrap={true}
+        // onFinishFailed={onCancel}
+        >
+
+            <Form.Item
+                name="foodTypeId"
+                label="ประเภท"
+                rules={[{ required: true }]}>
+                <Select
+                    showSearch
+                    placeholder="เลือกประเภทอาหาร"
+                    optionFilterProp="children"
+                    // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                    filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                </Select>
+            </Form.Item>
+            <Form.Item
+                name="name_th"
+                label="ชื่ออาหารไทย"
+                rules={[{ required: true }, {
+                    pattern: /^[\u0E00-\u0E7F ]+$/,
+                    message: 'กรอกภาษาไทย',
+                }]}>
+                <Input placeholder="ภาษาไทย" />
+            </Form.Item>
+            <Form.Item
+                name="name_en"
+                label="ชื่ออาหารอังกฤษ"
+                rules={[{ required: true }, {
+                    pattern: /^[a-zA-Z0-9 ]+$/,
+                    message: 'กรอกภาษาอังกฤษ',
+                }]}>
+                <Input placeholder="ภาษาอังกฤษ" />
+            </Form.Item>
+            <Form.Item
+                name="detail"
+                label="คำอธิบาย"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder="ใช้ในการอธิบายถึงอาหารนั้นๆ" />
+            </Form.Item>
+            <Form.Item
+                name="proceduce"
+                label="วิธีการทำ"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder={"วิธีการทำ \n1.\n2.\n3."} />
+            </Form.Item>
+            <Form.Item
+                name="ingredient"
+                label="ส่วนผสม"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder={"ส่วนผสม \n1.\n2.\n3."} />
+            </Form.Item>
+            <Form.Item
+                name="calories"
+                label="ปริมาณพลังงาน"
+                rules={[{ required: true }, {
+                    pattern: /^[0-9.]+$/,
+                    message: 'ป้อนตัวเลข',
+                }]}>
+                <InputNumber min="0" max="10000" step="0.01" stringMode placeholder="ปริมาณพลังงาน (Kilo Calories)" />
+            </Form.Item>
+
+            <Form.Item
+                name="video"
+                label="ที่อยู่วิดีโอ"
+                className='ml-10'
+                rules={[{ required: true }, {
+                    pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
+                    message: 'ป้อน url ให้ถูกต้อง',
+                }]}>
+                <Input placeholder="https://youtube.com/watch?" />
+            </Form.Item>
+
+            <Form.Item
+                name="image"
+                label="รูปภาพ"
+                className='ml-10'
+                rules={[{ required: true }]}
+            >
+
+                <Upload
+                    multiple={false}
+                    accept='image/png,image/jpeg'
+                    maxCount={1}
+                    action="/api/uploads"
+                    listType="picture"
+                    defaultFileList={fileList}
+                    onChange={onChange}
+                    className="upload-list-inline"
+                >
+                    <Button className="w-full" icon={<UploadOutlined />}>แก้ไขรูป ({fileList ? fileList.length : 0}/1)</Button>
+                </Upload>
+            </Form.Item>
+            <Form.List name="FoodNcds" >
+                {(fields, { add, remove }, { errors }) => (
+                    <>
+                        <Divider />
+                        {!!fields && fields.map((field, ind) => (
+                            <Form.Item
+                                {...fields}
+                                noStyle
+                                shouldUpdate
+                                key={field.key}
+                                required
+                            >
+
+                                {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+                                <Form.Item
+                                    {...field}
+                                    labelCol={{ span: 0 }}
+                                    label={""}
+                                    rules={[{ required: true }]}
+                                >
+                                    {ind !== 0 && <hr />}
+                                    <div className="flex gap-3 items-center  justify-center py-2">
+                                        <div className="text-lg"> โรคที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip>
+                                    </div>
+
+                                </Form.Item>
+                                <Form.Item
+                                    {...field}
+                                    label="เลือกโรค"
+                                    name={[field.name, 'ncdsId']}
+                                    fieldKey={[field.fieldKey, 'ncdsId']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Select>
+                                        {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="คำแนะนำ"
+                                    name={[field.name, 'suggess']}
+                                    fieldKey={[field.fieldKey, 'suggess']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Select>
+                                        <Option key={true} value={true}>สามารถรับประทานได้</Option>
+                                        <Option key={false} value={false}>ไม่แนะนำให้รับประทาน</Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="คำอธิบาย"
+                                    name={[field.name, 'detail']}
+                                    fieldKey={[field.fieldKey, 'detail']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input placeholder="เช่น สาเหตุที่สามารถทานได้ หรือ ไม่แนะนำให้รับประทาน" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="วิดีโอ"
+                                    name={[field.name, 'video']}
+                                    fieldKey={[field.fieldKey, 'video']}
+                                    rules={[{ required: false }, {
+                                        pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
+                                        message: 'ป้อน url ให้ถูกต้อง',
+                                    }]}
+                                >
+                                    <Input placeholder="https://youtube.com/watch?" />
+                                </Form.Item>
+                            </Form.Item>
+
+                        ))}
+                        <div className="flex justify-center ">
+                            <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+                                onClick={() => add()}
+                                type="button">
+                                <PlusOutlined />
+                                <span className="text-blue-900">เพิ่มโรคที่สามารถทานได้หรือไม่ได้</span>
+                            </button>
+                        </div>
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                )}
+            </Form.List>
+            <Form.List name="ref" >
+                {(fields, { add, remove }, { errors }) => (
+                    <>
+                        <Divider />
+                        {!!fields && fields.map((field, ind) => (
+                            <Form.Item
+                                {...fields}
+                                noStyle
+                                shouldUpdate
+                                key={field.key}
+                                required
+                            >
+
+                                {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+                                <Form.Item
+                                    {...field}
+                                    label={<div className="flex gap-3 items-center">
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                    </div>}
+                                    name={[field.name, 'url']}
+                                    fieldKey={[field.fieldKey, 'url']}
+                                    rules={[{ required: true }]}
+                                >
+
+                                    <Input placeholder="แหล่งอ้างอิง" />
+
+                                </Form.Item>
+                            </Form.Item>
+
+                        ))}
+                        <div className="flex justify-center ">
+                            <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+                                onClick={() => add()}
+                                type="button">
+                                <PlusOutlined />
+                                <span className="text-blue-900">เพิ่มแหล่งอ้างอิง</span>
+                            </button>
+                        </div>
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                )}
+            </Form.List>
+            <div className="flex justify-end gap-2 sm:mt-0 mt-3">
+                <Button htmlType="reset">ล้างค่า</Button>
+                <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
+            </div>
+        </Form>
+    </Modal>
+}
+const ModalManageType = () => {
+    const { modalAddType, setModalAddType } = useContext(Context)
     const [foodType, setType] = useState(null)
     const [foodTypeEdit, setFoodTypeEdit] = useState(null)
     const reload = async () => {
@@ -222,7 +775,7 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
 
     const onSubmit = async (val) => {
         if (foodTypeEdit) {
-            const send = {...foodTypeEdit,...val}
+            const send = { ...foodTypeEdit, ...val }
             const req = await fetch('/api/getTypeFood', {
                 headers: { 'Content-Type': 'application/json', },
                 method: "PATCH",
@@ -336,7 +889,7 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
                     name="name_th"
                     label="ชื่อภาษาไทย"
                     rules={[{ required: true }, {
-                        pattern: /^[\u0E00-\u0E7F ]+$/,
+                        pattern: /^[\u0E00-\u0E7F0-9 ]+$/,
                         message: 'กรอกภาษาไทย',
                     }]}>
                     <Input />
@@ -346,7 +899,7 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
                     name="name_en"
                     label="ชื่อภาษาอังกฤษ"
                     rules={[{ required: true }, {
-                        pattern: /^[a-zA-Z0-9 ]+$/,
+                        pattern: /^[a-zA-Z0-9- ]+$/,
                         message: 'กรอกภาษาอังกฤษ',
                     }]}>
                     <Input />
@@ -365,8 +918,78 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
     </>
 }
 
+const ModalView = () => {
+    const { setModalView, modalView, reload } = useContext(Context)
+    const onCancel = () => {
+        setModalView(false)
+    }
+    if (!modalView) return null
+    return <Modal title={modalView.name_th}
+        visible={modalView}
+        okText={null}
+        cancelText={<>ยกเลิก</>}
+        // onOk={onSubmit}
+        onCancel={onCancel}
+        width="100%"
+        footer={<></>}>
+        <Form labelCol={{ span: 4 }} labelAlign="left">
+            <Form.Item label={`รูปภาพ ${modalView.image.length} รูป`}>{modalView.image.map(({ name }) => <CusImage className="rounded-md shadow-lg" key={name} width="250px" height="150px" src={name} />)}</Form.Item>
+            <Form.Item label="ชื่ออาหารภาษาไทย"><span className='text-lg whitespace-pre-line'>{modalView.name_th}</span></Form.Item>
+            <Form.Item label="ชื่ออาหารภาษาอังกฤษ"><span className='text-lg whitespace-pre-line'>{modalView.name_en}</span></Form.Item>
+            <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView.detail}</span></Form.Item>
+            <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView.proceduce}</span></Form.Item>
+            <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView.ingredient}</span></Form.Item>
+            <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><span key={url} className='text-md whitespace-pre-line'>{url}</span><br /></>)}</Form.Item>
+            <Form.Item label={`โรคที่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
+                {suggess ? <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}</span>
+                    : <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}</span>}
+                <br />
+            </>)}
+            </Form.Item>
+        </Form>
+    </Modal>
+
+}
+const showConfirmDel = async (val, reload) => {
+
+    confirm({
+        title: <>คุณต้องการจะลบอาหาร</>,
+        content: <p>{val.name_th}({val.name_en})</p>,
+        okText: "ตกลง",
+        cancelText: "ยกเลิก",
+        async onOk() {
+            const res = await fetch("/api/getFood", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify(val)
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                fetch(`/api/uploads`)
+                await reload()
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
+            }
+        },
+        onCancel() { },
+    });
+}
 const FetchTypeFood = async () => {
     const req = await fetch("/api/getTypeFood")
+    if (req.status === 200) {
+        const data = await req.json()
+        return data
+    }
+    return null
+}
+const FetchNCDS = async () => {
+    const req = await fetch("/api/getNCDS")
     if (req.status === 200) {
         const data = await req.json()
         return data

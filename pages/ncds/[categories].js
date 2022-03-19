@@ -1,5 +1,5 @@
 import { useRouter, createRef, useRef } from 'next/router'
-import {  notification } from 'antd';
+import { notification } from 'antd';
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react';
 import BestFood from '../../components/BestFood';
@@ -18,6 +18,8 @@ export default function Index() {
     const [NCDS, setNCDS] = useState()
     const [headerData, setHeaderData] = useState()
     const [loading, setloading] = useState()
+    const [casImg, setCasImg] = useState(0)
+
     const router = useRouter()
     const { categories, name } = router.query
     useEffect(() => {
@@ -27,12 +29,13 @@ export default function Index() {
                 await fetch(`/api/getNCDS?id=${categories}`).then(res => res.ok ? res.json() : notification.error({ message: "Error", description: "ไม่พบข้อมูล" }))
                     .then(data => {
                         // title , content
+                        console.log(data)
                         setNCDS(data)
                         setHeaderData([
-                            {title :"สาเหตุ" ,  content: data.cause},
-                            {title :"ลดความเสี่ยงต่อการเกิดโรค" ,  content: data.reduce},
-                            {title :"สัญญาณการเกิดโรค" ,  content: data.signs},
-                            {title :"คำแนะนำในการปฎิบัติตัว" ,  content: data.sugess},
+                            { title: "สาเหตุ", content: data.cause },
+                            { title: "ลดความเสี่ยงต่อการเกิดโรค", content: data.reduce },
+                            { title: "สัญญาณการเกิดโรค", content: data.signs },
+                            { title: "คำแนะนำในการปฎิบัติตัว", content: data.sugess },
                         ])
                     })
                     .catch(err => notification.error({ message: "ไม่สามารถดึงข้อมูลได้", description: err.message }))
@@ -41,28 +44,31 @@ export default function Index() {
         }
         setloading(false)
     }, [NCDS, categories])
+    useEffect(() => { return () => setNCDS() }, [router.query])
+    useEffect(() => {
+        if (NCDS) {
+            const timmer = setInterval(() => {
+                setCasImg(casImg => casImg < NCDS.image.length-1 ? casImg += 1 : casImg = 0)
+            },10000)
+            return () => clearInterval(timmer)
+        }
+    },[NCDS, casImg])
     if (loading) return <>กำลังดึงข้อมูลโรคไม่ติดต่อ</>
     if (!NCDS) return <>ไม่พบข้อมูลโรค</>
     return (
         <>
             {!!NCDS &&
                 <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto">
-                    <div className="text-center p-5 ">
-                        <Owl_Carousel margin={0}>
-                            <>
-                                {NCDS.image.map(({ name }) =>
-                                    // <div key={name} >
-                                        <CustImage className="w-full block justify-center items-center" key={name} src={name} alt={"0"} width="100%" height="288px" />
-                                    // </div>
-                                )}
-                            </>
-                        </Owl_Carousel>
-                        <p className='w-2/3 text-left ml-auto mr-auto'>{NCDS.imply}</p>
+                    <div className="text-center p-5 w-full">
+
+                        <CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="80vw" height="50vh" />
+
+                        <p className='w-2/3 text-left ml-auto mr-auto mt-3'>{NCDS.imply}</p>
                         <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
                     </div>
                     <ContentHeader headerData={headerData} url_yt={NCDS.video} />
 
-                    <div className='lg:mx-32 mx-0'>
+                    <div className=''>
                         <BestFood />
                         <DisplayFoodReadMore data={NCDSTrends} title={`บทความยอดนิยม`} />
                     </div>
