@@ -4,37 +4,35 @@ import { Tooltip, Divider, Rate, Select, notification } from 'antd';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic'
 import Owl_Carousel from './Owl_Carousel';
-import {useState ,useEffect} from 'react'
+import { useState, useEffect } from 'react'
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 
 
 export default function DisplayBlogReadMore() {
   const [_data, setData] = useState()
-  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
   const fetchData = async () => {
-      setLoading(true)
-      const data = await fetch(`/api/getBlogs?BestBlog=${true}`).then(async res => {
-          if (res.ok) {
-              const _ = await res.json()
-              return _
-          } else notification.error({ message: `ไม่สามารถดึงข้อมูลบทความ` })
-      })
+    const data = await fetch(`/api/getBlogs?BestBlog=${true}`).then(async res => {
+      if (res.ok) {
+        const _ = await res.json()
+        return _
+      } else notification.error({ message: `ไม่สามารถดึงข้อมูลบทความ` })
+      
+    })
 
-      setLoading(false)
-      return data
+    return data
   }
   useEffect(() => {
-      (async () => {
-          if (!_data) {
-              const data = await fetchData()
-              !!data && setData([...data])
-              console.log(data)
-          }
-      })()
+    (async () => {
+      if (!_data) {
+        const data = await fetchData()
+        !!data && setData([...data])
+      }
+    })()
   }, [_data])
-  if (!_data && !Array.isArray(_data) ) return null
+
+  if (!_data && !Array.isArray(_data)) return null
   return (
     <Owl_Carousel
       title="บทความยอดนิยม"
@@ -79,7 +77,7 @@ export default function DisplayBlogReadMore() {
                 <p className=" mt-1 sm:mx-5 break-words overflow-hidden text-lg md:text-md h-20">{imply}...</p>
                 <hr className='mb-2 ' />
                 <div className="flex justify-center ">
-                  <a onClick={() => {localStorage.setItem('keys', `blogs_${type}`);router.push(`/blogs/${type.toLowerCase()}/${id}`)}} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                  <a onClick={() => { localStorage.setItem('keys', `blogs_${type}`); router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
                 </div>
               </div>
 

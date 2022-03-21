@@ -42,8 +42,13 @@ const removeFile = async (dir) => {
         select: { name: true },
     })
     db_name = [...db_name, ...data]
+    data = await prisma.subBlog.findMany({
+        where: { image: { in: files } },
+        select: { image: true },
+    })
+    db_name = [...db_name, ...data]
     for (const file of files) {
-        if (!(db_name.map(v => v.name).indexOf(file) > -1)) {
+        if (!((db_name.map(v => v.name).indexOf(file) > -1) || db_name.map(v => v.image).indexOf(file) > -1)) {
             await fs.unlink(`${dir}/${file}`, function (err) {
                 console.log(`${dir}/${file} deleted!`);
             });

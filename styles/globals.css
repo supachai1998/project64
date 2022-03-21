@@ -379,3 +379,6 @@ a {
 .ant-table-title {
   @apply bg-gray-900 text-white
 }
+.ant-modal-confirm-btns {
+  @apply w-full h-full flex justify-end !important
+}

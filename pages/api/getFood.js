@@ -191,6 +191,14 @@ export default async function handler(req, res) {
                         }
                     })
                     if (data.id) return res.status(200).json(data)
+                }else if (select) {
+                    let _ = {}
+                    for (const val of select.split(",")) {
+                        _ = {..._, [val]: true }
+                    }
+                    data = await prisma.food.findMany({
+                        select: _
+                    })
                 } else {
                     data = await prisma.food.findMany({
                         include: {

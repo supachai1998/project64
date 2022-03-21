@@ -10,19 +10,16 @@ const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 export default function BestFood() {
 
     const [_data, setData] = useState()
-    const [loading, setLoading] = useState(false)
 
     const router = useRouter()
     const fetchData = async () => {
-        setLoading(true)
         const data = await fetch(`/api/getFood?BestFood=${true}`).then(async res => {
-            if (res.ok) {
+            if (res.ok && res.status === 200) {
                 const _ = await res.json()
                 return _
             } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร` })
         })
 
-        setLoading(false)
         return data
     }
     useEffect(() => {
@@ -30,12 +27,12 @@ export default function BestFood() {
             if (!_data) {
                 const data = await fetchData()
                 !!data && setData([...data])
-                console.log(data)
             }
         })()
+
     }, [_data])
 
-    if (!!!_data) return null
+    if (!_data && !Array.isArray(_data)) return null
     return (
 
         <Owl_Carousel

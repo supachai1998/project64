@@ -22,7 +22,7 @@ export default async function handler(req, res) {
           }
         })
         return res.status(200).json({ status: true })
-        
+
       case "PATCH":
         // console.log(dataOld)
         if (!id) {
@@ -108,11 +108,11 @@ export default async function handler(req, res) {
           if (!query.select) {
             data = await prisma.ncds.findFirst({
               where: { id: id },
-              include:{
-                image : true,
-                foodncds : true,
-                relationBlog : true,
-                ref : true,
+              include: {
+                image: true,
+                foodncds: true,
+                relationBlog: true,
+                ref: true,
               }
             })
           } else {
@@ -131,6 +131,14 @@ export default async function handler(req, res) {
             },
           })
           // console.log(data,query.type)
+        } else if (select) {
+          let _ = {}
+          for (const val of select.split(",")) {
+            _ = { ..._, [val]: true }
+          }
+          data = await prisma.ncds.findMany({
+            select: _
+          })
         } else {
           data = await prisma.ncds.findMany({
             include: {

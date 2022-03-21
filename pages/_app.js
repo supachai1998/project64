@@ -6,7 +6,7 @@ import 'owl.carousel/dist/assets/owl.carousel.css';
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
 import thTh from 'antd/lib/locale/th_TH';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext, useContext } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
 import { useRouter, } from 'next/router'
 import Head from 'next/head'
@@ -28,7 +28,7 @@ const { SubMenu } = Menu;
 
 const animationZoomHover = "transition duration-500 ease-in-out transform  hover:scale-120"
 
-
+export const _AppContext = createContext()
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   // const [queryClient] = React.useState(() => new QueryClient())
@@ -50,7 +50,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const keys = localStorage?.getItem('keys') || "/"
-       setDefaultSelectedKeys(keys)
+      setDefaultSelectedKeys(keys)
     }
 
   }, [defaultSelectedKeys])
@@ -71,7 +71,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     // Array(3) [ "report_blogs_food", "report", "admin" ]
     localStorage.setItem('keys', val.key);
     setDefaultSelectedKeys(val.key);
-    if(val.keyPath.length > 1){
+    if (val.keyPath.length > 1) {
       router.push(`/${val.keyPath[1]}/${val.keyPath[0].split("_")[1]}`)
     }
   }
@@ -117,7 +117,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             className="sm:p-2 site-layout-background"
           >
             <ConfigProvider locale={thTh}>
-              <Component onClick={() => setCollapsed(true)} {...pageProps} />
+              <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, setCollapsed }}>
+                <Component onClick={() => setCollapsed(true)} {...pageProps} />
+              </_AppContext.Provider>
             </ConfigProvider>
           </Content>
           {/* <Navigator /> */}
@@ -160,22 +162,22 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
           <Menu.Item key="/" icon={<HomeIcon style={{ width: "18px", height: "18px" }} />}
             onClick={() => { handleMenu('', 'ใส่ใจโรคไม่ติดต่อเรื้อรัง (NCDs Care)') }}>หน้าหลัก</Menu.Item>
           <SubMenu key="ncds" icon={<MedicineBoxOutlined />} title="โรคไม่ติดต่อเรื้อรัง">
-            {!!ncds && ncds.map(({ id,name_en, name_th },index) =>
+            {!!ncds && ncds.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`ncds_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="form" icon={<MedicineBoxOutlined />} title="แบบประเมินโรค">
-            {!!ncds && ncds.map(({ id,name_en, name_th },index) =>
+            {!!ncds && ncds.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`form_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="foods" icon={<AppleOutlined />} title="ประเภทอาหาร" >
-            {!!foodType && foodType?.map(({ id,name_en, name_th },index) =>
+            {!!foodType && foodType?.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`foods_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="blogs" icon={<FormOutlined />} title="บทความ">
-            {!!blogs && blogs.map(({ id,name_en, name_th },index) =>
+            {!!blogs && blogs.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`blogs_${name_en.toLowerCase()}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
@@ -203,7 +205,6 @@ const TopProgressBar = dynamic(
   },
   { ssr: false },
 );
-
 
 // const Navigator = dynamic(
 //   () => {

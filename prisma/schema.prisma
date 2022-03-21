@@ -195,7 +195,7 @@ model subBlog {
   id      Int     @id @default(autoincrement())
   name    String
   detail  String  @db.LongText
-  image   String?
+  image   String? 
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id], onDelete: Cascade)
   blogsId Int?
 }

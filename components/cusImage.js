@@ -5,6 +5,7 @@ import { CircularProgress } from '@mui/material';
 export default function CusImage({ width, height, src, name, className, preview }) {
     const [onSrc, setOnSrc] = React.useState()
     async function checkIfImageExists(url, callback) {
+        
         const img = new Image();
         img.src = url;
 
@@ -19,23 +20,23 @@ export default function CusImage({ width, height, src, name, className, preview 
                 callback(false);
             };
         }
+        
     }
     useEffect(() => {
-        checkIfImageExists(src, (exists) => {
+         checkIfImageExists(src, (exists) => {
             if (exists) {
                 setOnSrc(src)
-
             } else {
                 checkIfImageExists(`/uploads/${src}`, (exists) => {
                     if (exists) {
                         setOnSrc(`/uploads/${src}`)
                     } else {
-                        setOnSrc("https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png")
+                        setOnSrc("/notFound.jpg")
                     }
                 });
             }
         });
-    }, [src])
+    }, [onSrc, src])
 
     return (
 
@@ -45,12 +46,12 @@ export default function CusImage({ width, height, src, name, className, preview 
             alt={name}
             width={width}
             height={height}
-            src={onSrc || "https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png"}
+            loading="lazy"
+            src={onSrc }
             preview={preview}
-            fallback={<div className={"w-full h-full bg-gray-50 flex justify-center"}><CircularProgress className="m-auto" /></div>}
-            placeholder={
-                <div className={"w-full h-full bg-gray-50 flex justify-center"}><CircularProgress className="m-auto" /></div>
-            }
+            fallback={<Load/>}
+            placeholder={<Load/>}
         />
     );
 }   
+const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center"}><CircularProgress className="m-auto" /></div>
