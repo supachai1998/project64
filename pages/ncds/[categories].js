@@ -1,18 +1,14 @@
 import { useRouter, createRef, useRef } from 'next/router'
-import { notification } from 'antd';
+import { notification, Tooltip } from 'antd';
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react';
-import BestFood from '../../components/BestFood';
-import Owl_Carousel from '../../components/Owl_Carousel';
+import { getCookie, setCookies } from 'cookies-next';
+import { serverip } from '/config/serverip'
 
-
-const CustImage = dynamic(() => import("/components/cusImage.js"))
+const CustImage = dynamic(() => import("/components/cusImage"))
+const BestFood = dynamic(() => import("/components/BestFood"))
+const BestBlog = dynamic(() => import("/components/BestBlog"))
 const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
-
-const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore.js"),
-    { ssr: false })
-const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
-    { ssr: false })
 
 export default function Index() {
     const [NCDS, setNCDS] = useState()
@@ -22,75 +18,81 @@ export default function Index() {
 
     const router = useRouter()
     const { categories, name } = router.query
-    useEffect(() => {
+    const fetchData = async () => {
         setloading(true)
-        if (categories && !NCDS) {
-            (async () => {
-                await fetch(`/api/getNCDS?id=${categories}`).then(res => res.ok ? res.json() : notification.error({ message: "Error", description: "ไม่พบข้อมูล" }))
-                    .then(data => {
-                        // title , content
-                        console.log(data)
-                        setNCDS(data)
-                        setHeaderData([
-                            { title: "สาเหตุ", content: data.cause },
-                            { title: "ลดความเสี่ยงต่อการเกิดโรค", content: data.reduce },
-                            { title: "สัญญาณการเกิดโรค", content: data.signs },
-                            { title: "คำแนะนำในการปฎิบัติตัว", content: data.sugess },
-                        ])
-                    })
-                    .catch(err => notification.error({ message: "ไม่สามารถดึงข้อมูลได้", description: err.message }))
-
-            })()
-        }
+        await fetch(`/api/getNCDS?id=${categories}`).then(res => res.ok ? res.json() : notification.error({ message: "Error", description: "ไม่พบข้อมูล" }))
+            .then(data => {
+                // title , content
+                setNCDS(data)
+                setHeaderData([
+                    { title: "สาเหตุ", content: data.cause },
+                    { title: "ลดความเสี่ยงต่อการเกิดโรค", content: data.reduce },
+                    { title: "สัญญาณการเกิดโรค", content: data.signs },
+                    { title: "คำแนะนำในการปฎิบัติตัว", content: data.sugess },
+                ])
+            })
+            .catch(err => notification.error({ message: "ไม่สามารถดึงข้อมูลได้", description: err.message }))
         setloading(false)
+    }
+    useEffect(() => {
+        if (categories && !NCDS) {
+            fetchData()
+        }
     }, [NCDS, categories])
     useEffect(() => { return () => setNCDS() }, [router.query])
     useEffect(() => {
         if (NCDS) {
             const timmer = setInterval(() => {
-                setCasImg(casImg => casImg < NCDS.image.length-1 ? casImg += 1 : casImg = 0)
-            },10000)
+                setCasImg(casImg => casImg < NCDS.image.length - 1 ? casImg += 1 : casImg = 0)
+            }, 10000)
             return () => clearInterval(timmer)
         }
-    },[NCDS, casImg])
+    }, [NCDS, casImg])
     if (loading) return <>กำลังดึงข้อมูลโรคไม่ติดต่อ</>
     if (!NCDS) return <>ไม่พบข้อมูลโรค</>
     return (
-        <>
-            {!!NCDS &&
-                <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto">
-                    <div className="text-center p-5 w-full">
-
-                        <CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="80vw" height="50vh" />
-
-                        <p className='w-2/3 text-left ml-auto mr-auto mt-3'>{NCDS.imply}</p>
-                        <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
-                    </div>
-                    <ContentHeader headerData={headerData} url_yt={NCDS.video} />
-
-                    <div className=''>
-                        <BestFood />
-                        <DisplayFoodReadMore data={NCDSTrends} title={`บทความยอดนิยม`} />
+        <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto">
+            <div className="text-center w-full">
+                {/* Custom image */}
+                <div className='flex flex-col justify-center items-center gap-4'>
+                    <div className="sm:w-11/12 sm:h-96 h-60"><CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="100%" height="100%" /></div>
+                    <div className="flex gap-2">
+                        {NCDS?.image.map(({ name }, i) => <Tooltip key={i + name} title={`รูป ${i + 1}`}><button onClick={() => setCasImg(i)} className={`w-2 h-2 rounded-full  hover:bg-gray-900 ease-anima ${casImg === i ? "bg-gray-900 animate-pulse" : "bg-gray-400"}`} /></Tooltip>)}
                     </div>
                 </div>
-            }
-        </>
+                {/* Custom image */}
+                <p className='w-2/3 text-left ml-auto mr-auto mt-3'>{NCDS.imply}</p>
+                <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
+            </div>
+            <ContentHeader headerData={headerData} url_yt={NCDS.video} />
+            <span className="flex justify-end w-full">ยอดเข้าชม {NCDS?.views} ครั้ง</span>
+            <div className=''>
+                <BestFood />
+                <BestBlog />
+            </div>
+        </div>
     )
 }
 
 
 
-const NCDSTrends = [
-    {
-        id: 0,
-        type: "NCDSs",
-        categories: "NCDSs_food",
-        title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
-        title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-        intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
-        detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
-        ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
-        imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-    },
+export async function getServerSideProps({ req, res, query }) {
+    try {
+        const { categories } = query
 
-]
+        // const token = headers.cookie.split("=")[1].split(";")[0]
+        if (/^-?\d+$/.test(categories)) {
+            const cookie_ref = getCookie(`NCDS${categories}`, { req, res })
+            if (!cookie_ref) {
+                setCookies(`NCDS${categories}`, true, { req, res, maxAge: 60 * 60 * 24 * 30 })
+                console.log("update views", categories)
+                fetch(`${serverip}/api/getNCDS?views=${categories}`, { method: "PATCH", })
+                    .then(resq => resq.ok)
+            }
+
+        }
+    } catch (e) { }
+    return {
+        props: {},
+    }
+}

@@ -1,111 +1,102 @@
 import { useRouter } from 'next/router'
 import { Button, Tooltip, Carousel, Card, Divider } from 'antd';
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import { getCookie, setCookies } from 'cookies-next';
+import { serverip } from '/config/serverip'
 
-import DisplayFoodReadMore from '/components/displayFoodReadMore'
+
 import BestFood from '../../../components/BestFood';
-const Ncds = dynamic(() => import("/components/ncds/ncds_more_index.js"),
-  { ssr: false })
-const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
-  { ssr: false })
+import BestBlog from '../../../components/BestBlog';
+
+const CustImage = dynamic(() => import("/components/cusImage"))
+
+
 export default function Index() {
   const router = useRouter()
   const { blog, categories } = router.query
+  const [casImg, setCasImg] = useState(null)
+  const [data, setData] = useState(null)
+  const [loading, setloading] = useState(false)
+  const fetechData = async () => {
+    setloading(true)
+    const data = await fetch(`/api/getBlogs?id=${blog}`).then(res => res.ok && res.json())
+    console.log(data)
+    if (data) {
+      setData(data)
+    }
+    setloading(false)
+  }
+  useEffect(() => {
+    if (blog && categories) {
+      fetechData()
+    }
+  }, [blog, categories])
+  useEffect(() => {
+    if (data) {
+      const timmer = setInterval(() => {
+        setCasImg(casImg => casImg < data.image.length - 1 ? casImg += 1 : casImg = 0)
+      }, 10000)
+      return () => clearInterval(timmer)
+    }
+  }, [data, casImg])
   if (!blog) return null
+  if (loading) return <>กำลังดึงข้อมูล</>
+  if (!data) return null
   return (
     <div className="flex flex-col min-h-screen ">
-      {blog ? <>
-        แสดงบทความ {blog}
-      </>
-        : categories ? <div className='lg:mx-10'>
-          <Ncds ncds={ncds} />
-          <BestFood/>
-          <DisplayFoodReadMore className="h-fix73" data={blogTrends} title={`อาหาร`} />
+      <div className="text-center w-full">
+        {/* Custom image */}
+        <div className='flex flex-col justify-center items-center gap-4'>
+          <div className="sm:w-11/12 sm:h-96 h-60"><CustImage className="rounded-lg " src={data?.image[casImg]?.name} alt={data.name} width="100%" height="100%" /></div>
+          <div className="flex gap-2">
+            {data?.image.map(({ name }, i) => <Tooltip key={i + name} title={`รูป ${i + 1}`}><button onClick={() => setCasImg(i)} className={`w-2 h-2 rounded-full  hover:bg-gray-900 ease-anima ${casImg === i ? "bg-gray-900 animate-pulse" : "bg-gray-400"}`} /></Tooltip>)}
+          </div>
         </div>
-          : <></>}
+        {/* Custom image */}
+        <p className='sm:w-2/3 w-10/12 text-left ml-auto mr-auto mt-3'>{data.imply}</p>
+        <div className='border-green-800 border-b-2 border-solid sm:w-8/12 w-10/12 mx-auto' />
+        <div className="flex flex-col gap-2 w-full sm:w-11/12   mt-5 sm:mx-auto">
+          {[...data.subBlog,...data.subBlog].map(({ id, name, image, detail }, ind) => <div key={name + ind} className="flex flex-col sm:flex-row shadow-sm bg-white sm:py-3 sm:px-3 rounded-xl  w-full h-full gap-3 ">
+            {image && ind % 2 === 0 && <div className="sm:w-3/5  my-auto h-full  ease "><CustImage className="rounded-md h-full" src={image} alt={name} width="100%" height="100%" /></div>}
+            <div className={`flex flex-col w-full h-full  ${ind % 2 === 0 ? " text-left" : "text-right"}`}>
+              <div className="text-2xl sm:text-5xl sm:px-0 px-2 ease">{name}</div>
+              <hr className="my-3"/>
+              <div className="text-lg sm:px-0 px-2 ease whitespace-pre-line ">{detail}</div>
+            </div>
+            {image && ind % 2 === 1 && <div className="sm:w-3/5  my-auto h-full  ease "><CustImage className="rounded-md h-full" src={image} alt={name} width="100%" height="100%" /></div>}
+            <hr className="my-3"/>
+          </div>)}
+        </div>
+      </div>
+
+      <div>
+        <BestFood />
+        <BestBlog />
+      </div>
     </div>
   )
 }
-const ncds = [
-  {
-    ncds: "โรคเบาหวาน",
-    because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-    imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
-    videoUrl: "https://youtu.be/FdOOBcN0Ws8",
-    suggess: true,
-    ref: "https://www.poonrada.com/sickness/detail/87",
-  },
-  {
-    ncds: "ความดันโลหิตสูง",
-    because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-    // videoUrl: "https://youtu.be/FdOOBcN0Ws8",
-    imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
-    suggess: false,
-    ref: "https://www.poonrada.com/sickness/detail/87",
-  },
-  {
-    ncds: "โรคเบาหวาน",
-    because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-    imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
-    videoUrl: "https://youtu.be/FdOOBcN0Ws8",
-    suggess: true,
-    ref: "https://www.poonrada.com/sickness/detail/87",
-  },
-  {
-    ncds: "ความดันโลหิตสูง",
-    because: "สามารถทานได้ในปริมาณที่จำกัด และควรทานข้าวปริมาณจำกัดเพื่อเลี่ยงน้ำตาล หากต้มยำกุ้งใส่กะทิไม่ควรทานและไม่ควรทานเค็ม",
-    // videoUrl: "https://youtu.be/FdOOBcN0Ws8",
-    imgUrl: "https://www.poonrada.com/upload/sickness/2019/07/2127fc6c17b6571965a73fd94dd623ca.jpg",
-    suggess: false,
-    ref: "https://www.poonrada.com/sickness/detail/87",
-  },
 
-]
-const blogTrends = [
-  {
-    id: 0,
-    type: "ncds",
-    categories: "diabetes",
-    title_th: "อาหาร",
-    title: "โรคเบาหวาน ควรรับประทานอย่างไร? (Diabetic Diet)",
-    intro: "ข้อความเกริ่นนำ....(ไม่เกิน 50 ตัวอักษร)",
-    detail: "อาหารสำหรับผู้ป่วยเบาหวานคืออาหารทั่วไปไม่แตกต่างจากอาหารที่รับประทานเป็นปกติ แต่ควรเป็นอาหารที่ไม่หวานจัด โดยคำนึงถึงปริมาณ ชนิดของแป้ง และไขมันเป็นสิ่งสำคัญ เพื่อควบคุมระดับน้ำตาลและไขมันในเลือด รวมถึงการรักษาน้ำหนักตัวให้อยู่ในเกณฑ์ปกติ นอกจากนี้ ควรรับประทานอาหารให้เป็นเวลา และปริมาณที่ใกล้เคียงกันในแต่ละมื้อ โดยเฉพาะปริมาณคาร์โบไฮเดรตโดยรวม หากต้องการลดน้ำหนักให้ลดปริมาณอาหาร แต่ไม่ควรงดอาหารมื้อใดมื้อหนึ่ง เพราะจะทำให้หิวและอาจรับประทานในมื้อถัดไปมากขึ้น ซึ่งจะส่งผลให้ระดับน้ำตาลในเลือดขึ้นๆ ลงๆ ควรปรึกษาแพทย์ที่ทำการรักษาเนื่องจากอาจมีการปรับยาในการรักษาเบาหวาน",
-    ref: "https://www.siphhospital.com/th/news/article/share/450",
-    imgUrl: "https://siph-space.sgp1.digitaloceanspaces.com/media/upload/diabeteshowtoeat_og_1200.jpg",
-  },
-  {
-    id: 1,
-    type: "blogs",
-    categories: "blogs_food",
-    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกันx",
-    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
-    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
-    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
-    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-  },
-  {
-    id: 2,
-    type: "blogs",
-    categories: "blogs_food",
-    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
-    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
-    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
-    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
-    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-  },
-  {
-    id: 3,
-    type: "blogs",
-    categories: "blogs_food",
-    title_th: "เมนูไทยๆ_ต้านโรคภัย_เพิ่มภูมิคุ้มกัน",
-    title: "เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน",
-    intro: "7 เมนูไทยๆ ต้านโรคภัย เพิ่มภูมิคุ้มกัน วัตถุดิบและกรรมวิธีการทำอาหารของไทยนั้นเป็นยาดีเพิ่มภูมิคุ้มกันให้ร่างกายของเราได้ด้วยตัวของมันอยู่แล้ว",
-    detail: "ต้มยำกุ้ง – กับข้าวรสร้อนแรงไม่ว่าใส่กะทิหรือไม่ใส่ก็อร่อยทั้งแบบ ยิ่งถ้าเป็นหวัดคัดจมูกได้ทานต้มยำกุ้งเข้าไปต้องรู้สึกล่งคอโล่งจมูกกันทั้งนั้น เพราะส่วนประกอบในต้มยำกุ้งนั้น เช่น ใบมะกรูด ขิง หอมแดงที่มีสารสารเคอร์ซีติน รวมถึงเห็ดต่างๆ ที่มีสารเบต้ากลูแคนเพิ่มภูมิคุ้มกันลดความเสี่ยงที่เชื้อไวรัสจะเข้าสู่เซลล์ในร่างกาย",
-    ref: "https://www.paolohospital.com/th-TH/rangsit/Article/Details/บทความโภชนาการ-/7-เมนูไทยๆ-ต้านโรคภัย-เพิ่มภูมิคุ้มกัน",
-    imgUrl: "https://www.paolohospital.com/Resource/Image/Article/shutterstock_289936964.jpg",
-  },
-]
+
+
+
+export async function getServerSideProps({ req, res, query }) {
+  try {
+    const { blog } = query
+    // const token = headers.cookie.split("=")[1].split(";")[0]
+    if (/^-?\d+$/.test(blog)) {
+      const cookie_ref = getCookie(`blog${blog}`, { req, res })
+      if (!cookie_ref) {
+        setCookies(`blog${blog}`, true, { req, res, maxAge: 60 * 60 * 24 * 30 })
+        console.log("update views", blog)
+        fetch(`${serverip}/api/getBlogs?views=${blog}`, { method: "PATCH", })
+          .then(resq => resq.ok)
+      }
+
+    }
+  } catch (e) { }
+  return {
+    props: {},
+  }
+}

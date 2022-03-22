@@ -382,3 +382,7 @@ a {
 .ant-modal-confirm-btns {
   @apply w-full h-full flex justify-end !important
 }
+
+.ease {
+  @apply transition-all duration-500  !important
+}

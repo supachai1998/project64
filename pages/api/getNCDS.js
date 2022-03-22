@@ -24,6 +24,17 @@ export default async function handler(req, res) {
         return res.status(200).json({ status: true })
 
       case "PATCH":
+        if (query.views) {
+          await prisma.ncds.update({
+            where: {
+              id: parseInt(query.views),
+            },
+            data: {
+              views: { increment: 1 }
+            }
+          })
+          return res.status(200).json({ status: true })
+        }
         // console.log(dataOld)
         if (!id) {
           data = body.new

@@ -16,7 +16,7 @@ export default function ContentHeader({ headerData, url_yt }) {
     }
     if(!headerData) return null
     return (
-        <div className="flex flex-wrap p-6 rounded-md mx-10 bg-gray-50">
+        <div className="flex flex-wrap sm:p-6 p-3 rounded-md sm:mx-10 bg-gray-50 h-full">
 
             <div className="mb-5 -ml-2  text-xs lg:text-sm font-bold  flex-col flex w-full text-center lg:flex-row  ">
                 {headerData.map(({ title, content }, index) =>
@@ -29,17 +29,17 @@ export default function ContentHeader({ headerData, url_yt }) {
                 )}
             </div>
             {headerData.map(({ title, content }, index) => (
-                <div key={index} className="" ref={el => dataRef.current[index] = el}>
+                <div key={index} className="w-full" ref={el => dataRef.current[index] = el}>
                     <div className={`pl-1 text-2xl font-thin border-l-2 border-green-600 lg:text-4xl mb-2 ${index !== 0 && "mt-4"}`}>{title}</div>
                     <div className={index % 2 === 0
-                        ? "pl-1  overflow-auto zm:text-sm whitespace-pre-line text-base mx-5"
-                        : "pl-1  overflow-auto zm:h-full zm:text-sm whitespace-pre-line text-base"} >
+                        ? "pl-1 sm:mx-5  zm:text-sm whitespace-pre-line text-lg "
+                        : "pl-1 sm:mx-5 zm:h-full zm:text-sm whitespace-pre-line text-lg"} >
                         {content}
                     </div>
-
+                    <hr className="sm:my-3 sm:visible invisible"/>
                 </div>
             ))}
-            <div className="flex justify-end w-full">
+            <div className="flex justify-end w-full sm:mt-0 mt-2">
                 <button href="#" className="w-32 text-lg border flex gap-2 justify-center items-center   rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: "วิดีโอ", video: url_yt }) }}>
                     <i><VideoCameraOutlined className='text-lg' /></i>
                     <span>ดูวิดีโอ</span>

@@ -23,6 +23,17 @@ export default async function handler(req, res) {
                 })
                 return res.status(200).json({ status: true })
             case "PATCH":
+                if (query.views) {
+                    await prisma.food.update({
+                        where: {
+                            id: parseInt(query.views),
+                        },
+                        data: {
+                            views: { increment: 1 }
+                        }
+                    })
+                    return res.status(200).json({ status: true })
+                }
                 body = JSON.parse(body)
                 data = body.new
                 const dataOld = body.old
@@ -132,7 +143,7 @@ export default async function handler(req, res) {
                         },
                         take: 5,
                     })
-                    if (!!data && data.length > 0) {return res.status(200).json(data)} else {return res.status(404).json([])}
+                    if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
                 }
                 if (query.categories) {
                     data = await prisma.food.findMany({
@@ -191,10 +202,10 @@ export default async function handler(req, res) {
                         }
                     })
                     if (data.id) return res.status(200).json(data)
-                }else if (select) {
+                } else if (select) {
                     let _ = {}
                     for (const val of select.split(",")) {
-                        _ = {..._, [val]: true }
+                        _ = { ..._, [val]: true }
                     }
                     data = await prisma.food.findMany({
                         select: _
@@ -216,9 +227,9 @@ export default async function handler(req, res) {
                             }
                         }
                     })
-                    if (!!data & data.length > 0) {return res.status(200).json(data)}else{return res.status(404).json([])}
+                    if (!!data & data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
                 }
-                if (!!data && data.length > 0) return res.status(200).json(data) 
+                if (!!data && data.length > 0) return res.status(200).json(data)
                 else return res.status(404).send({
                     query: query.name,
                     message: "data not found",

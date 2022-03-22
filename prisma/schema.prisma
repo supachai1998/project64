@@ -106,7 +106,7 @@ model Food {
   ref          Ref[]
   ingredient   String         @db.LongText
   video        String?
-  views        Int?
+  views        Int?           @default(0)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   FoodNcds     FoodNcds[]
@@ -172,7 +172,7 @@ model Blogs {
   vote_3    Int?
   vote_4    Int?
   vote_5    Int?
-  views     Int?
+  views     Int?           @default(0)
   createdAt DateTime?      @default(now())
   updatedAt DateTime?      @updatedAt
   related   relationBlog[]
