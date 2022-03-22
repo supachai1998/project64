@@ -8,6 +8,7 @@ const BestFood = dynamic(() => import( '../components/BestFood'))
 const BestBlog = dynamic(() => import( '../components/BestBlog'))
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const CusInput = dynamic(() => import("/components/cusInput"))
+const MultiCard = dynamic(() => import("/components/MultiCard"))
 
 const DisplayFoodReadMore = dynamic(() => import("/components/displayFoodReadMore"),
   { ssr: false })
@@ -25,8 +26,8 @@ export default function Index() {
       animate="visible">
       <div className="relative">
         <div className="flex flex-col gap-3 p-3 ">
-          <CusInput data={data} setData={setData} originData={onSearchTomyum} />
-          {!loading && !!data && data.length > 0 && <DisplayFoodReadMore data={data} title={"ผลการค้นหา"} />}
+          <CusInput data={data} setData={setData} />
+          {!loading && !!data && data.length > 0 && <MultiCard data={data} title={"ผลการค้นหา"} />}
         </div>
         {loading && input.length > 2 && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>}
       </div>

@@ -12,7 +12,7 @@ import Resizer from "react-image-file-resizer";
 import { noti } from '/components/noti'
 
 const { Search } = Input
-export default function CusInput({ data, setData, originData }) {
+export default function CusInput({ data, setData }) {
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
   const [loading, setLoading] = useState(false)

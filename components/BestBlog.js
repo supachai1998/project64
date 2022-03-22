@@ -1,5 +1,5 @@
 
-import { Tooltip, Divider, Rate, Select, notification } from 'antd';
+import { Tooltip, Rate, notification } from 'antd';
 
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic'

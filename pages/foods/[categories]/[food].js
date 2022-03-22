@@ -31,7 +31,7 @@ export default function Index() {
     const [content, setContent] = useState()
     const [data, setData] = useState(null)
     const [Loading, setLoading] = useState(null)
-    const fetchData = async () =>{
+    const fetchData = async () => {
         setLoading(true)
         const data_categories = await fetch(`/api/getTypeFood`).then(res => res.ok && res.json())
         const data_food = await fetch(`/api/getFood?id=${food}`).then(res => res.ok && res.json())
@@ -55,14 +55,18 @@ export default function Index() {
     }
     if (!food) return null
     if (Loading) return <>กำลังดึงข้อมูล</>
-    if(!data) return <>ไม่พบข้อมูล</>
+    if (!data) return <>ไม่พบข้อมูล</>
     return (
         <div className="-mt-1 min-h-screen bg-gray-100">
             <div className="flex flex-col w-full h-full   ">
                 <div className="flex  flex-col bg-gray-100 ipad:flex-row relative h-96 md:h-super lg:h-very-super ">
                     <div className='sm:w-10/12 mx-auto flex h-full '><CustImage className="sm:rounded-md" src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} /></div>
                     <div className='absolute-center w-full text-center align-middle '>
-                        <p className='text-6xl sm:text-9xl lg:text-9xl text-shadow  text-white my-auto p-0'>{data.name_th}</p>
+                        <div className='my-auto p-0 flex flex-col gap-5'>
+
+                            <span className='text-6xl sm:text-9xl  text-shadow  text-white '>{data.name_th}</span>
+                            <span className='text-lg sm:text-xl  text-shadow  text-black my-auto p-0'>{data.name_en}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -71,11 +75,11 @@ export default function Index() {
                     <div className="flex flex-col w-full px-4 h-full    text-center">
                         <p className="sm:text-4xl text-3xl font-bold text-green-800 ">{data.calories} กิโลแคลอรี่</p>
                         <div className="w-full ">
-                            <p className='food-content-body'>{data.detail.replace("<br/>", "\n")}</p>
+                            <p className='food-content-body'>{data.detail}</p>
                             <p className="food-content-header">วิธีการทำ</p>
-                            <p className='food-content-body'>{data.proceduce.replace("<br/>", "\n")}</p>
+                            <p className='food-content-body'>{data.proceduce}</p>
                             <p className="food-content-header">ส่วนผสม</p>
-                            <p className='food-content-body'>{data.ingredient.replace("<br/>", "\n")}</p>
+                            <p className='food-content-body'>{data.ingredient}</p>
 
                         </div>
                         <div className='flex justify-between items-center'>
