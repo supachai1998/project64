@@ -20,23 +20,30 @@ export default function Index() {
     const [loading, setLoading] = useState(false)
     const [NCDS, setNCDS] = useState()
     const [_form, setForm] = useState([])
+    const reqForm = async () => await fetch("/api/getForm")
+        .then(res => res.status === 200 && res.json())
+        .then(data => data)
+        .catch(err => notification.error({ message: "Error", description: err.message }))
+            
     const reload = async () => {
         setLoading(true)
-
-        const reqForm = await fetch("/api/getForm")
-            .then(res => res.status === 200 && res.json())
-            .then(data => setForm(!!data && data.length > 0 && data || []))
-            .catch(err => notification.error({ message: "Error", description: err.message }))
+        const data = await reqForm()
+        setForm(!!data && data.length > 0 && data || [])
         setLoading(false)
     }
     useEffect(() => {
         (async () => {
-            reload()
+            await reload()
             const fetchNCDS = await FetchNCDS()
             Array.isArray(fetchNCDS) && setNCDS(fetchNCDS)
         })()
         return () => setForm([])
     }, [])
+    useEffect(()=>{
+        (async () => {
+            await reload()
+        })()
+    },[modalEdit])
     return (
         <div className="ease-div flex flex-col gap-4 w-full">
             <Board data={{}} />
@@ -311,7 +318,7 @@ const ModalAdd = () => {
                                                     <div className='mx-auto flex justify-center'>
                                                         <Form.Item
                                                             label={<div className='flex gap-3 items-center'><Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red", fontSize: "12px" }} onClick={() => remove(field.name)} /></Tooltip>ชื่อคำถาม</div>}
-                                                            name={[fieldchoice.name, 'คำถาม']}
+                                                            name={[fieldchoice.name, 'name']}
                                                             fieldKey={[fieldchoice.fieldKey, 'name']}
                                                             rules={[{ required: true }]}
                                                             labelCol={{ span: 10 }}
@@ -320,7 +327,7 @@ const ModalAdd = () => {
                                                         </Form.Item>
                                                         <Form.Item
                                                             label="รายละเอียด"
-                                                            name={[fieldchoice.name, 'รายละเอียด']}
+                                                            name={[fieldchoice.name, 'detail']}
                                                             fieldKey={[fieldchoice.fieldKey, 'detail']}
                                                             rules={[{ required: false }]}
                                                             labelCol={{ span: 10 }}
@@ -330,7 +337,7 @@ const ModalAdd = () => {
                                                         <Form.Item
                                                             label="คะแนน"
                                                             labelCol={{ span: 10 }}
-                                                            name={[fieldchoice.name, 'คะแนน']}
+                                                            name={[fieldchoice.name, 'score']}
                                                             fieldKey={[fieldchoice.fieldKey, 'score']}
                                                             rules={[{ required: true }, {
                                                                 pattern: /^[0-9.]+$/,
@@ -385,7 +392,6 @@ const ModalEdit = () => {
     const [ncds, setNcds] = useState()
 
     useEffect(() => {
-        console.log(modalEdit)
         form.setFieldsValue({ ...modalEdit, ncdsId: modalEdit?.ncds?.id });
     }, [form, modalEdit]);
     useEffect(() => {
@@ -412,12 +418,13 @@ const ModalEdit = () => {
             .then(async res => {
                 if (res.ok) {
                     notification.success({ message: "แก้ไขข้อมูลเรียบร้อย" })
+                    await reload()
                     setModalEdit(false)
                 } else {
                     notification.error({ message: `ไม่สามารถแก้ไขข้อมูลได้` })
                 }
             })
-        await reload()
+            await reload()
     }
     const onCancel = () => {
         setModalEdit(false)

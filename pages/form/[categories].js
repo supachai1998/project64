@@ -1,274 +1,159 @@
 import { useRouter } from 'next/router'
-import { Steps, Button, message, Tooltip, Checkbox, Row, Col, Divider } from 'antd';
-import Image from 'next/image'
+import { Steps, Button, Radio, message, Modal, Tooltip, Checkbox, Select, notification, } from 'antd';
 import { useState, useEffect } from 'react'
-import { motion, } from 'framer-motion';
-import { isMobile } from 'react-device-detect';
+import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
+
 const { Step } = Steps;
+const { Option } = Select
 
 export default function Index() {
     const router = useRouter()
+    const [data, setData] = useState()
+    const [choice, setChoice] = useState([])
+    const [loading, setloading] = useState()
     const { categories } = router.query
-    const [_choice, setChoice] = useState(choice.map(val => ({
-        ...val, checked: false, disabled: false
-    })));
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [btnLoading, setBtnLoading] = useState(false);
+    const [curInd, setcurInd] = useState(0);
+    const [avg_score, setAvg_score] = useState(0);
+    const [modal, setModal] = useState(false);
 
-    const { title, content } = _choice[currentIndex]
+    const fetchData = async () => {
+        setloading(true)
+        const data = await fetch(`/api/getForm?id=${categories}`).then(res => res.ok && res.json())
+        setChoice(data.subForm.map(({ choice }) => setChoice(prev => [...prev, 0])))
+        setData(data)
+        setloading(false)
+    }
+
+    useEffect(() => {
+        if (categories) {
+            fetchData()
+        }
+        return () => setData()
+    }, [categories])
 
     const next = () => {
-        setCurrentIndex(currentIndex + 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setcurInd(curInd + 1);
     };
 
     const prev = () => {
-        setCurrentIndex(currentIndex - 1);
+        setcurInd(curInd - 1);
     };
-    const handleSubmit = () => {
-        setBtnLoading(true)
-        setTimeout(() => {
-            setBtnLoading(false)
-            Math.random() > .4 ? message.success('คุณปกติ!') : message.warning('คุณป่วย!')
-        }, 1000);
+    const onRadioChange = ({ target: { value } }) => {
+        setChoice(prev => prev.map((_, i) => i === curInd ? value : _))
     }
-    const onChange = (e) => {
-        const { name, checked } = e.target
-        let _temp_choice = _choice[currentIndex]
-        let _temp_content = _temp_choice.content
-        if (name === "ไม่มีอาการ" && checked) {
-            _temp_content = _temp_content.map(el => el.title !== name ? { ...el, checked: false, disabled: true } : { ...el, checked: checked })
-        } else {
-            _temp_content = _temp_content.map(el => el.title === name ? { ...el, checked: checked, disabled: false } : { ...el, disabled: false })
+    const sendForm = () => {
+        const notScore = choice.map((v, i) => {
+            if (typeof v !== "number") {
+                notification.error({ message: `คุณลืมทำแบบประเมินหัวข้อที่ ${i + 1}` })
+                return true
+            }
+            return false
+        }).every(v => v === false)
+        if (notScore) {
+            const total_score = data.subForm.map((v) => v.choice.map((v2) => v2.score))
+            // const sum = total_score.map(v => v.reduce((a, b) => a + b))
+            // console.log(sum)
+            const max = total_score.map(v => v.reduce((a, b) => a > b ? a : b))
+            const sum = max.reduce((a, b) => a + b)
+            const total_usr_score = choice.reduce((a, b) => a + b)
+            const avgScore = total_usr_score / sum * 100
+            setAvg_score(avgScore)
+            setModal(true)
         }
-        _temp_choice.content = _temp_content
-        setChoice(prev => prev.map((_, i) => i === currentIndex ? _temp_choice : _))
     }
-    const handleStepClick = i => {
-        i < currentIndex && setCurrentIndex(i)
-    }
+
+    if (loading) return <div className='min-h-screen'>กำลังดึงข้อมูล</div>
+    if (!data) return <div className='min-h-screen'>ไม่พบข้อมูล</div>
+
     return (
-        <div className="flex flex-col m-5 lg:mx-20 mx-0 h-screen">
-            <div className='lg:w-full flex flex-col' >
-                
-                    <Steps  current={currentIndex} >
-                        
-                        {choice.map((item, i) => (
-                            <Step key={i} title={item.title} onStepClick={handleStepClick} />
-                        ))}
-                    </Steps>
+        <div className="min-h-screen h-full sm:w-1/2 mx-auto bg-white rounded-lg shadow-md px-3 py-2">
+            <div className="w-full">
+                <div className='flex sm:gap-3 justify-between'>
+                    <span className="text-md md:text-4xl">{curInd + 1}. {data?.subForm[curInd]?.name}</span>
+                    <div>
+                        <Select
+                            showSearch
+                            placeholder="เลือกหัวข้อแบบประเมิน"
+                            optionFilterProp="children"
+                            onChange={(value) => setcurInd(value)}
+                            // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                            filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                            {!!data.subForm && data.subForm.map(({ name, id }, ind) => <Option key={ind} value={ind}>{name}</Option>)}
+                        </Select>
+                    </div>
+                </div>
+                <Radio.Group onChange={onRadioChange} value={choice[curInd]}>
+                    {data.subForm[curInd].choice.map(({ name, detail, score }, i) => <div key={i} className="my-5">
+                        <Tooltip title={detail}><Radio style={{ fontSize: "1.5vw" }} value={score}>{name}</Radio></Tooltip>
+                        <p className="w-full max-h-96   text-black">{detail}</p>
+                    </div>)}
+                </Radio.Group>
             </div>
-           
-            <div className=" mt-5">
-                {/* <p>{title}</p> */}
-
-                <div className=" w-full gap-4 bg-white rounded-lg p-10 lg:mx-2 shadow-lg ">
-                    {content.map((con, i) => (
-                        <motion.div
-                            variants={fadeInUp}
-                            whileTap={{ scale: .97 }}
-                            key={i} title={con.detail} className="w-full h-full break-all">
-                            <Checkbox value={con.score} onChange={onChange} checked={con.checked} disabled={con.disabled} name={con.title} >{con.title}
-                                {"\t"}<span className="text-gray-600 ">{con.detail}</span>
-                            </Checkbox>
-
-                        </motion.div>
-                    ))}
-                        <div className="flex justify-center mt-3 ">
-                    
-                        <a  onClick={() => prev()} className='text-gray-500 hover:text-gray-900'>
-                            ข้อก่อนหน้า
-                        </a>
-                        <span className='mx-2 text-gray-500'>|</span>
-                    
-
-                        <a type="default" className='text-green-700 hover:text-green-900'
-                            disabled={!_choice[currentIndex].content.find(val => val.checked === true)} onClick={() => next()}>
-                            ข้อถัดไป
-                        </a>
-              
-                   
-
-                </div>
-                     
-                </div>
-
-
-                <div className='flex justify-end mt-5'>
-                        
-                        <Button type="primary" onClick={handleSubmit} loading={btnLoading} className='mx-2'
-                            disabled={!_choice[currentIndex].content.find(val => val.checked === true)} danger>
-                            ล้างฟอร์ม
-                        </Button>
-               
-                        <Button type="primary" onClick={handleSubmit} loading={btnLoading}
-                            disabled={!_choice[currentIndex].content.find(val => val.checked === true)}>
-                            ส่งแบบประเมิน
-                        </Button>
-               
-                </div>
+            <div className='w-full flex items-end justify-end gap-3'>
+                {curInd > 0 && (
+                    <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+                        ข้อก่อนหน้า
+                    </Button>
+                )}
+                {curInd < data.subForm.length - 1 && (
+                    <Button type="primary" disabled={typeof choice[curInd] !== "number"} onClick={() => next()}>
+                        ข้อถัดไป
+                    </Button>
+                )}
+                {(curInd === data.subForm.length - 1) && (
+                    <Button type="ghost" onClick={sendForm}>
+                        ส่งแบบประเมิน
+                    </Button>
+                )}
             </div>
+
+            <Result avg_score={avg_score} setAvg_score={setAvg_score} data={data} modal={modal} setModal={setModal} />
         </div>
     )
 }
 
-
-const choice = [
-    {
-        title: "คุณมีอาการดังต่อไปนี้หรือไม่ ",
-        content: [
-            {
-                title: "ปวดหัว",
-                detail: "รายละเอียด xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                score: 1,
-            },
-            {
-                title: "ตัวร้อน",
-                detail: "รายละเอียด 1 2 3 4 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                score: 2,
-            },
-            {
-                title: "ไม่สบาย",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 3,
-            },
-            {
-                title: "วินเวียน",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 4,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-    {
-        title: "พฤติกรรมการรับประทานอาหาร ",
-        content: [
-            {
-                title: "กินเผ็ด",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "เปรี้ยว",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 6,
-            },
-            {
-                title: "หวาน",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 7,
-            },
-            {
-                title: "เผ็ดมากๆ",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 1,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-    {
-        title: "พฤติกรรมการนอน",
-        content: [
-            {
-                title: "นอนไม่ค่อยหลับ",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 2,
-            },
-            {
-                title: "นอนหลับๆตื่นๆ",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 3,
-            },
-            {
-                title: "นอนไม่เป็นเวลา",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 4,
-            },
-            {
-                title: "นอนเต็มอิ่ม",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 4,
-            },
-            {
-                title: "ยังไม่ได้นอน~~~",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-    {
-        title: "พฤติกรรมการนั่ง",
-        content: [
-            {
-                title: "กินเผ็ด1",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "เปรี้ยว2",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "หวาน3",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "เผ็ดมากๆ4",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-]
-
-// Our custom easing
-let easing = [0.6, -0.05, 0.01, 0.99];
-
-// animate: defines animation
-// initial: defines initial state of animation or stating point.
-// exit: defines animation when component exits
-
-// Custom variant
-const fadeInUp = {
-    initial: {
-        y: 60,
-        opacity: 0,
-        transition: { duration: 0.6, ease: easing }
-    },
-    animate: {
-        y: 0,
-        opacity: 1,
-        transition: {
-            duration: 0.6,
-            ease: easing
-        }
+const Result = ({ data, avg_score, setModal, modal }) => {
+    const [sugess, setSugess] = useState()
+    const router = useRouter()
+    const handleCancel = () => {
+        setModal();
+    };
+    const fetchData = async () => {
+        await fetch(`/api/getNCDS?id=${data.ncds.id}`).then(res => res.ok ? res.json() : notification.error({ message: "Error", description: "ไม่พบข้อมูล" }))
+            .then(data => {
+                setSugess(data.sugess)
+            })
+            .catch(err => notification.error({ message: "ไม่สามารถดึงข้อมูลได้", description: err.message }))
     }
-};
+    useEffect(() => {
+        data && fetchData()
+    }, [data])
 
-const stagger = {
-    animate: {
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
-};
+    if (!data && !modal) return null
+    return <Modal
+
+        title={<span className='text-3xl'>ผลการประเมิน{data.ncds.name_th}</span>}
+        visible={modal}
+        onCancel={handleCancel}
+        footer={null}>
+        <>
+            <div className='flex justify-center'><Icon avg_score={avg_score} /></div>
+            <div className='flex flex-col gap-3'>
+                <span className='mt-3 text-lg border-b-2 w-full'>คำแนะนำในการปฏิบัติตัว</span>
+                <span className='whitespace-pre-line'>{sugess}</span>
+            </div>
+            <div className='flex justify-end'>
+                <Tooltip title={data.ncds.name_th}> <button className='button  hover:text-blue-800 shadow-md hover:text-lg ease' onClick={() => router.push(`/ncds/${data.ncds.id}`)} >อ่านต่อ</button></Tooltip>
+            </div>
+        </>
+    </Modal>
+}
+const Icon = ({ avg_score }) => (<>
+    <Tooltip title={`${avg_score.toFixed(0)}%`}>
+        {avg_score <= 20 ? <div className="text-7xl text-green-500 flex flex-col gap-2"> <SmileOutlined /> <span className='text-3xl'>เสี่ยงต่ำมาก </span></div>
+            : avg_score <= 40 ? <div className="text-7xl text-green-900 flex flex-col gap-2"> <SmileOutlined /><span className='text-3xl'>เสี่ยงต่ำ </span></div>
+                : avg_score <= 60 ? <div className="text-7xl text-yellow-500 flex flex-col gap-2"> <SmileOutlined /><span className='text-3xl'>เสี่ยงปานกลาง </span></div>
+                    : avg_score <= 80 ? <div className="text-7xl text-red-900 flex flex-col gap-2"> <FrownOutlined /><span className='text-3xl'>เสี่ยงสูง </span></div>
+                        : <div className="text-7xl text-red-500 flex flex-col gap-2"><FrownOutlined /><span className='text-3xl'>เสี่ยงสูงมาก </span></div>}
+    </Tooltip>
+</>)

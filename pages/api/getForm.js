@@ -36,7 +36,7 @@ export default async function handler(req, res,) {
           let { subForm } = _data
           delete _data['subForm']
           subForm = subForm.map(v1 => { return { ...v1, choice: v1.choice.map(v => { return { ...v, score: Number(v.score) } }) } })
-          const createSubform = subForm.filter(val => !val.id).map((v1) =>{return {...v1, choice : {create : [...v1.choice]}}})
+          const createSubform = subForm.filter(val => !val.id).map((v1) => { return { ...v1, choice: { create: [...v1.choice] } } })
           const updateSubform = subForm.map(val => {
             if (val.id) {
               return {
@@ -138,21 +138,42 @@ export default async function handler(req, res,) {
         ])
 
       default:
-        if (query.id) {
+        const _id = parseInt(query.id)
+        if (_id) {
           if (!query.select) {
             data = await prisma.form.findFirst({
 
-              where: { id: query.id }
+              where: { ncdsId: _id },
+              select: {
+                id: true,
+                subForm: {
+                  include: {
+                    choice: {
+                      orderBy :{
+                        score:"desc"
+                      }
+                    }
+                  },
+                },
+                ncds: {
+                  select: {
+                    id: true,
+                    name_th: true,
+                    name_en: true
+                  }
+                }
+              },
+              
             })
           } else {
             const { select } = query
             data = await prisma.form.findFirst({
 
-              where: { id: query.id },
+              where: { id: _id },
               select: { [select]: true }
             })
           }
-          data && res.status(200).json(data)
+          if(data)return res.status(200).json(data)
         } else {
           data = await prisma.form.findMany({
 
@@ -173,7 +194,8 @@ export default async function handler(req, res,) {
             },
           })
         }
-        !!data && data.length > 0 ? res.status(200).json(data) : res.status(404).send({ error: "data not found" })
+        if(!!data && data.length > 0) return res.status(200).json(data) 
+        else res.status(404).send({ error: "data not found" })
         break;
     }
   } catch (e) { console.log(e); res.status(500).send(body) }

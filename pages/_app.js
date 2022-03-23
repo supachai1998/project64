@@ -17,6 +17,7 @@ import {
   FormOutlined,
   MedicineBoxOutlined,
   PieChartOutlined,
+  ProfileOutlined,
   HomeOutlined as HomeIcon,
   LogoutOutlined as LogoutOutlined
 } from '@ant-design/icons';
@@ -166,7 +167,7 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
               <Menu.Item key={`ncds_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
-          <SubMenu key="form" icon={<MedicineBoxOutlined />} title="แบบประเมินโรค">
+          <SubMenu key="form" icon={<ProfileOutlined />} title="แบบประเมินโรค">
             {!!ncds && ncds.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`form_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
