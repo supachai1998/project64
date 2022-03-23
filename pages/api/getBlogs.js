@@ -34,9 +34,18 @@ export default async function handler(req, res) {
             }
           })
           return res.status(200).json({ status: true })
+        } else if (query.vote) {
+          // console.log(query.vote ,query.id)
+          data = await prisma.blogs.update({
+            where: {
+              id: parseInt(query.id),
+            },
+            data: {
+              [query.vote]: { increment: 1 }
+            }
+          })
         }
-        // console.log(dataOld)
-        if (!id) {
+        else if (!id) {
           data = body.new
           const dataOld = body.old
           id = data.id
@@ -139,10 +148,10 @@ export default async function handler(req, res) {
               }
             }
           })
-        }else{
+        } else {
           await prisma.blogs.update({
             where: { id: id },
-            data : {...body}
+            data: { ...body }
           })
         }
         return res.status(200).json({ status: true })
@@ -250,34 +259,34 @@ export default async function handler(req, res) {
           })
 
         }
-        if (!Array.isArray(data)) {
-          data["image"] = data.image.map(({ id, name }) => {
-            return {
-              id: id,
-              status: "done",
-              url: `/uploads/${name}`,
-              name: name
-            }
-          })
-          const total_vote = data.vote_1 + data.vote_2 + data.vote_3 + data.vote_4 + data.vote_5
-          const avg_vote = parseFloat(((1 * data.vote_1 + 2 * data.vote_2 + 3 * data.vote_3 + 4 * data.vote_4 + 5 * data.vote_5) / total_vote).toFixed(2)) || 0
-          return res.status(200).json({ ...data, total_vote, avg_vote })
-        } else if (Array.isArray(data) && data.length > 0) {
-          data = data.map(item => {
-            const image = item.image.map(({ id, name }) => {
-              return {
-                id: id,
-                status: "done",
-                url: `/uploads/${name}`,
-                name: name
-              }
-            })
-            const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
-            const avg_vote = parseFloat(((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote).toFixed(2)) || 0
-            return { ...item, avg_vote, total_vote, image }
-          })
-          return res.status(200).json(data)
+    }
+    if (!Array.isArray(data)) {
+      data["image"] = data.image.map(({ id, name }) => {
+        return {
+          id: id,
+          status: "done",
+          url: `/uploads/${name}`,
+          name: name
         }
+      })
+      const total_vote = data.vote_1 + data.vote_2 + data.vote_3 + data.vote_4 + data.vote_5
+      const avg_vote = parseFloat(((1 * data.vote_1 + 2 * data.vote_2 + 3 * data.vote_3 + 4 * data.vote_4 + 5 * data.vote_5) / total_vote).toFixed(2)) || 0
+      return res.status(200).json({ ...data, total_vote, avg_vote })
+    } else if (Array.isArray(data) && data.length > 0) {
+      data = data.map(item => {
+        const image = item.image.map(({ id, name }) => {
+          return {
+            id: id,
+            status: "done",
+            url: `/uploads/${name}`,
+            name: name
+          }
+        })
+        const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
+        const avg_vote = parseFloat(((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote).toFixed(2)) || 0
+        return { ...item, avg_vote, total_vote, image }
+      })
+      return res.status(200).json(data)
     }
     return res.status(404).send({ error: "data not found", query: query })
   } catch (e) { console.log(e); return res.status(500).send(e) }

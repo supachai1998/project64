@@ -92,6 +92,7 @@ export default function Index() {
                         </div>
                     </div>
                 </div>
+                    <p className='text-right'>ยอดเข้าชม {data.views} ยอด</p>
 
 
                 <NCDS ncds={data.FoodNcds} />

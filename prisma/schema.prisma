@@ -167,11 +167,11 @@ model Blogs {
   type      Type
   approve   Int?           @default(0)
   video     String?
-  vote_1    Int?
-  vote_2    Int?
-  vote_3    Int?
-  vote_4    Int?
-  vote_5    Int?
+  vote_1    Int?           @default(0)
+  vote_2    Int?           @default(0)
+  vote_3    Int?           @default(0)
+  vote_4    Int?           @default(0)
+  vote_5    Int?           @default(0)
   views     Int?           @default(0)
   createdAt DateTime?      @default(now())
   updatedAt DateTime?      @updatedAt

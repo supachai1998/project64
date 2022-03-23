@@ -384,5 +384,9 @@ a {
 }
 
 .ease {
-  @apply transition-all duration-500  !important
+  @apply transition-all ease-in-out duration-500 transform !important
+}
+
+.button {
+  @apply rounded-lg py-1 px-2  
 }
