@@ -118,6 +118,7 @@ export default async function handler(req, res) {
         if (id) {
           if (!query.select) {
             data = await prisma.ncds.findFirst({
+              
               where: { id: id },
               include: {
                 image: true,
@@ -128,6 +129,7 @@ export default async function handler(req, res) {
             })
           } else {
             data = await prisma.ncds.findFirst({
+              
               where: { id: id },
               select: { [select]: true }
             })
@@ -135,6 +137,7 @@ export default async function handler(req, res) {
         }
         else if (query.type) {
           data = await prisma.ncds.findMany({
+            
             where: { type: query.type },
             include: {
               image: true,
@@ -148,10 +151,12 @@ export default async function handler(req, res) {
             _ = { ..._, [val]: true }
           }
           data = await prisma.ncds.findMany({
+            
             select: _
           })
         } else {
           data = await prisma.ncds.findMany({
+            
             include: {
               image: true,
               ref: true

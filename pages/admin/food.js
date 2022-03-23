@@ -189,6 +189,7 @@ const ModalAdd = () => {
 
     const onReset = () => {
         setFileList(null)
+        form.setFieldsValue();
     }
     return <Modal
         title={"เพิ่มข้อมูลอาหาร"}
@@ -222,7 +223,7 @@ const ModalAdd = () => {
                     optionFilterProp="children"
                     // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
                     filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item

@@ -74,13 +74,14 @@ model Ncds {
   reduce       String?        @db.LongText
   signs        String?        @db.LongText
   sugess       String?        @db.LongText
-  ref          Ref[]
   views        Int?           @default(0)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+  ref          Ref[]
   image        ImageNCDS[]
   foodncds     FoodNcds[]
   relationBlog relationBlog[]
+  form         form[]
 }
 
 model Ref {
@@ -146,10 +147,10 @@ model ImageNCDS {
 }
 
 model ImageFood {
-  id       Int        @id @default(autoincrement())
-  name     String     @db.LongText
-  Food     Food?      @relation(fields: [foodId], references: [id], onDelete: Cascade)
-  foodId   Int?
+  id     Int    @id @default(autoincrement())
+  name   String @db.LongText
+  Food   Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId Int?
   // FoodNcds FoodNcds[]
 }
 
@@ -195,9 +196,33 @@ model subBlog {
   id      Int     @id @default(autoincrement())
   name    String
   detail  String  @db.LongText
-  image   String? 
+  image   String?
   Blogs   Blogs?  @relation(fields: [blogsId], references: [id], onDelete: Cascade)
   blogsId Int?
+}
+
+model form {
+  id      Int       @id @default(autoincrement())
+  ncds    Ncds      @relation(fields: [ncdsId], references: [id])
+  ncdsId  Int
+  subForm subForm[]
+}
+
+model subForm {
+  id     Int      @id @default(autoincrement())
+  name   String
+  form   form?    @relation(fields: [formId], references: [id])
+  formId Int?
+  choice choice[]
+}
+
+model choice {
+  id     Int     @id @default(autoincrement())
+  name   String
+  detail String? @db.LongText
+  score  Int
+  subForm   subForm? @relation(fields: [subFormId], references: [id])
+  subFormId Int?
 }
 
 enum Role {

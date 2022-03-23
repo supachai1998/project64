@@ -278,7 +278,8 @@ const ModalAdd = ({ modalAdd, setModalAdd, reload }) => {
         onOk={onOk}
         onCancel={onCancel}
         width="100%"
-        footer={<></>}>
+        // footer={<></>}
+        >
         <Form
             form={form}
             // initialValues={{}}

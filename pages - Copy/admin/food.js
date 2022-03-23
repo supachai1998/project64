@@ -100,7 +100,7 @@ const ModalAddFood = ({ modalAddFood, setModalAddFood }) => {
         visible={modalAddFood}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
-        footer={<></>}
+        // footer={<></>}
         // onOk={onOk}
         onCancel={onCancel}
         width={1000}>
@@ -318,7 +318,7 @@ const ModalManageType = ({ modalAddType, setModalAddType }) => {
             visible={modalAddType}
             okText={<>ตกลง</>}
             cancelText={<>ยกเลิก</>}
-            footer={<></>}
+            // footer={<></>}
             // onOk={onOk}
             onCancel={onCancel}
             width={640}

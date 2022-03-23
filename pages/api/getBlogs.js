@@ -168,6 +168,7 @@ export default async function handler(req, res) {
         let { select, id, BestBlog, approve } = query
         if (BestBlog) {
           data = await prisma.blogs.findMany({
+            
             where: { approve: 1 },
             orderBy: [
               { views: 'desc', },
@@ -184,6 +185,7 @@ export default async function handler(req, res) {
           if (!query.select) {
             id = parseInt(id)
             data = await prisma.blogs.findFirst({
+              
               where: {
                 id: id,
                 approve: 1
@@ -197,6 +199,7 @@ export default async function handler(req, res) {
             })
           } else {
             data = await prisma.blogs.findFirst({
+              
               where: {
                 id: id,
                 approve: 1
@@ -207,6 +210,7 @@ export default async function handler(req, res) {
         }
         else if (query.type) {
           data = await prisma.blogs.findMany({
+            
             where: {
               type: query.type.toUpperCase(),
               approve: 1
@@ -224,11 +228,13 @@ export default async function handler(req, res) {
             _ = { ..._, [val]: true }
           }
           data = await prisma.blogs.findMany({
+            
             where: { approve: 1 },
             select: _
           })
         } else if (approve) {
           data = await prisma.blogs.findMany({
+            
             include: {
               subBlog: true,
               image: true,
@@ -244,6 +250,7 @@ export default async function handler(req, res) {
         }
         else {
           data = await prisma.blogs.findMany({
+            
             where: { approve: 1 },
             include: {
               subBlog: true,
