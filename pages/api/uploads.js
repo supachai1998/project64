@@ -18,9 +18,11 @@ function makeid(length) {
     }
     return result;
 }
-const saveFile = async (file, name) => {
+const saveFile = async (saveDir,file, name) => {
     const data = fs.readFileSync(file.path);
-    fs.writeFileSync(`./public/uploads/${name}`, data);
+    const save_name = `${saveDir}/${name}`
+    console.log(save_name)
+    fs.writeFileSync(save_name, data);
     await fs.unlinkSync(file.path);
 };
 
@@ -58,7 +60,7 @@ const removeFile = async (dir) => {
 }
 
 export default async function handler(req, res) {
-    const saveDir = "./public/uploads"
+    const saveDir = "public/static"
 
     const { body, method, query } = req;
     if (method === "GET") {
@@ -87,7 +89,7 @@ export default async function handler(req, res) {
                             const ext = name.split(".")
                             const _name = `${makeid(15)}.${ext[ext.length - 1]}`
                             // await formdata.append([key], fs.createReadStream(path));
-                            await saveFile(files.file, _name);
+                            await saveFile(saveDir,files.file, _name);
                             res.status(200).json({ name: _name })
                         }
                     })()

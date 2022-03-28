@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "server": "next build&&next start",
+    "start": "NODE_ENV=production node server.js",
+    "server": "next build&&NODE_ENV=production node server.js",
     "lint": "next lint",
     "localssl": "local-ssl-proxy --source 3001 --target 3000",
     "db": "yarn prisma studio --port 5566",
@@ -25,6 +25,7 @@
     "antd-img-crop": "^3.16.0",
     "cookies-next": "^2.0.4",
     "crypto-js": "^4.1.1",
+    "express": "^4.17.3",
     "form-data": "^4.0.0",
     "formidable": "^1.2.2",
     "framer-motion": "^4.1.17",
@@ -43,7 +44,8 @@
     "react-webcam": "^6.0.0",
     "sharp": "^0.29.1",
     "tailwindcss": "^2.2.9",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "win-node-env": "^0.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",

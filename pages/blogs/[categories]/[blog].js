@@ -79,7 +79,7 @@ export default function Index() {
         {/* Custom image */}
         <div className='flex flex-col justify-center items-center gap-4'>
           <div className="sm:w-9/12 sm:h-96 h-60 relative">
-            <CustImage className="rounded-lg " src={data?.image[casImg]?.name} alt={data.name} width="100%" height="100%" />
+            {!!data?.image && <CustImage className="rounded-lg " src={data?.image[casImg]?.name} alt={data.name} width="100%" height="100%" />}
             <div className='right-0 bottom-1 absolute rounded-md py-1 px-2 bg-gray-900 text-white items-center flex gap-2'>
               <span className='mt-1'>{data.avg_vote}</span><Rate value={data.avg_vote} onChange={rateChange} tooltips={[`${data.vote_1} โหวต`, `${data.vote_2} โหวต`, `${data.vote_3} โหวต`, `${data.vote_4} โหวต`, `${data.vote_5} โหวต`,]} />
             </div>
@@ -97,10 +97,10 @@ export default function Index() {
         </div> */}
         <div className='border-green-800 border-b-2 border-solid sm:w-8/12 w-10/12 mx-auto ' />
         <div className="flex flex-col gap-2 w-full sm:w-6/12   mt-10 sm:mx-auto">
-          {[...data.subBlog, ...data.subBlog].map(({ id, name, image, detail }, ind) => <div key={name + ind} className="flex flex-col sm:flex-row shadow-sm bg-white sm:py-3 sm:px-3 rounded-xl  w-full h-full gap-3 ">
-            <div className={`flex flex-col w-full h-full  ${ind % 2 === 0 ? " text-left" : "text-right"}`}>
+          {[...data.subBlog].map(({ id, name, image, detail }, ind) => <div key={name + ind} className="flex flex-col sm:flex-row shadow-sm bg-white sm:py-3 sm:px-3 rounded-xl  w-full h-full gap-3 ">
+            <div className={`flex flex-col w-full h-full  text-left `}>
               {image && <div className="flex justify-center"><CustImage className="rounded-md h-full" src={image} alt={name} width="50vw" height="50vh" /></div>}
-              <div className="text-2xl sm:text-5xl sm:px-0 px-2 ease">{name}</div>
+              <div className="text-2xl sm:text-3xl sm:px-0 px-2 ease">{name}</div>
               <hr className="my-3" />
               <div className="text-lg sm:px-0 font-thin px-2 ease whitespace-pre-line ">{detail}</div>
             </div>

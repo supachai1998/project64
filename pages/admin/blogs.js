@@ -568,7 +568,6 @@ const ModalEdit = () => {
             const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
                 .then(resp => resp.json())
                 .then(data => setFood(data)).catch(err => console.log(err))
-            form.setFieldsValue(modalEdit);
         })()
     }, []);
 
@@ -610,31 +609,40 @@ const ModalEdit = () => {
         val['subBlog'] = _tempsubBlog
         val['id'] = modalEdit.id
         let related = []
-        if (val['foodId']) {
-            for (const [kk, vv] of Object.entries(modalEdit.related)) {
-                val['foodId'].map((v) => {
-                    if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
-                    else related.push({ foodId: v })
-                })
+        console.log(val['foodId'], val['ncdsId'])
+        if (!!val['foodId']) {
+            if (!!modalEdit.related) {
+                for (const [kk, vv] of Object.entries(modalEdit.related)) {
+                    val['foodId'].map((v) => {
+                        if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
+                        else related.push({ foodId: v })
+                    })
+                }
+                related = related.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
+                delete val['foodId']
+            } else {
+                val['foodId'].map(v => related.push({ foodId: v }))
             }
-            delete val['foodId']
-            related = related.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
         }
-        if (val['ncdsId']) {
-            for (const [kk, vv] of Object.entries(modalEdit.related)) {
-                val['ncdsId'].map((v) => {
-                    console.log(v, vv.ncdsId)
-                    if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
-                    else related.push({ ncdsId: v })
-                })
+        if (!!val['ncdsId']) {
+            if (!!modalEdit.related) {
+                for (const [kk, vv] of Object.entries(modalEdit.related)) {
+                    val['ncdsId'].map((v) => {
+                        if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
+                        else related.push({ ncdsId: v })
+                    })
+                }
+                delete val['ncdsId']
+                related = related.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
+
+            } else {
+                val['ncdsId'].map(v => related.push({ ncdsId: v }))
             }
-            delete val['ncdsId']
-            related = related.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
         }
         val["ref"] = [...val["ref"]]
         val["related"] = [...related]
 
-        // console.log(val)
+        console.log(val)
         const res = await fetch(`/api/getBlogs`, {
             headers: { 'Content-Type': 'application/json', },
             method: "PATCH",

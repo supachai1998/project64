@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { Image as Img } from 'antd';
 import { CircularProgress } from '@mui/material';
-
+import getConfig from 'next/config'
+const {  publicRuntimeConfig } = getConfig()
 export default function CusImage({ width, height, src, name, className, preview }) {
-    const [onSrc, setOnSrc] = React.useState()
+    const [onSrc, setOnSrc] = React.useState("/placeholder.png")
     async function checkIfImageExists(url, callback) {
-        
+
         const img = new Image();
         img.src = url;
 
@@ -20,18 +21,24 @@ export default function CusImage({ width, height, src, name, className, preview 
                 callback(false);
             };
         }
-        
+
     }
     useEffect(() => {
-         checkIfImageExists(src, (exists) => {
+        checkIfImageExists(`${publicRuntimeConfig.staticFolder}/static/${src}`, (exists) => {
             if (exists) {
-                setOnSrc(src)
+                setOnSrc(`${publicRuntimeConfig.staticFolder}/static/${src}`)
             } else {
-                checkIfImageExists(`/uploads/${src}`, (exists) => {
+                checkIfImageExists(`/static/${src}`, (exists) => {
                     if (exists) {
-                        setOnSrc(`/uploads/${src}`)
+                        setOnSrc(`/static/${src}`)
                     } else {
-                        setOnSrc("/notFound.jpg")
+                        checkIfImageExists(src, (exists) => {
+                            if (exists) {
+                                setOnSrc(src)
+                            } else {
+                                setOnSrc("/notFound.jpg")
+                            }
+                        });
                     }
                 });
             }
@@ -47,11 +54,11 @@ export default function CusImage({ width, height, src, name, className, preview 
             width={width}
             height={height}
             loading="lazy"
-            src={onSrc }
+            src={onSrc}
             preview={preview}
-            fallback={<Load/>}
-            placeholder={<Load/>}
+            fallback={<Load />}
+            placeholder={<Load />}
         />
     );
-}   
+}
 const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center"}><CircularProgress className="m-auto" /></div>

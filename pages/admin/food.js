@@ -449,7 +449,7 @@ const ModalEdit = () => {
             return {
                 id: id,
                 status: "done",
-                url: `/uploads/${name}`,
+                url: `/static/${name}`,
                 name: name
             }
         }))

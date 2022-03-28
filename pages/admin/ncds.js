@@ -296,13 +296,13 @@ const ModalEdit = () => {
             return {
                 id: id,
                 status: "done",
-                url: `/uploads/${name}`,
+                url: `/static/${name}`,
                 name: name
             }
         }))
     }, [form, modalEdit]);
     // useEffect(() => {
-    //     !fileList && modalEdit  && setFileList({fileList : modalEdit.image.map(({ name }, index) => { return { name: name, url: `/uploads/${name}` } })})
+    //     !fileList && modalEdit  && setFileList({fileList : modalEdit.image.map(({ name }, index) => { return { name: name, url: `/static/${name}` } })})
     // }, [fileList, modalEdit]);
 
     const onCancel = () => {

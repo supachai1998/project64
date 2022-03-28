@@ -69,6 +69,7 @@ export default async function handler(req, res) {
               return { id: val.id }
             }
           })
+          
           const createImage = image.filter(val => !val.id)
           const updateImage = image.map(val => {
             if (val.id) {
@@ -78,11 +79,10 @@ export default async function handler(req, res) {
               }
             }
           })
-          const deleteImage = dataOld.image.filter(val => {
+          const deleteImage = dataOld.image.map(val => {
             if (image.every(val2 => val.id !== val2.id)) {
               return {
-                where: { id: val.id },
-                data: { url: val.url }
+                 id: val.id 
               }
             }
           })
@@ -272,7 +272,7 @@ export default async function handler(req, res) {
         return {
           id: id,
           status: "done",
-          url: `/uploads/${name}`,
+          url: `/static/${name}`,
           name: name
         }
       })
@@ -285,7 +285,7 @@ export default async function handler(req, res) {
           return {
             id: id,
             status: "done",
-            url: `/uploads/${name}`,
+            url: `/static/${name}`,
             name: name
           }
         })

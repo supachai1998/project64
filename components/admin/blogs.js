@@ -440,7 +440,7 @@ const ModalEdit = ({ modalEdit, setModalEdit, reload }) => {
             return {
                 id: id,
                 status: "done",
-                url: `/uploads/${name}`,
+                url: `/static/${name}`,
                 name: name
             }
         }))
@@ -643,7 +643,7 @@ const ModalView = ({ modalView, setModalView, reload }) => {
                 return {
                     id: id,
                     status: "done",
-                    url: `/uploads/${name}`,
+                    url: `/static/${name}`,
                     name: name
                 }
             }))
