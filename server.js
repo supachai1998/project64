@@ -6,7 +6,7 @@ const next = require('next')
 const path = require('path')
 
 const dev = process.env.NODE_ENV !== 'production'
-const hostname = '192.168.43.65'
+const hostname = '0.0.0.0'
 const port = 3000
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port })
@@ -21,6 +21,6 @@ app.prepare().then(() => {
     })
     server.listen(port, (err) => {
       if (err) throw err
-      console.log(`> Ready on http://localhost:${port}`)
+      console.log(`> Ready on ${hostname}:${port}`)
     })
 })

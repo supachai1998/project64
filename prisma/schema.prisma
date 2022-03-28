@@ -66,8 +66,8 @@ model VerificationToken {
 
 model Ncds {
   id           Int            @id @default(autoincrement())
-  name_th      String
-  name_en      String
+  name_th      String         @unique
+  name_en      String         @unique
   imply        String?        @db.LongText
   video        String?
   cause        String?        @db.LongText
@@ -99,8 +99,8 @@ model Food {
   id           Int            @id @default(autoincrement())
   foodTypeId   Int
   FoodType     FoodType       @relation(fields: [foodTypeId], references: [id], onDelete: Cascade)
-  name_th      String
-  name_en      String
+  name_th      String         @unique
+  name_en      String         @unique
   proceduce    String         @db.LongText
   calories     Float
   detail       String         @db.LongText
@@ -203,6 +203,7 @@ model subBlog {
 
 model form {
   id      Int       @id @default(autoincrement())
+  title   String    @unique
   ncds    Ncds      @relation(fields: [ncdsId], references: [id])
   ncdsId  Int
   subForm subForm[]
