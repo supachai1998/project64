@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production node server.js",
-    "server": "next build&&NODE_ENV=production node server.js",
+    "start": "node server.js",
+    "server": "yarn build&&yarn start",
     "lint": "next lint",
     "localssl": "local-ssl-proxy --source 3001 --target 3000",
     "db": "yarn prisma studio --port 5566",
@@ -44,8 +44,7 @@
     "react-webcam": "^6.0.0",
     "sharp": "^0.29.1",
     "tailwindcss": "^2.2.9",
-    "uuid": "^8.3.2",
-    "win-node-env": "^0.6.1"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
