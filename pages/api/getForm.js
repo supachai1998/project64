@@ -15,7 +15,7 @@ export default async function handler(req, res,) {
     switch (method) {
       case "POST":
         await prisma.form.create({
-          data: JSON.parse(body)
+          data: JSON.parse(body),
         })
         return res.status(200).json({ status: true })
       case "DELETE":
@@ -146,6 +146,8 @@ export default async function handler(req, res,) {
               where: { ncdsId: _id },
               select: {
                 id: true,
+                title: true,
+                ncdsId :true,
                 subForm: {
                   include: {
                     choice: {
@@ -179,6 +181,8 @@ export default async function handler(req, res,) {
 
             select: {
               id: true,
+              title: true,
+              ncdsId :true,
               subForm: {
                 include: {
                   choice: true

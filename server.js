@@ -7,7 +7,7 @@ const path = require('path')
 
 const dev = false
 const hostname = '0.0.0.0'
-const port = 3000
+const port = process.env.PORT || 3000
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()

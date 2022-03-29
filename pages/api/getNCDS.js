@@ -8,12 +8,13 @@ export default async function handler(req, res) {
   try {
     switch (method) {
       case "POST":
-        console.log(body)
-
-        await prisma.ncds.create({
-          data: body
-        })
-        return res.status(200).json({ status: true })
+        const _body = JSON.parse(body)
+        try {
+          await prisma.ncds.create({
+              data: _body
+          })
+          return res.status(200).json({ status: true })
+      } catch (e) {console.error(e); return res.status(500).json({ status: false, error: e , data : _body }) }
       case "DELETE":
 
         await prisma.ncds.delete({

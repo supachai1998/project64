@@ -69,7 +69,7 @@ model Ncds {
   name_th      String         @unique
   name_en      String         @unique
   imply        String?        @db.LongText
-  video        String?
+  video        String?        @db.LongText
   cause        String?        @db.LongText
   reduce       String?        @db.LongText
   signs        String?        @db.LongText
@@ -86,7 +86,7 @@ model Ncds {
 
 model Ref {
   id      Int    @id @default(autoincrement())
-  url     String
+  url     String  @db.LongText
   ncds    Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   ncdsId  Int?
   Food    Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
@@ -106,7 +106,7 @@ model Food {
   detail       String         @db.LongText
   ref          Ref[]
   ingredient   String         @db.LongText
-  video        String?
+  video        String?        @db.LongText
   views        Int?           @default(0)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -128,7 +128,7 @@ model FoodNcds {
   id        Int      @id @default(autoincrement())
   detail    String   @db.LongText
   suggess   Boolean
-  video     String?
+  video     String?  @db.LongText
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ncdsId    Int?
@@ -167,7 +167,7 @@ model Blogs {
   imply     String         @db.LongText
   type      Type
   approve   Int?           @default(0)
-  video     String?
+  video     String?         @db.LongText
   vote_1    Int?           @default(0)
   vote_2    Int?           @default(0)
   vote_3    Int?           @default(0)

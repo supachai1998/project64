@@ -41,19 +41,19 @@ export default async function handler(req, res) {
                         console.log(type, predict_topic, confident_percent)
                         switch (type) {
                             case 'ไม่ใช่อาหาร':
-                                res.status(200).json({ type: "ไม่ใช่อาหาร" })
-                                break;
+                                return res.status(200).json({ type: "ไม่ใช่อาหาร" })
+                                
                             case 'ไม่ใช่ภาพ':
-                                res.status(200).json({ type: "ไม่ใช่ภาพ" })
-                                break;
+                                return res.status(200).json({ type: "ไม่ใช่ภาพ" })
+                                
                             default:
-                                res.status(200).json({ name: predict_topic, confident: confident_percent.toFixed(2) })
-                                break;
+                                return res.status(200).json({ name: predict_topic, confident: confident_percent.toFixed(2) })
+                                
                         }
                     })
-                    .catch(error => { res.status(500).json({ error: error.message }) });
+                    .catch(error => { return res.status(500).json({ error: error }) });
             });
         
-        } catch (e) { res.status(500).json({ error: e.message }) }
+        } catch (e) {return res.status(500).json({ error: e.message }) }
     }
 }

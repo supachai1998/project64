@@ -24,13 +24,13 @@ export default function CusImage({ width, height, src, name, className, preview 
 
     }
     useEffect(() => {
-        checkIfImageExists(`${publicRuntimeConfig.staticFolder}/static/${src}`, (exists) => {
+        checkIfImageExists(`/static/${src}`, (exists) => {
             if (exists) {
-                setOnSrc(`${publicRuntimeConfig.staticFolder}/static/${src}`)
+                setOnSrc(`/static/${src}`)
             } else {
-                checkIfImageExists(`/static/${src}`, (exists) => {
+                checkIfImageExists(`${publicRuntimeConfig.staticFolder}/static/${src}` , (exists) => {
                     if (exists) {
-                        setOnSrc(`/static/${src}`)
+                        setOnSrc(`${publicRuntimeConfig.staticFolder}/static/${src}` )
                     } else {
                         checkIfImageExists(src, (exists) => {
                             if (exists) {
