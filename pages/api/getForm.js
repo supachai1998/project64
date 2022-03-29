@@ -14,9 +14,22 @@ export default async function handler(req, res,) {
     let { id } = body
     switch (method) {
       case "POST":
-        await prisma.form.create({
-          data: JSON.parse(body),
-        })
+        const { addSubForm } = query
+        if (addSubForm) {
+          console.log(body)
+          let subForm = body.subForm.map(v1 => { return { ...v1, choice: v1.choice.map(v => { return { ...v, score: Number(v.score) } }) } })
+          subForm = subForm.map((v1) => { return { ...v1, choice: { create: [...v1.choice] } } })
+          await prisma.form.create({
+            data: { 
+              ...body,
+              subForm: { create: [...subForm] } 
+            },
+          })
+        } else {
+          await prisma.form.create({
+            data: JSON.parse(body),
+          })
+        }
         return res.status(200).json({ status: true })
       case "DELETE":
 
@@ -147,12 +160,12 @@ export default async function handler(req, res,) {
               select: {
                 id: true,
                 title: true,
-                ncdsId :true,
+                ncdsId: true,
                 subForm: {
                   include: {
                     choice: {
-                      orderBy :{
-                        score:"desc"
+                      orderBy: {
+                        score: "desc"
                       }
                     }
                   },
@@ -165,7 +178,7 @@ export default async function handler(req, res,) {
                   }
                 }
               },
-              
+
             })
           } else {
             const { select } = query
@@ -175,14 +188,14 @@ export default async function handler(req, res,) {
               select: { [select]: true }
             })
           }
-          if(data)return res.status(200).json(data)
+          if (data) return res.status(200).json(data)
         } else {
           data = await prisma.form.findMany({
 
             select: {
               id: true,
               title: true,
-              ncdsId :true,
+              ncdsId: true,
               subForm: {
                 include: {
                   choice: true
@@ -198,7 +211,7 @@ export default async function handler(req, res,) {
             },
           })
         }
-        if(!!data && data.length > 0) return res.status(200).json(data) 
+        if (!!data && data.length > 0) return res.status(200).json(data)
         else res.status(404).send({ error: "data not found" })
         break;
     }

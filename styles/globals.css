@@ -390,3 +390,6 @@ a {
 .button {
   @apply rounded-lg py-1 px-2  
 }
+.ant-form-item-explain-error{
+  text-align: center !important
+}

@@ -1,12 +1,13 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, List, Steps, Form, Input, notification, InputNumber, Tooltip, Popconfirm } from 'antd'
-import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined,DeleteOutlined , MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
 const { Option } = Select
 import { groupByNcds } from '../../ulity/group';
+import { Button_Delete } from '../../ulity/button';
 const ellipsis = {
     rows: 3,
     expandable: false,
@@ -19,6 +20,7 @@ export default function Index() {
     const [modalEdit, setModalEdit] = useState(false)
     const [modalView, setModalView] = useState(false)
     const [modalViewSubForm, setModalViewSubForm] = useState(false)
+    const [modalAddSubForm, setModalAddSubForm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [NCDS, setNCDS] = useState()
     const [_form, setForm] = useState([])
@@ -56,6 +58,7 @@ export default function Index() {
                 modalEdit, setModalEdit,
                 modalViewSubForm, setModalViewSubForm,
                 modalView, setModalView,
+                modalAddSubForm, setModalAddSubForm,
                 loading,
                 _form, NCDS
             }}>
@@ -63,6 +66,7 @@ export default function Index() {
                 <ModalView />
                 <ModalAdd />
                 <ModalViewSubForm />
+                <ModalAddSubForm />
                 <TableForm />
             </Context.Provider>
         </div>
@@ -101,7 +105,7 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(__form[index])}>ดู</button>
+                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(__form[index])}>จัดการ</button>
                 {/* <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(_form[index].data)}>แก้ไข</button>
                 <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_form[index].data, reload)}>ลบ</button> */}
             </div>,
@@ -110,7 +114,6 @@ const TableForm = () => {
     ];
 
     const __form = groupByNcds(_form, 'ncdsId')
-    console.log(__form)
     return <div>
         <Table size='small' tableLayout='auto' dataSource={__form} columns={columns}
             title={() => <div className="flex items-center gap-2">ตารางแบบประเมิน
@@ -121,14 +124,15 @@ const TableForm = () => {
                 </button>
                 </Tooltip>
             </div>}
-        // footer={() => 'Footer'} 
         />
     </div>
 }
+
 const TableFormSub = () => {
     const { _form, reload,
         setModalEdit,
         setModalView,
+        modalAddSubForm, setModalAddSubForm,
         loading } = useContext(Context)
 
     const columns = [
@@ -164,8 +168,9 @@ const TableFormSub = () => {
 
     ];
 
-
     return <div>
+        <button className="button-cus  hover:bg-gray-200 float-right" onClick={() => setModalAddSubForm(_form[0])}>เพิ่มหัวข้อ</button>
+
         <Table size='small' tableLayout='auto' dataSource={_form} columns={columns}
             title={() => <div className="flex items-center gap-2">ตารางแบบประเมิน
                 <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
@@ -181,7 +186,7 @@ const TableFormSub = () => {
 }
 
 const ModalView = () => {
-    const { setModalView, modalView, reload } = useContext(Context)
+    const { setModalView, modalView, reload, } = useContext(Context)
     const [current, setCurrent] = useState(0);
     const next = () => {
         setCurrent(current + 1);
@@ -587,39 +592,35 @@ const ModalEdit = () => {
                     {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
-            <Form.List name="subForm" rules={[{ required: true, message: "คุณลืมเพิ่มคำถาม" }]}>
-                {(fields, { add, remove }, { errors }) => (
+            <Form.Item
+                name="title"
+                label="ชื่อหัวข้อ"
+                rules={[{ required: true }]}>
+                <Input />
+            </Form.Item>
+            <Form.List name="subForm" rules={[{ required: true, message: "คุณลืมเพิ่มคำถาม" }]} >
+                {(subForm, { add, remove }, { errors }) => (
                     <>
-                        <Divider />
-                        {!!fields && fields.map((field, ind) => (
+                        {!!subForm && subForm.map((fieldsubForm, ind) => (
                             <Form.Item
-                                {...fields}
+                                {...subForm}
                                 noStyle
                                 shouldUpdate
-                                key={field.key}
+                                key={fieldsubForm.key}
                                 required
                             >
 
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
-                                <Form.Item
-                                    {...field}
-                                    labelCol={{ span: 0 }}
 
-                                >
-                                    {ind !== 0 && <hr />}
-                                    <div className="flex gap-3 items-center  justify-center py-2">
-                                        <div className="text-lg text-blue-500">คำถามที่ {ind + 1}</div> <Tooltip title={"ลบคำถามที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip>
-                                    </div>
-                                </Form.Item>
                                 <Form.Item
-                                    label="ชื่อ"
-                                    name={[field.name, 'name']}
-                                    fieldKey={[field.fieldKey, 'name']}
+                                    label={`ชื่อคำถามที่ ${ind + 1}`}
+                                    name={[fieldsubForm.name, 'name']}
+                                    fieldKey={[fieldsubForm.fieldKey, 'name']}
                                     rules={[{ required: true }]}
                                 >
                                     <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
                                 </Form.Item>
-                                <Form.List name={[field.name, 'choice']}  rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]}>
+                                <Form.List name={[fieldsubForm.name, 'choice']} rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]} >
                                     {(choice, { add, remove }, { errors }) => (
                                         <>
 
@@ -630,14 +631,12 @@ const ModalEdit = () => {
                                                     shouldUpdate
                                                     key={fieldchoice.key}
                                                     required
-
-
                                                 >
                                                     {/* {ind !== 0 && <Divider />} */}
                                                     {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
-                                                    <div className='mx-auto flex justify-center'>
+                                                    <div className='mx-auto sm:flex justify-center'>
                                                         <Form.Item
-                                                            label={<div className='flex gap-3 items-center'><Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red", fontSize: "12px" }} onClick={() => remove(fieldchoice.name)} /></Tooltip>ชื่อคำถาม</div>}
+                                                            label={"ชื่อตัวเลือก"}
                                                             name={[fieldchoice.name, 'name']}
                                                             fieldKey={[fieldchoice.fieldKey, 'name']}
                                                             rules={[{ required: true }]}
@@ -665,17 +664,23 @@ const ModalEdit = () => {
                                                             }]}>
                                                             <InputNumber min="0" max="5" step="1" stringMode placeholder="คะแนน 0 - 5" />
                                                         </Form.Item>
+                                                        <Form.Item labelCol={{ span: 1 }} >
+                                                            <div className="flex gap-2">
+                                                                <button className="button bg-red-300" onClick={() => remove(fieldchoice.name)}>ลบ</button>
+                                                                {ind === choice.length - 1 && <button className="button bg-green-300" onClick={() => add()}>เพิ่ม</button>}
+                                                            </div>
+                                                        </Form.Item>
                                                     </div>
                                                 </Form.Item>
                                             ))}
-                                            <div className="flex justify-center ">
+                                            {choice.length === 0 && <div className="flex justify-center ">
                                                 <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease btn-sm"
                                                     onClick={() => add()}
                                                     type="button">
                                                     <PlusOutlined />
-                                                    <span className="text-blue-500">เพิ่มคำถาม</span>
+                                                    <span className="text-blue-500">เพิ่มตัวเลือก</span>
                                                 </button>
-                                            </div>
+                                            </div>}
                                             <Form.ErrorList errors={errors} />
                                             <hr className='w-1/2 mx-auto' />
                                         </>
@@ -689,7 +694,7 @@ const ModalEdit = () => {
                                 onClick={() => add()}
                                 type="button">
                                 <PlusOutlined />
-                                <span className="text-blue-900">เพิ่มหัวข้อแบบประเมิน</span>
+                                <span className="text-blue-900">เพิ่มคำถาม</span>
                             </button>
                         </div>
 
@@ -701,6 +706,200 @@ const ModalEdit = () => {
             <div className="flex justify-end gap-2 sm:mt-0 mt-3">
                 <Button htmlType="reset">ล้างค่า</Button>
                 <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
+            </div>
+        </Form>
+
+    </Modal>
+}
+const ModalAddSubForm = () => {
+    const { modalAddSubForm, setModalAddSubForm, reload, _form, NCDS } = useContext(Context)
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        !!modalAddSubForm && form.setFieldsValue({
+            ncdsId: modalAddSubForm.ncdsId
+        });
+        console.log(modalAddSubForm)
+    }, [form, modalAddSubForm]);
+
+    const onOk = async (val) => {
+        console.log(val)
+        delete val["ncds"]
+        delete val["id"] 
+        const res = await fetch(`/api/getForm?addSubForm=true`, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(val)
+        })
+            .then(async res => {
+                if (res.ok) {
+                    notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
+                    onReset()
+                    setModalAddSubForm(false)
+                } else {
+                    notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้` })
+                }
+            })
+        await reload()
+    }
+    const onCancel = () => {
+        setModalAddSubForm(false)
+    }
+    const onReset = () => {
+        form.setFieldsValue({
+            ncdsId: modalAddSubForm.ncdsId
+        });
+    }
+    return <Modal title={"เพิ่มข้อมูลแบบประเมิน"}
+        visible={modalAddSubForm}
+        okText={<>ตกลง</>}
+        cancelText={<>ยกเลิก</>}
+        footer={<></>}
+        zIndex={10000}
+        // onOk={onOk}
+        onCancel={onCancel}
+        width="90%"
+    >
+        <Form
+            form={form}
+            // initialValues={valUser}
+            labelCol={{ span: 3 }}
+            onFinish={onOk}
+            onReset={onReset}
+            // onValuesChange={v=>console.log(v)}
+            scrollToFirstError={true}
+            labelWrap={true}
+        // onFinishFailed={onCancel}
+        >
+            <Form.Item
+                name="ncdsId"
+                label="โรคไม่ติดต่อ"
+                rules={[{ required: true }]}>
+                <Select
+                    showSearch
+                    placeholder="เลือกโรคไม่ติดต่อ"
+                    optionFilterProp="children"
+                    disabled
+                    // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                    filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                    {!!NCDS && NCDS.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
+                </Select>
+            </Form.Item>
+            <Form.Item
+                name="title"
+                label="ชื่อหัวข้อ"
+                rules={[{ required: true }]}>
+                <Input />
+            </Form.Item>
+            <Form.List name="subForm" rules={[{ required: true, message: "คุณลืมเพิ่มคำถาม" }]} >
+                {(subForm, { add, remove }, { errors }) => (
+                    <>
+                        {!!subForm && subForm.map((fieldsubForm, ind) => (
+                            <Form.Item
+                                {...subForm}
+                                noStyle
+                                shouldUpdate
+                                key={fieldsubForm.key}
+                                required
+                            >
+
+                                {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+
+                                <Form.Item
+                                    label={<><Button_Delete fx={()=>remove(fieldsubForm.name)}/>ชื่อคำถามที่ {ind + 1}</>}
+                                    name={[fieldsubForm.name, 'name']}
+                                    fieldKey={[fieldsubForm.fieldKey, 'name']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
+                                </Form.Item>
+                                <Form.List name={[fieldsubForm.name, 'choice']} rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]} >
+                                    {(choice, { add, remove }, { errors }) => (
+                                        <>
+
+                                            {!!choice && choice.map((fieldchoice, ind) => (
+                                                <Form.Item
+                                                    {...choice}
+                                                    noStyle
+                                                    shouldUpdate
+                                                    key={fieldchoice.key}
+                                                    required
+                                                >
+                                                    {/* {ind !== 0 && <Divider />} */}
+                                                    {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+                                                    <div className='mx-auto sm:flex justify-center'>
+                                                        <Form.Item
+                                                            label={"ชื่อตัวเลือก"}
+                                                            name={[fieldchoice.name, 'name']}
+                                                            fieldKey={[fieldchoice.fieldKey, 'name']}
+                                                            rules={[{ required: true }]}
+                                                            labelCol={{ span: 10 }}
+                                                        >
+                                                            <Input placeholder="เช่น กินเผ็ดมาก" />
+                                                        </Form.Item>
+                                                        <Form.Item
+                                                            label="รายละเอียด"
+                                                            name={[fieldchoice.name, 'detail']}
+                                                            fieldKey={[fieldchoice.fieldKey, 'detail']}
+                                                            rules={[{ required: false }]}
+                                                            labelCol={{ span: 10 }}
+                                                        >
+                                                            <TextArea rows={1} placeholder="รายละเอียด" />
+                                                        </Form.Item>
+                                                        <Form.Item
+                                                            label="คะแนน"
+                                                            labelCol={{ span: 10 }}
+                                                            name={[fieldchoice.name, 'score']}
+                                                            fieldKey={[fieldchoice.fieldKey, 'score']}
+                                                            rules={[{ required: true }, {
+                                                                pattern: /^[0-9.]+$/,
+                                                                message: 'ป้อนตัวเลข',
+                                                            }]}>
+                                                            <InputNumber min="0" max="5" step="1" stringMode placeholder="คะแนน 0 - 5" />
+                                                        </Form.Item>
+                                                        <Form.Item labelCol={{ span: 1 }} >
+                                                            <div className="flex gap-2">
+                                                                <button className="button bg-red-300" onClick={() => remove(fieldchoice.name)}>ลบ</button>
+                                                                {ind === choice.length - 1 && <button className="button bg-green-300" onClick={() => add()}>เพิ่ม</button>}
+                                                            </div>
+                                                        </Form.Item>
+                                                    </div>
+                                                </Form.Item>
+                                            ))}
+                                            {choice.length === 0 && <div className="flex justify-center ">
+                                                <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease btn-sm"
+                                                    onClick={() => add()}
+                                                    type="button">
+                                                    <PlusOutlined />
+                                                    <span className="text-blue-500">เพิ่มตัวเลือก</span>
+                                                </button>
+                                            </div>}
+                                            <Form.ErrorList errors={errors} />
+                                            <hr className='w-1/2 mx-auto' />
+                                        </>
+
+                                    )}
+                                </Form.List>
+                            </Form.Item>
+                        ))}
+                        <div className="flex justify-center ">
+                            <button className="flex gap-1 items-center hover:text-blue-500 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+                                onClick={() => add()}
+                                type="button">
+                                <PlusOutlined />
+                                <span className="text-blue-900">เพิ่มคำถาม</span>
+                            </button>
+                        </div>
+
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                )}
+            </Form.List>
+
+            <div className="flex justify-end gap-2 sm:mt-0 mt-3">
+                <Button htmlType="reset">ล้างค่า</Button>
+                <Button type="primary" htmlType="submit">เพิ่มข้อมูล</Button>
             </div>
         </Form>
 

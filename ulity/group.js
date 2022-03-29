@@ -3,6 +3,7 @@ export const groupByNcds = (list, _key) => {
         // console.log(x)
         rv[x[_key]] = rv[x[_key]] || { 
             [_key]: x[_key],
+            id : x.id,
             name_th : x.ncds.name_th,
             name_en : x.ncds.name_en,
             data: [] 
