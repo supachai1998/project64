@@ -14,17 +14,29 @@ export default async function handler(req, res,) {
     let { id } = body
     switch (method) {
       case "POST":
-        const { addSubForm } = query
+        const { addSubForm, addForm } = query
         if (addSubForm) {
-          console.log(body)
           let subForm = body.subForm.map(v1 => { return { ...v1, choice: v1.choice.map(v => { return { ...v, score: Number(v.score) } }) } })
           subForm = subForm.map((v1) => { return { ...v1, choice: { create: [...v1.choice] } } })
           await prisma.form.create({
-            data: { 
+            data: {
               ...body,
-              subForm: { create: [...subForm] } 
+              subForm: { create: [...subForm] }
             },
           })
+        } else if (addForm) {
+          for (const row of JSON.parse(body)) {
+            try {
+              const dup = await prisma.form.findFirst({
+                where: {
+                  title: row.title
+                }
+              })
+              console.log(dup)
+              if (dup === null) await prisma.form.create({ data: row, })
+              else return res.status(400).send( {statusText:`duplicate title : ${row.title}`})
+            } catch (e) {console.error(e.message);return res.status(400).send({statusText :e.message}) }
+          }
         } else {
           await prisma.form.create({
             data: JSON.parse(body),
@@ -32,12 +44,22 @@ export default async function handler(req, res,) {
         }
         return res.status(200).json({ status: true })
       case "DELETE":
-
-        await prisma.form.delete({
-          where: {
-            id: parseInt(id),
+        const { allForm } = query
+        if (allForm) {
+          for (const { id } of body) {
+            await prisma.form.delete({
+              where: {
+                id: parseInt(id),
+              }
+            })
           }
-        })
+        } else {
+          await prisma.form.delete({
+            where: {
+              id: parseInt(id),
+            }
+          })
+        }
         return res.status(200).json({ status: true })
       case "PATCH":
 
@@ -78,8 +100,8 @@ export default async function handler(req, res,) {
             await prisma.form.update(update)
           } catch (e) {
             console.log(e)
-            return res.status(500).json({
-              status: "error when form update",
+            return res.status(400).json({
+              statusText: "error when form update",
               ...update
             })
           }
@@ -91,8 +113,8 @@ export default async function handler(req, res,) {
                 //   data: choice
                 // })
               } catch (e) {
-                console.log(e); return res.status(500).json({
-                  status: "error in loop create",
+                console.log(e); return res.status(400).json({
+                  statusText: "error in loop create",
                   ...choice,
                 })
               }
@@ -126,8 +148,8 @@ export default async function handler(req, res,) {
               try {
                 await prisma.subForm.update(update)
               } catch (e) {
-                console.log(e); return res.status(500).json({
-                  status: "error in loop update",
+                console.log(e); return res.status(400).json({
+                  statusText: "error in loop update",
                   ...update,
                 })
               }
@@ -212,8 +234,8 @@ export default async function handler(req, res,) {
           })
         }
         if (!!data && data.length > 0) return res.status(200).json(data)
-        else res.status(404).send({ error: "data not found" })
+        else res.status(404).send({ statusText: "data not found" })
         break;
     }
-  } catch (e) { console.log(e); res.status(500).send(body) }
+  } catch (e) { console.log(e); res.status(500).send({statusText :"something error" ,raw :body}) }
 }

@@ -393,3 +393,6 @@ a {
 .ant-form-item-explain-error{
   text-align: center !important
 }
+.ant-notification {
+  z-index: 999999 !important;
+}
