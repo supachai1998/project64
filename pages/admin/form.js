@@ -7,13 +7,14 @@ const { confirm } = Modal;
 const { TextArea } = Input;
 const { Option } = Select
 import { groupByNcds } from '../../ulity/group';
-import { Button_Delete } from '../../ulity/button';
+import { Button_Delete  , Button_Collapsed } from '../../ulity/button';
+import ResultForm from '/components/admin/form/ResultForm';
 const ellipsis = {
     rows: 3,
     expandable: false,
 }
 const { Step } = Steps;
-const Context = createContext()
+export const ContextForm = createContext()
 
 export default function Index() {
     const [modalAdd, setModalAdd] = useState(false)
@@ -21,12 +22,13 @@ export default function Index() {
     const [modalEdit, setModalEdit] = useState(false)
     const [modalView, setModalView] = useState(false)
     const [modalViewSubForm, setModalViewSubForm] = useState(-1)
+    const [modalResultForm, setModalResultForm] = useState(-1)
     const [loading, setLoading] = useState(false)
     const [NCDS, setNCDS] = useState()
     const [_form, setForm] = useState([])
     const [_formGroupBy, setFormGroupBy] = useState([])
     const reqForm = async () => await fetch("/api/getForm")
-        .then(res => res.status === 200 ? res.json() : notification.error({ message: "ไม่สามารถดึงข้อมูลแบบฟอร์ม" }))
+        .then(res => res.status === 200 ? res.json() : notification.error({ message: "ไม่สามารถดึงข้อมูลแบบประเมิน" }))
         .then(data => data)
         .catch(err => notification.error({ message: "Error", description: err.message }))
 
@@ -62,7 +64,7 @@ export default function Index() {
                 <div className="text-xl"></div>
                 <Button onClick={() => setModalAdd(true)}>เพิ่มแบบประเมิน</Button>
             </div>
-            <Context.Provider value={{
+            <ContextForm.Provider value={{
                 reload,
                 _formGroupBy, setFormGroupBy,
                 modalAdd, setModalAdd,
@@ -70,6 +72,7 @@ export default function Index() {
                 modalViewSubForm, setModalViewSubForm,
                 modalView, setModalView,
                 modalAddSubForm, setModalAddSubForm,
+                modalResultForm, setModalResultForm,
                 loading,
                 _form, NCDS
             }}>
@@ -79,7 +82,8 @@ export default function Index() {
                 <ModalViewSubForm />
                 <ModalAddSubForm />
                 <TableForm />
-            </Context.Provider>
+                <ResultForm/>
+            </ContextForm.Provider>
         </div>
     )
 }
@@ -87,7 +91,8 @@ export default function Index() {
 const TableForm = () => {
     const { _formGroupBy, reload,
         setModalViewSubForm,
-        loading } = useContext(Context)
+        setModalResultForm,
+        loading } = useContext(ContextForm)
 
     const columns = [
         {
@@ -100,6 +105,9 @@ const TableForm = () => {
             title: <Paragraph align="center" >จำนวนหัวข้อ</Paragraph>,
             dataIndex: 'data',
             key: 'data',
+            filterSearch: true,
+            onFilter: (value, record) => console.log(record),
+            sorter: (a, b) => a.data.length - b.data.length,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
@@ -110,14 +118,14 @@ const TableForm = () => {
         },
 
         {
-            title: <Paragraph align="left" >การจัดการ</Paragraph>,
+            title: <Paragraph align="left" >จัดการ</Paragraph>,
             dataIndex: '',
             key: '',
-
+            width:"20%",
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(index)}>จัดการ</button>
-                {/* <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(_form[index].data)}>แก้ไข</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_form[index].data, reload)}>ลบ</button> */}
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(index)}>แบบประเมิน</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalResultForm(val)}>การประเมินผล</button>
+                {/* <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_form[index].data, reload)}>ลบ</button> */}
             </div>,
         },
 
@@ -138,7 +146,7 @@ const TableForm = () => {
     </div>
 }
 const ModalView = () => {
-    const { setModalView, modalView, reload, } = useContext(Context)
+    const { setModalView, modalView, reload, } = useContext(ContextForm)
     const [current, setCurrent] = useState(0);
     const next = () => {
         setCurrent(current + 1);
@@ -201,7 +209,7 @@ const TableFormSub = () => {
         modalViewSubForm, setModalViewSubForm,
         modalAddSubForm, setModalAddSubForm,
         setModalEdit,
-        loading } = useContext(Context)
+        loading } = useContext(ContextForm)
     useEffect(() => { }, [_formGroupBy])
     const columns = [
         {
@@ -223,14 +231,14 @@ const TableFormSub = () => {
             render: val => <Tooltip><Paragraph align="center" ellipsis={ellipsis}>{val.map(({ choice }) => choice.length).reduce((a, b) => a + b)}</Paragraph></Tooltip>
         },
         {
-            title: <Paragraph align="left" >การจัดการ</Paragraph>,
+            title: <Paragraph align="left" >จัดการแบบประเมิน</Paragraph>,
             dataIndex: '',
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(_formGroupBy[modalViewSubForm].data[index])}>ดู</button>
-                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(_formGroupBy[modalViewSubForm].data[index])}>แก้ไข</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_formGroupBy[modalViewSubForm].data[index], reload)}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(_formGroupBy[modalViewSubForm].data[index])}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(_formGroupBy[modalViewSubForm].data[index])}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_formGroupBy[modalViewSubForm].data[index], reload)}>ลบ</button>
             </div>,
         },
 
@@ -239,8 +247,8 @@ const TableFormSub = () => {
     if (!!!_formGroupBy[modalViewSubForm]) return null
     return <div className=''>
         <div className='flex gap-2 justify-end items-end flex-row '>
-            <button className="button-cus  hover:bg-gray-200 " onClick={() => setModalAddSubForm(_formGroupBy[modalViewSubForm])}>เพิ่มหัวข้อ</button>
-            <button className="button-cus  bg-red-400 hover:bg-red-500 " onClick={() => deleteAll(_formGroupBy[modalViewSubForm].data, reload, setModalViewSubForm)}>ลบทั้งหมด</button>
+            <button className="  hover:bg-gray-200 " onClick={() => setModalAddSubForm(_formGroupBy[modalViewSubForm])}>เพิ่มหัวข้อ</button>
+            <button className="  bg-red-400 hover:bg-red-500 " onClick={() => deleteAll(_formGroupBy[modalViewSubForm].data, reload, setModalViewSubForm)}>ลบทั้งหมด</button>
         </div>
         <Table size='small' tableLayout='auto' dataSource={_formGroupBy[modalViewSubForm].data} columns={columns}
             title={() => <div className="flex items-center gap-2">ตารางแบบประเมิน {_formGroupBy[modalViewSubForm]?.name_th}
@@ -261,7 +269,7 @@ const ModalViewSubForm = () => {
     const { reload,
         _formGroupBy,
         modalViewSubForm, setModalViewSubForm,
-    } = useContext(Context)
+    } = useContext(ContextForm)
     useEffect(() => { }, [_formGroupBy])
     if (!!!_formGroupBy[modalViewSubForm]) return null
     return <Modal title={`แบบประเมิน ${_formGroupBy[modalViewSubForm]?.name_th}`}
@@ -279,7 +287,7 @@ const ModalViewSubForm = () => {
 }
 
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload, _form, NCDS } = useContext(Context)
+    const { modalAdd, setModalAdd, reload, _form, NCDS } = useContext(ContextForm)
     const [form] = Form.useForm();
     const [ncds, setNcds] = useState()
 
@@ -332,6 +340,7 @@ const ModalAdd = () => {
                     notification.error({ message: `ไม่สามารถเพิ่มแบบประเมิน`, description: json.statusText })
                 }
             })
+        await reload()
     }
     const onCancel = () => {
         setModalAdd(false)
@@ -401,7 +410,17 @@ const ModalAdd = () => {
                                     <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
                                 </Form.Item>
                                 <Form.List name={[field.name, 'subForm']} rules={[{ required: true, message: "คุณลืมเพิ่มคำถาม" }]} >
-                                    {(subForm, { add, remove }, { errors }) => (
+                                    {(subForm, { add, remove }, { errors }) => {
+                                        const collapsed = (v, field, ind) => {
+                                            const val = form.getFieldValue()
+                                            console.log(val)
+                                            return
+                                            let subForm = form.getFieldValue("subForm")
+                                            console.log(subForm)
+                                            subForm[ind] = { ...subForm[ind], collapsed: v }
+                                            form.setFieldsValue({ subForm: subForm })
+                                        }
+                                        return(
                                         <>
                                             {!!subForm && subForm.map((fieldsubForm, ind) => (
                                                 <Form.Item
@@ -415,7 +434,7 @@ const ModalAdd = () => {
                                                     {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
 
                                                     <Form.Item
-                                                        label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1}</>}
+                                                        label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1} <Button_Collapsed fx={collapsed}/></>}
                                                         name={[fieldsubForm.name, 'name']}
                                                         fieldKey={[fieldsubForm.fieldKey, 'name']}
                                                         rules={[{ required: true }]}
@@ -464,7 +483,7 @@ const ModalAdd = () => {
                                                                                     pattern: /^[0-9.]+$/,
                                                                                     message: 'ป้อนตัวเลข',
                                                                                 }]}>
-                                                                                <InputNumber min="0" max="5" step="1" stringMode placeholder="คะแนน 0 - 5" />
+                                                                                <InputNumber min="0" max="5" step="1" stringMode={false} placeholder="คะแนน 0 - 5" />
                                                                             </Form.Item>
                                                                             <Form.Item labelCol={{ span: 1 }} >
                                                                                 <div className="flex gap-2 ml-2">
@@ -503,7 +522,7 @@ const ModalAdd = () => {
                                             <Form.ErrorList errors={errors} />
                                         </>
 
-                                    )}
+                                    )}}
                                 </Form.List>
                             </Form.Item>))}
                         <div className="flex justify-center ">
@@ -528,7 +547,7 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload, NCDS } = useContext(Context)
+    const { modalEdit, setModalEdit, reload, NCDS } = useContext(ContextForm)
     const [form] = Form.useForm();
     const [ncds, setNcds] = useState()
 
@@ -627,15 +646,17 @@ const ModalEdit = () => {
                             >
 
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
-
-                                <Form.Item
-                                    label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1}</>}
-                                    name={[fieldsubForm.name, 'name']}
-                                    fieldKey={[fieldsubForm.fieldKey, 'name']}
-                                    rules={[{ required: true }]}
-                                >
-                                    <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
-                                </Form.Item>
+                                {/* <div className='flex w-full justify-around'> */}
+                                    <Form.Item
+                                        label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1} </>}
+                                        name={[fieldsubForm.name, 'name']}
+                                        fieldKey={[fieldsubForm.fieldKey, 'name']}
+                                        rules={[{ required: true }]}
+                                    >
+                                        <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
+                                    </Form.Item>
+                                    {/* <button>ย่อ</button> */}
+                                {/* </div> */}
                                 <Form.List name={[fieldsubForm.name, 'choice']} rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]} >
                                     {(choice, { add, remove }, { errors }) => (
                                         <>
@@ -678,7 +699,7 @@ const ModalEdit = () => {
                                                                 pattern: /^[0-9.]+$/,
                                                                 message: 'ป้อนตัวเลข',
                                                             }]}>
-                                                            <InputNumber min="0" max="5" step="1" stringMode placeholder="คะแนน 0 - 5" />
+                                                            <InputNumber min="0" max="5" step="1" stringMode={false} placeholder="คะแนน 0 - 5" />
                                                         </Form.Item>
                                                         <Form.Item labelCol={{ span: 1 }} >
                                                             <div className="flex gap-2 ml-2">
@@ -728,7 +749,7 @@ const ModalEdit = () => {
     </Modal>
 }
 const ModalAddSubForm = () => {
-    const { modalAddSubForm, setModalAddSubForm, setModalViewSubForm, reload, _form, NCDS } = useContext(Context)
+    const { modalAddSubForm, setModalAddSubForm, setModalViewSubForm, reload, _form, NCDS } = useContext(ContextForm)
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -766,7 +787,7 @@ const ModalAddSubForm = () => {
         setModalAddSubForm(false)
     }
 
-    return <Modal title={"เพิ่มข้อมูลแบบประเมิน"}
+    return <Modal title={"เพิ่มหัวข้อแบบประเมิน"}
         visible={modalAddSubForm}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -871,7 +892,7 @@ const ModalAddSubForm = () => {
                                                                 pattern: /^[0-9.]+$/,
                                                                 message: 'ป้อนตัวเลข',
                                                             }]}>
-                                                            <InputNumber min="0" max="5" step="1" stringMode placeholder="คะแนน 0 - 5" />
+                                                            <InputNumber min="0" max="5" step="1" stringMode={false} placeholder="คะแนน 0 - 5" />
                                                         </Form.Item>
                                                         <Form.Item labelCol={{ span: 1 }} >
                                                             <div className="flex gap-2 ml-2">
@@ -1017,7 +1038,7 @@ const deleteAll = async (vals, reload, setModalViewSubForm) => {
     });
 }
 const FetchNCDS = async () => {
-    const req = await fetch("/api/getNCDS")
+    const req = await fetch("/api/getNCDS?select=name_th,name_en,id")
     if (req.status === 200) {
         const data = await req.json()
         return data

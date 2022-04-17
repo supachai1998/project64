@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { Form, Input, Button, message, Select } from 'antd';
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic'
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-
+import { _AppContext } from '/pages/_app'
 const _Ncds = dynamic(() => import('./ncds'))
 const _Food = dynamic(() => import('./food'))
 const _Form = dynamic(() => import('./form'))
@@ -14,21 +14,20 @@ const _Report_blogs_ncds = dynamic(() => import('./report_blogs_ncds/index'))
 
 export default function Index() {
     const { status } = useSession()
-    
+
     const { router } = useRouter()
-    
-    const [title, setTitle] = useState("จัดการข้อมูล")
-    
-    const onSelectPage = (_title) => {
-        setTitle(_title)
-        localStorage?.setItem('page', _title) 
+    const { setTitle } = useContext(_AppContext)
+    const [titleAdmin, setTitleAdmin] = useState("จัดการข้อมูล")
+
+    const onSelectPage = (_titleAdmin) => {
+        setTitleAdmin(_titleAdmin)
+        localStorage?.setItem('page', _titleAdmin)
     }
     useEffect(() => {
         if (typeof window !== 'undefined') {
-          localStorage?.setItem('title', "ผู้ดูแลระบบ")
-          localStorage?.setItem('keys', "admin") 
-          const _page = localStorage?.getItem('page') 
-          setTitle(_page)
+            setTitle("ผู้ดูแลระบบ")
+            const _page = localStorage?.getItem('page')
+            setTitleAdmin(_page)
         }
     }, [])
 
@@ -78,14 +77,14 @@ export default function Index() {
     else if (status === "authenticated") {
         return (
             <div className="w-full h-full min-h-screen flex flex-col">
-                <HeaderAdmin title={title} onSelectPage={onSelectPage} />
+                <HeaderAdmin titleAdmin={titleAdmin} onSelectPage={onSelectPage} />
 
-                {title === "โรคไม่ติดต่อเรื้อรัง" ? <_Ncds />
-                    : title === "บทความ" ? <_Blogs />
-                        : title === "อาหาร" ? <_Food />
-                            : title === "แบบประเมินโรค" ? <_Form />
-                                : title === "รายงานแบบประเมินโรค" ? <_Report_blogs_food />
-                                    : title === "รายงานบทความ" && <_Report_blogs_ncds />
+                {titleAdmin === "โรคไม่ติดต่อเรื้อรัง" ? <_Ncds />
+                    : titleAdmin === "บทความ" ? <_Blogs />
+                        : titleAdmin === "อาหาร" ? <_Food />
+                            : titleAdmin === "แบบประเมินโรค" ? <_Form />
+                                : titleAdmin === "รายงานแบบประเมินโรค" ? <_Report_blogs_food />
+                                    : titleAdmin === "รายงานบทความ" && <_Report_blogs_ncds />
                 }
             </div>
         )
@@ -118,15 +117,17 @@ export default function Index() {
 }
 
 const { Option } = Select
-const HeaderAdmin = ({ title, onSelectPage }) => {
+const HeaderAdmin = ({ titleAdmin, onSelectPage }) => {
     return (
         <div className=" flex flex-col w-full  gap-4 m-2">
-            <span className="text-xl duration-500 transform md:text-2xl">{title}</span>
+            <span className="text-xl duration-500 transform md:text-2xl">{titleAdmin}</span>
             <div className="flex flex-auto flex-wrap w-full gap-4 items-center">
-                <Button onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</Button >
-                <Button onClick={() => onSelectPage("บทความ")}>บทความ</Button >
-                <Button onClick={() => onSelectPage("อาหาร")}>อาหาร</Button >
-                <Button onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</Button >
+                <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "โรคไม่ติดต่อเรื้อรัง" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</button >
+                <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "บทความ" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("บทความ")}>บทความ</button >
+                <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "อาหาร" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("อาหาร")}>อาหาร</button >
+                <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "แบบประเมินโรค" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</button >
+
+
                 <Select
                     className="w-36 rounded"
                     placeholder="รายงาน"

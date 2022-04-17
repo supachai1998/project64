@@ -14,7 +14,7 @@ export default function ContentHeader({ headerData, url_yt }) {
     const handleCancel = () => {
         setContent()
     }
-    if(!headerData) return null
+    if (!headerData) return null
     return (
         <div className="flex flex-wrap sm:p-6 p-3 rounded-md sm:mx-10 bg-gray-50 h-full">
 
@@ -29,18 +29,23 @@ export default function ContentHeader({ headerData, url_yt }) {
                 )}
             </div>
             {headerData.map(({ title, content }, index) => (
-                <div key={index} className="w-full" ref={el => dataRef.current[index] = el}>
-                    <div className={`pl-1 text-2xl font-thin border-l-2 border-green-600 lg:text-4xl mb-2 ${index !== 0 && "mt-4"}`}>{title}</div>
-                    <div className={index % 2 === 0
-                        ? "pl-1 sm:mx-5  zm:text-sm whitespace-pre-line text-lg "
-                        : "pl-1 sm:mx-5 zm:h-full zm:text-sm whitespace-pre-line text-lg"} >
+                <div key={index} className="w-full grid grid-cols-1" ref={el => dataRef.current[index] = el}>
+                    <div className={`pl-1 text-xl font-thin border-l-2 border-green-600 lg:text-4xl mb-2 ${index !== 0 && "mt-4"}`}>{title}</div>
+                    {title !== "อ้างอิง" ? <div className={index % 2 === 0
+                        ? "pl-1 sm:mx-5  sm:text-sm whitespace-pre-line text-md "
+                        : "pl-1 sm:mx-5 sm:h-full sm:text-sm whitespace-pre-line text-md"} >
                         {content}
-                    </div>
-                    <hr className="sm:my-3 sm:visible invisible"/>
+                    </div> :
+                        content.map(({ url }, ind) => <div key={url} className="sm:pl-5 pl-1">
+                            <a target="_blank" href={url.trim().split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a>
+                        </div>)
+                    }
+                    <hr className="sm:my-5 sm:visible invisible" />
                 </div>
             ))}
-            <div className="flex justify-end w-full sm:mt-0 mt-2">
-                <button href="#" className="w-32 text-lg border flex gap-2 justify-center items-center   rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: "วิดีโอ", video: url_yt }) }}>
+            <div className="flex justify-end items-start w-full sm:mt-0 mt-2">
+
+                <button href="#" className="w-32 sm:text-lg border flex gap-2 justify-center items-center   rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: "วิดีโอ", video: url_yt }) }}>
                     <i><VideoCameraOutlined className='text-lg' /></i>
                     <span>ดูวิดีโอ</span>
                 </button>

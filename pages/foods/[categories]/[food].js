@@ -1,11 +1,11 @@
 import { useRouter } from 'next/router'
 import { Card, Modal, } from 'antd';
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useContext } from 'react';
 import { VideoCameraOutlined } from '@ant-design/icons';
 import { getCookie, setCookies } from 'cookies-next';
 import { serverip } from '/config/serverip'
-
+import {_AppContext} from '/pages/_app'
 
 
 const { Meta } = Card;
@@ -23,7 +23,8 @@ const BestFood = dynamic(() => import("/components/BestFood.js"),
 
 
 
-export default function Index() {
+/** @param {import('next').InferGetServerSidePropsType<typeof getServerSideProps> } props */
+export default function Index(props) {
     const router = useRouter()
     const query = router.query
     const { categories, food } = query
@@ -31,6 +32,7 @@ export default function Index() {
     const [content, setContent] = useState()
     const [data, setData] = useState(null)
     const [Loading, setLoading] = useState(null)
+    const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
     const fetchData = async () => {
         setLoading(true)
         const data_categories = await fetch(`/api/getTypeFood`).then(res => res.ok && res.json())
@@ -42,10 +44,12 @@ export default function Index() {
         }
         if (data_food) {
             setData(data_food)
+            setTitle(data_food.name_th)
         }
         setLoading(false)
     }
     useEffect(() => {
+        setDefaultSelectedKeys(`foods_${categories}`)
         if (categories && food && !data) {
             fetchData()
         }
@@ -54,18 +58,16 @@ export default function Index() {
         setContent()
     }
     if (!food) return null
-    if (Loading) return <>กำลังดึงข้อมูล</>
-    if (!data) return <>ไม่พบข้อมูล</>
+    if (Loading) return <div className="min-h-screen">กำลังดึงข้อมูล</div>
+    if (!data) return <div className="min-h-screen">ไม่พบข้อมูล</div>
     return (
         <div className="-mt-1 min-h-screen bg-gray-100">
             <div className="flex flex-col w-full h-full   ">
-                <div className="flex  flex-col bg-gray-100 ipad:flex-row relative h-96 md:h-super lg:h-very-super ">
-                    <div className='sm:w-10/12 mx-auto flex h-full '><CustImage className="sm:rounded-md" src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} /></div>
+                <div className="flex  flex-col bg-gray-100 ipad:flex-row relative h-96 md:h-super lg:h-1/3 ">
+                    <div className='sm:w-10/12 mx-auto flex  h-very-super'><CustImage className="sm:rounded-md" src={data.image[0].name} alt={"0"} width="100%" height="100%" preview={false} /></div>
                     <div className='absolute-center w-full text-center align-middle '>
                         <div className='my-auto p-0 flex flex-col gap-5'>
-
-                            <span className='text-6xl sm:text-9xl  text-shadow  text-white '>{data.name_th}</span>
-                            <span className='text-lg sm:text-xl  text-shadow  text-black my-auto p-0'>{data.name_en}</span>
+                            <span className='text-6xl lg:text-9xl  text-shadow  text-white '>{data.name_th}</span> 
                         </div>
                     </div>
                 </div>
@@ -73,8 +75,10 @@ export default function Index() {
 
                 <div className='card mv-10 w-11/12 mx-auto mt-5 sm:w-8/12'>
                     <div className="flex flex-col w-full px-4 h-full    text-center">
-                        <p className="sm:text-4xl text-3xl font-bold text-green-800 ">{data.calories} กิโลแคลอรี่</p>
+                    <span className='text-lg sm:text-xl    text-black my-auto p-0'>{data.name_en}</span>
+                        <p className="sm:text-4xl text-3xl font-bold text-green-800 mt-3">{data.calories} กิโลแคลอรี่</p>
                         <div className="w-full ">
+                        
                             <p className='food-content-body'>{data.detail}</p>
                             <p className="food-content-header">วิธีการทำ</p>
                             <p className='food-content-body'>{data.proceduce}</p>

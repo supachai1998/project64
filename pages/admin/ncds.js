@@ -1,9 +1,10 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
-import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined,PlusOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
 import ReactPlayer from 'react-player';
+import {Button_Delete} from '/ulity/button'
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -85,7 +86,7 @@ const ModalView = () => {
             <Form.Item label="สัญญาณการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.signs}</span></Form.Item>
             <Form.Item label="คำแนะนำในการปฏิบัติตัว"><span className='text-md whitespace-pre-line'>{modalView.sugess}</span></Form.Item>
             <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><span key={url} className='text-md whitespace-pre-line'>{url}</span><br /></>)}</Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank"  href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
 
@@ -252,7 +253,7 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip><> แหล่งอ้างอิงที่ {ind + 1}</>
+                                        <Tooltip title={"ลบแหล่งอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} title={`แหล่งอ้างอิงที่ ${(ind + 1)}`}/></Tooltip>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -467,7 +468,7 @@ const ModalEdit = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip><> แหล่งอ้างอิงที่ {ind + 1}</>
+                                        <Tooltip title={"ลบแหล่งอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} title={`แหล่งอ้างอิงที่ ${(ind + 1)}`}/></Tooltip>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -566,9 +567,9 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(ncds[index])}>ดู</button>
-                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(ncds[index])}>แก้ไข</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(ncds[index], reload)}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(ncds[index])}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(ncds[index])}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(ncds[index], reload)}>ลบ</button>
             </div>,
         },
 
@@ -585,6 +586,6 @@ const TableForm = () => {
                 </button>
                 </Tooltip>
             </div>}
-            footer={() => 'Footer'} />
+         />
     </div>
 }

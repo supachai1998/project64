@@ -1,0 +1,251 @@
+generator client {
+  provider          = "prisma-client-js"
+  // previewFeatures = ["referentialIntegrity", "createMany"]
+  previewFeatures   = ["referentialIntegrity"]
+  planetScaleMode   = true
+  enable_direct_ddl = false
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  referentialIntegrity = "prisma"
+
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  password      String?   @db.VarChar(255)
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  apporve       Boolean?  @default(false)
+  delete        Boolean?  @default(false)
+  role          Role      @default(USER)
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Ncds {
+  id           Int            @id @default(autoincrement())
+  name_th      String         @unique
+  name_en      String         @unique
+  imply        String?        @db.LongText
+  video        String?        @db.LongText
+  cause        String?        @db.LongText
+  reduce       String?        @db.LongText
+  signs        String?        @db.LongText
+  sugess       String?        @db.LongText
+  views        Int?           @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  ref          Ref[]
+  image        ImageNCDS[]
+  foodncds     FoodNcds[]
+  relationBlog relationBlog[]
+  form         form[]
+  resultForm   resultForm[]
+}
+
+model Ref {
+  id      Int    @id @default(autoincrement())
+  url     String @db.LongText
+  ncds    Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  ncdsId  Int?
+  Food    Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId  Int?
+  Blogs   Blogs? @relation(fields: [blogsId], references: [id], onDelete: Cascade)
+  blogsId Int?
+}
+
+model Food {
+  id           Int            @id @default(autoincrement())
+  foodTypeId   Int
+  FoodType     FoodType       @relation(fields: [foodTypeId], references: [id], onDelete: Cascade)
+  name_th      String         @unique
+  name_en      String         @unique
+  proceduce    String         @db.LongText
+  calories     Float
+  detail       String         @db.LongText
+  ref          Ref[]
+  ingredient   String         @db.LongText
+  video        String?        @db.LongText
+  views        Int?           @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  FoodNcds     FoodNcds[]
+  image        ImageFood[]
+  relationBlog relationBlog[]
+}
+
+model FoodType {
+  id        Int      @id @default(autoincrement())
+  name_th   String   @unique
+  name_en   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Food      Food[]
+}
+
+model FoodNcds {
+  id        Int      @id @default(autoincrement())
+  detail    String   @db.LongText
+  suggess   Boolean
+  video     String?  @db.LongText
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ncdsId    Int?
+  // imageFoodId Int?
+  foodId    Int
+  // image       ImageFood? @relation(fields: [imageFoodId], references: [id], onDelete: Cascade)
+  ncds      Ncds?    @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  food      Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+}
+
+model ImageNCDS {
+  id     Int    @id @default(autoincrement())
+  name   String @db.LongText
+  ncds   Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  ncdsId Int?
+}
+
+model ImageFood {
+  id     Int    @id @default(autoincrement())
+  name   String @db.LongText
+  Food   Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId Int?
+  // FoodNcds FoodNcds[]
+}
+
+model ImageBlog {
+  id      Int    @id @default(autoincrement())
+  name    String @db.LongText
+  Blogs   Blogs? @relation(fields: [blogsId], references: [id], onDelete: Cascade)
+  blogsId Int?
+}
+
+model Blogs {
+  id        Int            @id @default(autoincrement())
+  name      String
+  imply     String         @db.LongText
+  type      Type
+  approve   Int?           @default(0)
+  video     String?        @db.LongText
+  vote_1    Int?           @default(0)
+  vote_2    Int?           @default(0)
+  vote_3    Int?           @default(0)
+  vote_4    Int?           @default(0)
+  vote_5    Int?           @default(0)
+  views     Int?           @default(0)
+  createdAt DateTime?      @default(now())
+  updatedAt DateTime?      @updatedAt
+  related   relationBlog[]
+  ref       Ref[]
+  subBlog   subBlog[]
+  image     ImageBlog[]
+}
+
+model relationBlog {
+  id      Int   @id @default(autoincrement())
+  ncds    Ncds? @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
+  Foods   Food? @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  Blogs   Blogs @relation(fields: [blogsId], references: [id], onDelete: Cascade)
+  blogsId Int
+  foodId  Int?
+  ncdsId  Int?
+}
+
+model subBlog {
+  id      Int     @id @default(autoincrement())
+  name    String
+  detail  String  @db.LongText
+  image   String?
+  Blogs   Blogs?  @relation(fields: [blogsId], references: [id], onDelete: Cascade)
+  blogsId Int?
+}
+
+model form {
+  id      Int       @id @default(autoincrement())
+  title   String    @unique
+  ncds    Ncds      @relation(fields: [ncdsId], references: [id])
+  ncdsId  Int
+  subForm subForm[]
+}
+
+model subForm {
+  id     Int      @id @default(autoincrement())
+  name   String
+  form   form?    @relation(fields: [formId], references: [id])
+  formId Int?
+  choice choice[]
+}
+
+model choice {
+  id        Int      @id @default(autoincrement())
+  name      String
+  detail    String?  @db.LongText
+  score     Int
+  subForm   subForm? @relation(fields: [subFormId], references: [id])
+  subFormId Int?
+}
+
+model resultForm {
+  id            Int             @id @default(autoincrement())
+  title         String          
+  start         Int
+  end           Int
+  ncds          Ncds            @relation(fields: [ncdsId], references: [id])
+  ncdsId        Int
+  recommend     String          @db.LongText
+}
+
+
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Type {
+  NCDS
+  FOOD
+  ALL
+}

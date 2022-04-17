@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 // import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { VideoCameraOutlined } from '@ant-design/icons';
+import { useRouter } from 'next/router';
 
 const ReactPlayer = dynamic(() => import('react-player'), {
     ssr: false,
@@ -43,7 +44,7 @@ const NCDS = ({ ncds }) => {
         <div className="w-full h-auto sm:px-5">
             <hr className="my-3" />
             <div className="flex justify-center  items-center">
-                <p className='w-full'/>
+                <p className='w-full' />
                 <Select defaultValue={3} onChange={handleChange} >
                     <Option value={3}>ทั้งหมด ({total})</Option>
                     <Option value={2}>แนะนำ ({count_sugess})</Option>
@@ -71,7 +72,7 @@ const CusModal = ({ handleClose, contentModal }) => {
     );
 };
 const Suggess_true = ({ data, showModal }) => {
-
+    const router = useRouter()
     return <div>
         <p className='w-full text-2xl text-center  text-green-600'>โรคที่สามารถรับประทานได้</p>
         <Owl_Carousel margin={0}>
@@ -107,6 +108,10 @@ const Suggess_true = ({ data, showModal }) => {
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
                                         {video && <hr className='mb-2 border-t' />}
                                         <div className="flex justify-center mb-4">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
+                                        <hr className='mb-2 ' />
+                                        <div className="flex justify-center ">
+                                            <a onClick={() => { localStorage.setItem('keys', `ncds_${id}`); router.push(`/ncds/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                        </div>
                                     </div>
                                 </>
                             </div>
@@ -155,6 +160,10 @@ const Suggess_false = ({ data, showModal }) => {
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
                                         {video && <hr className='mb-2 border-t' />}
                                         <div className="flex justify-center mb-4 h-11/12">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
+                                        <hr className='mb-2 ' />
+                                        <div className="flex justify-center ">
+                                            <a onClick={() => { localStorage.setItem('keys', `ncds_${id}`); router.push(`/ncds/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                        </div>
                                     </div>
                                 </>
                             </div>

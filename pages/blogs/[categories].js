@@ -1,17 +1,21 @@
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import { useState, useEffect } from 'react'
+import { useState, useEffect ,useContext} from 'react'
 import { notification } from 'antd'
+import {_AppContext} from '/pages/_app'
+
 // import { notification } from 'antd'
 
 const DisplayBlogReadMore = dynamic(() => import("/components/displayBlogReadMore"),
   { ssr: false })
-export default function Index() {
+/** @param {import('next').InferGetServerSidePropsType<typeof getServerSideProps> } props */
+export default function Index(props) {
   const router = useRouter()
   const { categories } = router.query
   const [data, setData] = useState()
   const [loading, setLoading] = useState()
   const [prevPath, setPrevPath] = useState()
+  const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
   useEffect(() => {
     if (!prevPath) {
       setPrevPath(categories)
@@ -23,11 +27,20 @@ export default function Index() {
   }, [categories])
   useEffect(() => {
     (async () => {
+      setDefaultSelectedKeys(`blogs_${categories}`)
+      if(categories === 'all'){
+        setTitle("บทความทั้งหมด")
+      }else if(categories === 'ncds'){
+        setTitle("บทความโรคไม่ติดต่อทั้งหมด")
+      }else if(categories === 'food'){
+        setTitle("บทความอาหารทั้งหมด")
+      }
       if (!data) {
         setLoading(true)
         const _ = await getData(categories)
         setLoading(false)
         setData(_)
+        console.log(_)
       }
     })()
   }, [categories, data])

@@ -41,50 +41,33 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [blogs, setBlogs] = useState([
     { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
   ])
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const _title = localStorage?.getItem('title') || ""
-      setTitle(_title)
-    }
-
-  }, [title])
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const keys = localStorage?.getItem('keys') || "/"
-      setDefaultSelectedKeys(keys)
-    }
-
-  }, [defaultSelectedKeys])
 
   const toggle = () => { setCollapsed(!collapsed) }
 
-  useEffect(() => {// call api machine learning 
-    // set up heroku
-    !ncds && fetch(`/api/getNCDS`)
+  useEffect(() => {
+    !ncds && fetch(`/api/getNCDS?select=name_th,name_en,id`)
       .then(async res => res.ok && res.json())
       .then(data => setNCDS(data))
       .catch(err => notification.error({ message: err.message }))
+      // call api machine learning 
     !ncds && fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
   }, [])
 
   const handleMenuClick = (val) => {
-    // console.log(keyPath)
+    // console.log(val,defaultSelectedKeys)
     // Array(3) [ "report_blogs_food", "report", "admin" ]
-    localStorage.setItem('keys', val.key);
-    setDefaultSelectedKeys(val.key);
     if (val.keyPath.length > 1) {
       router.push(`/${val.keyPath[1]}/${val.keyPath[0].split("_")[1]}`)
     }
   }
   const handleSubMenuClick = (name) => {
-    localStorage.setItem('title', name);
     setTitle(name)
+    setCollapsed(true)
   }
   const handleMenu = (en, th) => {
-    localStorage.setItem('title', th);
-    localStorage.setItem('keys', en);
     setTitle(th);
     setDefaultSelectedKeys(en);
+    console.log(en)
     router.push(`/${en}`);
     setCollapsed(true)
   }
@@ -118,7 +101,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             className="sm:p-2 site-layout-background"
           >
             <ConfigProvider locale={thTh}>
-              <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, setCollapsed }}>
+              <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, title, setCollapsed }}>
                 <Component onClick={() => setCollapsed(true)} {...pageProps} />
               </_AppContext.Provider>
             </ConfigProvider>

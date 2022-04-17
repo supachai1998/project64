@@ -2,8 +2,8 @@
 import { Card, Input,notification } from 'antd';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router';
-import { useState, useRef, useEffect } from 'react';
-
+import { useState, useRef, useEffect,useContext } from 'react';
+import {_AppContext} from '/pages/_app'
 const { Meta } = Card
 const { Search } = Input;
 const CusImage = dynamic(() => import('./../cusImage.js'));
@@ -18,6 +18,7 @@ export default function _Categories({ fetchData, categories, placeholder,_data, 
     const refSearchInput = useRef()
     const displaySearch = useRef()
     const router = useRouter()
+    const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
     const refreshData= async () =>{
         setLoading(true)
         const { title_th, title_en, data } = await fetchData(categories)
@@ -27,6 +28,8 @@ export default function _Categories({ fetchData, categories, placeholder,_data, 
         setTitle_en(title_en)
         setSearch_bool(true)
         setLoading(false)
+        setDefaultSelectedKeys(`foods_${categories}`)
+        setTitle(title_th)
     }
     useEffect(() => {
         if (!_data && categories) {

@@ -221,6 +221,7 @@ export default async function handler(req, res) {
                         include: {
                             image: true,
                             ref: true,
+                            FoodType:true,
                             FoodNcds: {
                                 include: {
                                     ncds: {

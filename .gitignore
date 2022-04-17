@@ -39,6 +39,9 @@ yarn-error.log*
 *.py
 *.bat
 
+lossfile
+d..
+
 public/foods/*
 
 # google

@@ -1,22 +1,24 @@
 import { useRouter, createRef, useRef } from 'next/router'
 import { notification, Tooltip } from 'antd';
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useContext } from 'react';
 import { getCookie, setCookies } from 'cookies-next';
 import { serverip } from '/config/serverip'
+import {_AppContext} from '/pages/_app'
 
 const CustImage = dynamic(() => import("/components/cusImage"))
 const BestFood = dynamic(() => import("/components/BestFood"))
 const BestBlog = dynamic(() => import("/components/BestBlog"))
 const ContentHeader = dynamic(() => import("../../components/ncds/contentheader"))
 
-export default function Index() {
+/** @param {import('next').InferGetServerSidePropsType<typeof getServerSideProps> } props */
+export default function Index(props) {
     const [NCDS, setNCDS] = useState()
     const [headerData, setHeaderData] = useState()
     const [loading, setloading] = useState()
     const [casImg, setCasImg] = useState(0)
-
     const router = useRouter()
+    const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
     const { categories, name } = router.query
     const fetchData = async () => {
         setloading(true)
@@ -29,12 +31,15 @@ export default function Index() {
                     { title: "ลดความเสี่ยงต่อการเกิดโรค", content: data.reduce },
                     { title: "สัญญาณการเกิดโรค", content: data.signs },
                     { title: "คำแนะนำในการปฎิบัติตัว", content: data.sugess },
+                    { title: "อ้างอิง", content: data.ref },
                 ])
+                setTitle(data.name_th)
             })
             .catch(err => notification.error({ message: "ไม่สามารถดึงข้อมูลได้", description: err.message }))
         setloading(false)
     }
     useEffect(() => {
+        setDefaultSelectedKeys(`ncds_${categories}`)
         if (categories && !NCDS) {
             fetchData()
         }
@@ -48,14 +53,14 @@ export default function Index() {
             return () => clearInterval(timmer)
         }
     }, [NCDS, casImg])
-    if (loading) return <>กำลังดึงข้อมูลโรคไม่ติดต่อ</>
-    if (!NCDS) return <>ไม่พบข้อมูลโรค</>
+    if (loading) return <div className='min-h-screen'>กำลังดึงข้อมูลโรคไม่ติดต่อ</div>
+    if (!NCDS) return <div className='min-h-screen'>ไม่พบข้อมูลโรค</div>
     return (
         <div className="flex flex-col justify-center w-full h-full min-h-screen gap-4 mx-auto">
             <div className="text-center w-full">
                 {/* Custom image */}
                 <div className='flex flex-col justify-center items-center gap-4'>
-                    <div className="sm:w-11/12 sm:h-96 h-60"><CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="100%" height="100%" /></div>
+                    <div className="sm:w-8/12 sm:h-96 h-1/2"><CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="100%" height="100%" /></div>
                     <div className="flex gap-2">
                         {NCDS?.image.map(({ name }, i) => <Tooltip key={i + name} title={`รูป ${i + 1}`}><button onClick={() => setCasImg(i)} className={`w-2 h-2 rounded-full  hover:bg-gray-900 ease-anima ${casImg === i ? "bg-gray-900 animate-pulse" : "bg-gray-400"}`} /></Tooltip>)}
                     </div>

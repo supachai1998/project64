@@ -152,7 +152,6 @@ export default async function handler(req, res) {
             _ = { ..._, [val]: true }
           }
           data = await prisma.ncds.findMany({
-            
             select: _
           })
         } else {

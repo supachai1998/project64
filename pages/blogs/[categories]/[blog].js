@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router'
 import { Tooltip, Modal, Rate, notification } from 'antd';
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { getCookie, setCookies } from 'cookies-next';
 import { serverip } from '/config/serverip'
+import {_AppContext} from '/pages/_app'
 
 
 const BestFood = dynamic(() => import('../../../components/BestFood'))
@@ -12,29 +13,31 @@ const CustImage = dynamic(() => import("/components/cusImage"))
 const { confirm } = Modal;
 
 
-export default function Index() {
+/** @param {import('next').InferGetServerSidePropsType<typeof getServerSideProps> } props */
+export default function Index(props) {
   const router = useRouter()
   const { blog, categories } = router.query
-  const [casImg, setCasImg] = useState(null)
+  const [casImg, setCasImg] = useState(0)
   const [data, setData] = useState(null)
   const [loading, setloading] = useState(false)
+  const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
   const fetechData = async () => {
     setloading(true)
     const data = await fetch(`/api/getBlogs?id=${blog}`).then(res => res.ok && res.json())
-    console.log(data)
     if (data) {
       setData(data)
+      setTitle(data.name)
     }
     setloading(false)
   }
   const fetechDataRate = async () => {
     const data = await fetch(`/api/getBlogs?id=${blog}`).then(res => res.ok && res.json())
-    console.log(data)
     if (data) {
       setData(data)
     }
   }
   useEffect(() => {
+    setDefaultSelectedKeys(`blogs_${categories}`)
     if (blog && categories) {
       fetechData()
     }
@@ -48,8 +51,8 @@ export default function Index() {
     }
   }, [data, casImg])
   if (!blog) return null
-  if (loading) return <>กำลังดึงข้อมูล</>
-  if (!data) return null
+  if (loading) return <div className='min-h-screen'>กำลังดึงข้อมูล</div>
+  if (!data) return <div className='min-h-screen'>ไม่พบข้อมูล</div>
   const rateChange = async val => {
     if (val > 0) {
       await confirm({
@@ -78,7 +81,7 @@ export default function Index() {
       <div className="text-center w-full">
         {/* Custom image */}
         <div className='flex flex-col justify-center items-center gap-4'>
-          <div className="sm:w-9/12 sm:h-96 h-60 relative">
+          <div className="sm:w-9/12 w-full sm:h-96 h-60 relative">
             {!!data?.image && <CustImage className="rounded-lg " src={data?.image[casImg]?.name} alt={data.name} width="100%" height="100%" />}
             <div className='right-0 bottom-1 absolute rounded-md py-1 px-2 bg-gray-900 text-white items-center flex gap-2'>
               <span className='mt-1'>{data.avg_vote}</span><Rate value={data.avg_vote} onChange={rateChange} tooltips={[`${data.vote_1} โหวต`, `${data.vote_2} โหวต`, `${data.vote_3} โหวต`, `${data.vote_4} โหวต`, `${data.vote_5} โหวต`,]} />

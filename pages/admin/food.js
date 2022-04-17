@@ -1,9 +1,10 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import { Button, Table, Divider, Typography, Select, Modal,  Form, Input, Upload, notification, InputNumber,  Tooltip } from 'antd'
+import { Button, Table, Divider, Typography, Select, Modal,  Form, Input, Upload, notification, InputNumber,  Tooltip ,Radio } from 'antd'
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
 import ReactPlayer from 'react-player';
+import { Button_Delete } from '/ulity/button';
+
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -20,7 +21,9 @@ function Index() {
     const [modalEdit, setModalEdit] = useState(false)
     const [modalView, setModalView] = useState(false)
     const [loading, setLoading] = useState(false)
+    
     const [food, setFood] = useState()
+    const [NCDS, setNCDS] = useState()
     const reload = async () => {
         setLoading(true)
         await fetch("/api/getFood").then(async res => {
@@ -32,7 +35,11 @@ function Index() {
         setLoading(false)
     }
     useEffect(() => {
-        reload()
+        (async()=>{
+            reload()
+            const fetchNCDS = await FetchNCDS()
+            Array.isArray(fetchNCDS) && setNCDS(fetchNCDS)
+        })()
         return () => setFood()
     }, [])
     return (
@@ -48,6 +55,7 @@ function Index() {
             </div>
             <Context.Provider value={{
                 reload,
+                NCDS,
                 modalAdd, setModalAdd,
                 modalEdit, setModalEdit,
                 modalView, setModalView,
@@ -97,10 +105,12 @@ const TableForm = () => {
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >จำนวนอาหาร</Paragraph>,
+            title: <Paragraph align="center" >จำนวนโรคแนะนำ</Paragraph>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: val => <Tooltip><Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph></Tooltip>
+            render: (text, val, index) => <Tooltip title={<div>
+                {food[index].FoodNcds.map((val, index) => <div key={index}>{val.ncds.name_th}({val.suggess ? "แนะนำ" : "ไม่แนะนำ"})</div>)}
+            </div>}><Paragraph align="center" ellipsis={ellipsis}>{text.length}</Paragraph></Tooltip>
         },
         {
             title: <Paragraph align="center" >การจัดการ</Paragraph>,
@@ -108,9 +118,9 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(food[index])}>ดู</button>
-                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(food[index])}>แก้ไข</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(food[index], reload)}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(food[index])}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(food[index])}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(food[index], reload)}>ลบ</button>
             </div>,
         },
 
@@ -127,14 +137,13 @@ const TableForm = () => {
                 </button>
                 </Tooltip>
             </div>}
-            footer={() => 'Footer'} />
+        />
     </div>
 }
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload } = useContext(Context)
+    const { modalAdd, setModalAdd, reload , NCDS } = useContext(Context)
     const [foodType, setFoodType] = useState(null)
     const [fileList, setFileList] = useState()
-    const [ncds, setNcds] = useState()
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -146,8 +155,6 @@ const ModalAdd = () => {
             if (modalAdd) {
                 const fetchTypeFood = await FetchTypeFood()
                 Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
-                const fetchNCDS = await FetchNCDS()
-                Array.isArray(fetchNCDS) && setNcds(fetchNCDS)
             }
         })()
     }, [modalAdd])
@@ -230,7 +237,7 @@ const ModalAdd = () => {
                 name="name_th"
                 label="ชื่ออาหารไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F ]+$/,
+                    pattern: /^[\u0E00-\u0E7F- ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ภาษาไทย" />
@@ -239,7 +246,7 @@ const ModalAdd = () => {
                 name="name_en"
                 label="ชื่ออาหารอังกฤษ"
                 rules={[{ required: true }, {
-                    pattern: /^[a-zA-Z0-9 ]+$/,
+                    pattern: /^[a-zA-Z0-9- ]+$/,
                     message: 'กรอกภาษาอังกฤษ',
                 }]}>
                 <Input placeholder="ภาษาอังกฤษ" />
@@ -303,7 +310,7 @@ const ModalAdd = () => {
                     <Button className="w-full" disabled={fileList && fileList.length > 0 && true} icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList.length : 0}/1)</Button>
                 </Upload>
             </Form.Item>
-            <Form.List name="FoodNcds" >
+            <Form.List name="FoodNcds"  rules={[{ required: true, message: "คุณลืมเพิ่มคำแนะนำสำหรับโรค" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -325,7 +332,7 @@ const ModalAdd = () => {
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <div className="text-lg"> โรคที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip>
+                                    <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip><div className="text-lg"> โรคที่ {ind + 1}</div> 
                                     </div>
 
                                 </Form.Item>
@@ -337,7 +344,7 @@ const ModalAdd = () => {
                                     rules={[{ required: true }]}
                                 >
                                     <Select>
-                                        {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                                        {!!NCDS && NCDS.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item
@@ -346,10 +353,10 @@ const ModalAdd = () => {
                                     fieldKey={[field.fieldKey, 'suggess']}
                                     rules={[{ required: true }]}
                                 >
-                                    <Select>
-                                        <Option key={true} value={true}>สามารถรับประทานได้</Option>
-                                        <Option key={false} value={false}>ไม่แนะนำให้รับประทาน</Option>
-                                    </Select>
+                                    <Radio.Group >
+                                        <Radio key={true} value={true}>แนะนำให้รับประทาน</Radio>
+                                        <Radio key={false} value={false}>ไม่แนะนำให้รับประทาน</Radio>
+                                    </Radio.Group>
                                 </Form.Item>
                                 <Form.Item
                                     label="คำอธิบาย"
@@ -386,7 +393,7 @@ const ModalAdd = () => {
 
                 )}
             </Form.List>
-            <Form.List name="ref" >
+            <Form.List name="ref" rules={[{ required: true, message: "คุณลืมเพิ่มแหล่งอ้างอิง" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -402,8 +409,9 @@ const ModalAdd = () => {
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
                                 <Form.Item
                                     {...field}
+                                    labelCol={{span:5}}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                         <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -437,10 +445,9 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload } = useContext(Context)
+    const { modalEdit, setModalEdit, reload,NCDS } = useContext(Context)
     const [foodType, setFoodType] = useState(null)
     const [fileList, setFileList] = useState()
-    const [ncds, setNcds] = useState()
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -460,8 +467,6 @@ const ModalEdit = () => {
             if (modalEdit) {
                 const fetchTypeFood = await FetchTypeFood()
                 Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
-                const fetchNCDS = await FetchNCDS()
-                Array.isArray(fetchNCDS) && setNcds(fetchNCDS)
             }
         })()
     }, [modalEdit])
@@ -550,7 +555,7 @@ const ModalEdit = () => {
                 name="name_th"
                 label="ชื่ออาหารไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F ]+$/,
+                    pattern: /^[\u0E00-\u0E7F- ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ภาษาไทย" />
@@ -559,7 +564,7 @@ const ModalEdit = () => {
                 name="name_en"
                 label="ชื่ออาหารอังกฤษ"
                 rules={[{ required: true }, {
-                    pattern: /^[a-zA-Z0-9 ]+$/,
+                    pattern: /^[a-zA-Z0-9- ]+$/,
                     message: 'กรอกภาษาอังกฤษ',
                 }]}>
                 <Input placeholder="ภาษาอังกฤษ" />
@@ -623,7 +628,7 @@ const ModalEdit = () => {
                     <Button className="w-full" icon={<UploadOutlined />}>แก้ไขรูป ({fileList ? fileList.length : 0}/1)</Button>
                 </Upload>
             </Form.Item>
-            <Form.List name="FoodNcds" >
+            <Form.List name="FoodNcds" rules={[{ required: true, message: "คุณลืมเพิ่มคำแนะนำสำหรับโรค" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -645,7 +650,7 @@ const ModalEdit = () => {
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <div className="text-lg"> โรคที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip>
+                                        <div className="text-lg"> โรคที่ {ind + 1}</div> 
                                     </div>
 
                                 </Form.Item>
@@ -657,7 +662,7 @@ const ModalEdit = () => {
                                     rules={[{ required: true }]}
                                 >
                                     <Select>
-                                        {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                                        {!!NCDS && NCDS.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item
@@ -667,7 +672,7 @@ const ModalEdit = () => {
                                     rules={[{ required: true }]}
                                 >
                                     <Select>
-                                        <Option key={true} value={true}>สามารถรับประทานได้</Option>
+                                        <Option key={true} value={true}>แนะนำให้รับประทาน</Option>
                                         <Option key={false} value={false}>ไม่แนะนำให้รับประทาน</Option>
                                     </Select>
                                 </Form.Item>
@@ -706,7 +711,7 @@ const ModalEdit = () => {
 
                 )}
             </Form.List>
-            <Form.List name="ref" >
+            <Form.List name="ref" rules={[{ required: true, message: "คุณลืมเพิ่มแหล่งอ้างอิง" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -721,17 +726,16 @@ const ModalEdit = () => {
 
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
                                 <Form.Item
+                                    labelCol={{span:5}}
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                         <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
                                     rules={[{ required: true }]}
                                 >
-
                                     <Input placeholder="แหล่งอ้างอิง" />
-
                                 </Form.Item>
                             </Form.Item>
 
@@ -861,8 +865,8 @@ const ModalManageType = () => {
             key: '',
             render: val => <div className="flex flex-wrap gap-2">
                 {/* <Button type="text" className="bg-yellow-300" onClick={() => console.log(val)}>ดู</Button> */}
-                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val)}>ลบ</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val)}>ลบ</button>
             </div>,
         },
 
@@ -924,6 +928,7 @@ const ModalView = () => {
     const onCancel = () => {
         setModalView(false)
     }
+    console.log(modalView)
     if (!modalView) return null
     return <Modal title={modalView.name_th}
         visible={modalView}
@@ -934,20 +939,24 @@ const ModalView = () => {
         width="100%"
         footer={<></>}>
         <Form labelCol={{ span: 4 }} labelAlign="left">
+            <Form.Item label="หมวด"><span className='text-lg whitespace-pre-line'>{modalView.FoodType.name_th}({modalView.FoodType.name_en})</span></Form.Item>
             <Form.Item label={`รูปภาพ ${modalView.image.length} รูป`}>{modalView.image.map(({ name }) => <CusImage className="rounded-md shadow-lg" key={name} width="250px" height="150px" src={name} />)}</Form.Item>
             <Form.Item label="ชื่ออาหารภาษาไทย"><span className='text-lg whitespace-pre-line'>{modalView.name_th}</span></Form.Item>
             <Form.Item label="ชื่ออาหารภาษาอังกฤษ"><span className='text-lg whitespace-pre-line'>{modalView.name_en}</span></Form.Item>
+            <Form.Item label="พลังงาน"><span className='text-lg whitespace-pre-line'>{modalView.calories} แคลอรี่</span></Form.Item>
             <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView.detail}</span></Form.Item>
             <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView.proceduce}</span></Form.Item>
             <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView.ingredient}</span></Form.Item>
             <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><span key={url} className='text-md whitespace-pre-line'>{url}</span><br /></>)}</Form.Item>
             <Form.Item label={`โรคที่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
-                {suggess ? <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}</span>
-                    : <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}</span>}
-                <br />
+                {suggess &&<> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
             </>)}
             </Form.Item>
+            <Form.Item label={`โรคที่ไม่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
+                {!suggess &&<> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
+            </>)}
+            </Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank"  href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
 
@@ -990,7 +999,7 @@ const FetchTypeFood = async () => {
     return null
 }
 const FetchNCDS = async () => {
-    const req = await fetch("/api/getNCDS")
+    const req = await fetch("/api/getNCDS?select=name_th,name_en,id")
     if (req.status === 200) {
         const data = await req.json()
         return data

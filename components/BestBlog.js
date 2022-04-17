@@ -77,7 +77,7 @@ export default function DisplayBlogReadMore() {
                 <p className=" mt-1 sm:mx-5 break-words overflow-hidden text-lg md:text-md h-20">{imply}...</p>
                 <hr className='mb-2 ' />
                 <div className="flex justify-center ">
-                  <a onClick={() => { localStorage.setItem('keys', `blogs_${type}`); router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                  <a onClick={() => {  router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
                 </div>
               </div>
 

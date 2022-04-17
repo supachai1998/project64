@@ -32,8 +32,9 @@ export default async function handler(req, res,) {
                   title: row.title
                 }
               })
-              console.log(dup)
-              if (dup === null) await prisma.form.create({ data: row, })
+              // row[ncdsId] = parseInt(row[ncdsId])
+              console.log(row)
+              if (dup === null) await prisma.form.create({ data: {...row}, })
               else return res.status(400).send( {statusText:`duplicate title : ${row.title}`})
             } catch (e) {console.error(e.message);return res.status(400).send({statusText :e.message}) }
           }
@@ -176,7 +177,7 @@ export default async function handler(req, res,) {
         const _id = parseInt(query.id)
         if (_id) {
           if (!query.select) {
-            data = await prisma.form.findFirst({
+            data = await prisma.form.findMany({
 
               where: { ncdsId: _id },
               select: {
@@ -204,7 +205,7 @@ export default async function handler(req, res,) {
             })
           } else {
             const { select } = query
-            data = await prisma.form.findFirst({
+            data = await prisma.form.findMany({
 
               where: { id: _id },
               select: { [select]: true }

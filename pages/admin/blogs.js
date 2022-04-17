@@ -3,6 +3,7 @@ import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, U
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
+import { Button_Delete } from '/ulity/button';
 import ReactPlayer from 'react-player';
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -20,6 +21,10 @@ export default function Index() {
     const [modalView, setModalView] = useState(false)
     const [loading, setLoading] = useState(false)
     const [blogs, setBlogs] = useState([])
+    const [ncdsLoading, setNCDSLoading] = useState()
+    const [foodLoading, setFoodLoading] = useState()
+    const [ncds, setNCDS] = useState()
+    const [food, setFood] = useState()
     const reload = async () => {
         setLoading(true)
         const reqBlogs = await fetch("/api/getBlogs?approve=true")
@@ -29,7 +34,22 @@ export default function Index() {
         setLoading(false)
     }
     useEffect(() => {
-        reload()
+        
+    }, []);
+    useEffect(() => {
+        (async () => {
+            setNCDSLoading(true)
+            reload()
+            const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
+                .then(async resp => resp.ok && resp.json())
+                .then(data => setNCDS(data)).catch(err => notification.error({ message: "Error", description: err.message }))
+            setNCDSLoading(false)
+            setFoodLoading(true)
+            const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
+                .then(async resp => resp.ok &&resp.json())
+                .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
+            setFoodLoading(false)
+        })()
         return () => setBlogs([])
     }, [])
     return (
@@ -45,6 +65,8 @@ export default function Index() {
                 modalEdit, setModalEdit,
                 modalView, setModalView,
                 loading,
+                ncds,food,
+                ncdsLoading,foodLoading,
                 blogs
             }}>
                 <ModalAdd />
@@ -132,9 +154,9 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className="button-cus bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(blogs[index])}>ดู</button>
-                <button className="button-cus bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(blogs[index])}>แก้ไข</button>
-                <button className="button-cus bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(blogs[index])}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(blogs[index])}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(blogs[index])}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(blogs[index])}>ลบ</button>
             </div>,
         },
 
@@ -214,36 +236,19 @@ const TableForm = () => {
                 </button>
                 </Tooltip>
             </div>}
-            footer={() => 'Footer'} />
+        />
     </div>
 }
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload } = useContext(Context)
+    const { modalAdd, setModalAdd, reload,ncds,food,ncdsLoading,foodLoading } = useContext(Context)
     const [fileList, setFileList] = useState([])
     const [fileListSubBlogs, setFileListSubBlogs] = useState([])
     const [type, setType] = useState(null)
-    const [ncds, setNCDS] = useState()
-    const [food, setFood] = useState()
-    const [ncdsLoading, setNCDSLoading] = useState()
-    const [foodLoading, setFoodLoading] = useState()
     const [form] = Form.useForm();
     useEffect(() => {
         form.setFieldsValue();
     }, [form, modalAdd]);
-    useEffect(() => {
-        (async () => {
-            setNCDSLoading(true)
-            const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
-                .then(resp => resp.json())
-                .then(data => setNCDS(data)).catch(err => console.log(err))
-            setNCDSLoading(false)
-            setFoodLoading(true)
-            const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
-                .then(resp => resp.json())
-                .then(data => setFood(data)).catch(err => console.log(err))
-            setFoodLoading(false)
-        })()
-    }, []);
+    
 
     const onOk = () => {
         setModalAdd(false)
@@ -341,7 +346,7 @@ const ModalAdd = () => {
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
-                rules={[{ required: true }]}>
+                rules={[{ required: true , message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
                     placeholder="เลือกประเภทอาหาร"
@@ -396,8 +401,8 @@ const ModalAdd = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
-                rules={[{ required: true }]}
-            >
+                rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}>
+            
 
                 <Upload
                     multiple={true}
@@ -412,7 +417,7 @@ const ModalAdd = () => {
                     <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/1)</Button>
                 </Upload>
             </Form.Item>
-            <Form.List name="subBlog" >
+            <Form.List name="subBlog" rules={[{ required: true, message: "คุณลืมเพิ่มหัวข้อย่อย" }]} >
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -431,7 +436,7 @@ const ModalAdd = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                            <div > หัวข้อย่อยที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip>
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip><div > หัวข้อย่อยที่ {ind + 1}</div> 
                                         </div>
                                     </>
                                 </Form.Item>
@@ -458,7 +463,7 @@ const ModalAdd = () => {
                                     name={[field.name, 'image']}
                                     fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
-                                // rules={[{ required: true }]}
+                                // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
                                 >
 
                                     <Upload
@@ -490,7 +495,7 @@ const ModalAdd = () => {
 
                 )}
             </Form.List>
-            <Form.List name="ref" >
+            <Form.List name="ref" rules={[{ required: true, message: "คุณลืมเพิ่มอ้างอิง" }]} >
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -507,7 +512,7 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -541,14 +546,10 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload } = useContext(Context)
+    const { modalEdit, setModalEdit, reload , ncds,food,ncdsLoading,foodLoading } = useContext(Context)
     const [type, setType] = useState(modalEdit?.type)
     const [fileList, setFileList] = useState([])
     const [fileListSubBlogs, setFileListSubBlogs] = useState([])
-    const [ncds, setNCDS] = useState()
-    const [food, setFood] = useState()
-    const [ncdsLoading, setNCDSLoading] = useState()
-    const [foodLoading, setFoodLoading] = useState()
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -558,18 +559,6 @@ const ModalEdit = () => {
         }
         form.setFieldsValue(modalEdit);
     }, [form, modalEdit]);
-
-
-    useEffect(() => {
-        (async () => {
-            const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
-                .then(resp => resp.json())
-                .then(data => setNCDS(data)).catch(err => console.log(err))
-            const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
-                .then(resp => resp.json())
-                .then(data => setFood(data)).catch(err => console.log(err))
-        })()
-    }, []);
 
 
     const onOk = () => {
@@ -692,7 +681,7 @@ const ModalEdit = () => {
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
-                rules={[{ required: true }]}>
+                rules={[{ required: true , message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
                     placeholder="เลือกประเภทอาหาร"
@@ -749,7 +738,7 @@ const ModalEdit = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
-                rules={[{ required: true }]}
+                rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
             >
 
                 <Upload
@@ -763,7 +752,7 @@ const ModalEdit = () => {
                     <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList?.length || 0}/1)</Button>
                 </Upload>
             </Form.Item>
-            <Form.List name="subBlog" >
+            <Form.List name="subBlog" rules={[{ required: true, message: "คุณลืมเพิ่มหัวข้อย่อย" }]} >
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -814,7 +803,7 @@ const ModalEdit = () => {
                                     name={[field.name, 'image']}
                                     fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
-                                // rules={[{ required: true }]}
+                                // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
                                 >
                                     <Upload
                                         multiple={true}
@@ -844,7 +833,7 @@ const ModalEdit = () => {
 
                 )}
             </Form.List>
-            <Form.List name="ref" >
+            <Form.List name="ref" rules={[{ required: true, message: "คุณลืมเพิ่มอ้างอิง" }]} >
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />

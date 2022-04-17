@@ -45,7 +45,7 @@
 }
 .food-content-body{
   text-overflow: ellipsis;
-  @apply w-full h-full pl-4 text-lg  whitespace-pre-line truncate break-words  text-left
+  @apply w-full h-full pl-4 sm:text-lg  whitespace-pre-line truncate break-words  text-left
 }
 .food-content-header{
   @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left  lg:text-3xl
@@ -203,14 +203,26 @@
   transition: 'all  ease-in-out';
   @apply transform transition-transform  ease-in-out;
 }
-.button-cus {
-  @apply rounded-lg  py-1 px-3 shadow-md  transform duration-500 transition-all ease-in-out;
-}
 
+button {
+  @apply rounded-lg  py-1 px-3  transform duration-500 transition-all ease-in-out flex gap-2 flex-wrap justify-center items-center ;
+}
+.button-cus {
+  @apply rounded-lg  py-1 px-3 shadow-md  transform duration-500 transition-all ease-in-out flex gap-2 flex-wrap justify-center items-center ;
+}
+.ant-typography ,
+.ant-typography-ellipsis ,
+.ant-tooltip-inner {
+  @apply whitespace-pre-line overflow-hidden w-full
+}
 /* custom curve ant design input */
 
 .ant-input-number{
   @apply w-full !important
+}
+
+a:link,a:visited  {
+  @apply text-gray-900
 }
 
 /* custom curve ant design button */
