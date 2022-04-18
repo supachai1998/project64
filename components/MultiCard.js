@@ -1,22 +1,24 @@
 /* eslint-disable react/jsx-key */
 import { Tooltip,Rate } from 'antd';
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router';
 
 const CusImage = dynamic(() => import('./cusImage.js'));
 const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 
-export default function MultiCard({ data, title }) {
+export default function MultiCard({loading, data, title }) {
+    const router = useRouter()
 
-    if (!data && !Array.isArray(data)) return null
+    if(loading) return null
+    if (!!!data || !Array.isArray(data) || data?.length <= 0 ) return null
     return (
-
         <Owl_Carousel
             title={title}
             info_top={`พบ ${data.length} รายการ`}
             info_down={`อ่านทั้งหมด`}
         >
             <>
-                {data && data.map(({
+                {data.map(({
                     id,
                     name_th,
                     foodTypeId,

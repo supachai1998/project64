@@ -31,6 +31,7 @@ const animationZoomHover = "transition duration-500 ease-in-out transform  hover
 
 export const _AppContext = createContext()
 
+const project_name = 'ใส่ใจโรคไม่ติดต่อเรื้อรัง (NCDs Care)'
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   // const [queryClient] = React.useState(() => new QueryClient())
   const router = useRouter()
@@ -65,9 +66,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     setCollapsed(true)
   }
   const handleMenu = (en, th) => {
-    setTitle(th);
+    
     setDefaultSelectedKeys(en);
-    console.log(en)
+    // console.log(en)
+    if(!en) setTitle(project_name); else setTitle(th);
     router.push(`/${en}`);
     setCollapsed(true)
   }
@@ -144,7 +146,7 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
       <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick} >
         {status === "unauthenticated" ? <>
           <Menu.Item key="/" icon={<HomeIcon style={{ width: "18px", height: "18px" }} />}
-            onClick={() => { handleMenu('', 'ใส่ใจโรคไม่ติดต่อเรื้อรัง (NCDs Care)') }}>หน้าหลัก</Menu.Item>
+            onClick={() => { handleMenu('', project_name) }}>หน้าหลัก</Menu.Item>
           <SubMenu key="ncds" icon={<MedicineBoxOutlined />} title="โรคไม่ติดต่อเรื้อรัง">
             {!!ncds && ncds.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`ncds_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
