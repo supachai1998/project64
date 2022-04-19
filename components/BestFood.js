@@ -8,12 +8,12 @@ const CusImage = dynamic(() => import('./cusImage.js'));
 const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 
 export default function BestFood() {
+    const router = useRouter()
 
     const [_data, setData] = useState()
-
-    const router = useRouter()
-    const fetchData = async () => {
-        const data = await fetch(`/api/getFood?BestFood=${true}`).then(async res => {
+    const { blogs,food, categories } = router.query
+    const fetchData = async (api) => {
+        const data = await fetch(api).then(async res => {
             if (res.ok && res.status === 200) {
                 const _ = await res.json()
                 return _
@@ -24,8 +24,13 @@ export default function BestFood() {
     }
     useEffect(() => {
         (async () => {
-            if (!_data) {
-                const data = await fetchData()
+            console.log(blogs,food,categories)
+            let api = ""
+            if(food && categories){
+                api = `/api/getFood?BestFood=${true}&self=${categories}`
+            }
+            if (!_data && api !== "") {
+                const data = await fetchData(api)
                 !!data && setData([...data])
             }
         })()
@@ -37,7 +42,7 @@ export default function BestFood() {
 
         <Owl_Carousel
             title={"อาหารยอดนิยม"}
-            link="/food"
+            link={`/foods/${categories}`}
             info_top={`พบ ${_data.length} รายการ`}
             info_down={`อ่านทั้งหมด`}
         >

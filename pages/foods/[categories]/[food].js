@@ -39,7 +39,7 @@ export default function Index(props) {
         const data_food = await fetch(`/api/getFood?id=${food}`).then(res => res.ok && res.json())
         if (data_categories) {
             const data = data_categories.find(({ name_en }) => name_en === categories)
-            // console.log(data_categories,categories,data)
+            console.log(data)
             if (data) setCategory(data.name_th)
         }
         if (data_food) {

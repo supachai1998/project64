@@ -128,11 +128,13 @@ export default async function handler(req, res) {
                 return res.status(200).json({ status: true })
             default:
 
-                const { select, BestFood } = query
+                const { select, BestFood , self , categories , name } = query
                 id = parseInt(query.id) || null
                 if (BestFood) {
-                    data = await prisma.food.findMany({
-
+                    data = [...await prisma.food.findMany({
+                        where:{
+                            NOT :{ id : parseInt(self)}
+                        },
                         orderBy: [
                             { views: 'desc', },
                             { calories: 'asc', },
@@ -141,14 +143,14 @@ export default async function handler(req, res) {
                             image: true,
                             ref: true,
                         },
-                        take: 5,
-                    })
+                        take: 6,
+                    })].filter(({id}) => id !== parseInt(self))
                     if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
                 }
-                if (query.categories) {
+                if (categories) {
                     data = await prisma.food.findMany({
 
-                        where: { foodTypeId: parseInt(query.categories) },
+                        where: { foodTypeId: parseInt(categories) },
                         include: {
                             image: true,
                             ref: true,
@@ -156,10 +158,10 @@ export default async function handler(req, res) {
                     })
                     if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
                 }
-                if (query.name) {
+                if (name) {
                     data = await prisma.food.findMany({
 
-                        where: { name_th: { contains: query.name } },
+                        where: { name_th: { contains: name } },
                         include: {
                             image: true,
                             ref: true,
@@ -167,7 +169,7 @@ export default async function handler(req, res) {
                         }
                     }) || await prisma.food.findMany({
 
-                        where: { name_en: { contains: query.name } },
+                        where: { name_en: { contains: name } },
                         include: {
                             image: true,
                             ref: true,
@@ -176,7 +178,7 @@ export default async function handler(req, res) {
                     })
                     if (!!data & data.length > 0) return res.status(200).json(data)
                 }
-                if (query.id) {
+                if (id) {
                     if (select) {
                         data = await prisma.food.findFirst({
 

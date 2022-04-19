@@ -29,7 +29,7 @@ export default function _Categories({ fetchData, categories, placeholder,_data, 
         setSearch_bool(true)
         setLoading(false)
         setDefaultSelectedKeys(`foods_${categories}`)
-        setTitle(title_th)
+        setTitle(`ประเภทอาหาร ${title_th}`)
     }
     useEffect(() => {
         if (!_data && categories) {
