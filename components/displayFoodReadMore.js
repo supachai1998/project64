@@ -4,7 +4,6 @@ import { Carousel, Tooltip, Divider, Rate, Select } from 'antd';
 
 import router from 'next/router';
 import dynamic from 'next/dynamic'
-import { motion } from 'framer-motion';
 const Owl_Carousel = dynamic(() => import('/components/Owl_Carousel'), {
   ssr: false,
 });

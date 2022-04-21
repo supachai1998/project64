@@ -125,5 +125,5 @@ export default async function handler(req, res,) {
         if (!!data && data.length > 0) return res.status(200).json(data)
         else return res.status(404).send({ statusText: "ไม่พบข้อมูล" })
     }
-  } catch (e) { console.log(e); res.status(500).send({ statusText: "something error", raw: body }) }
+  } catch (e) { console.log(e); res.status(500).send({ statusText: "something error",e:e.message, raw: body }) }
 }

@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext, useMemo, useCallback, } from 'react';
+import { useState, useEffect, createContext, useContext, useRef, } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, List, Steps, Form, Input, notification, Switch, InputNumber, Tooltip, Popconfirm } from 'antd'
-import { UploadOutlined, DeleteOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, MinusCircleOutlined, PlusOutlined,SearchOutlined } from '@ant-design/icons';
 import Board from '/components/admin/DisplayBoard';
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -14,6 +14,7 @@ const ellipsis = {
 }
 const { Step } = Steps;
 const ResultFormContext = createContext()
+const riskArr = ["เสี่ยงต่ำมาก", "เสี่ยงต่ำ", "เสี่ยงปานกลาง", "เสี่ยงสูง", "เสี่ยงสูงมาก"]
 import { ContextForm } from '/pages/admin/form.js'
 export default function ResultForm() {
     const [modalAdd, setModalAdd] = useState(false)
@@ -23,6 +24,7 @@ export default function ResultForm() {
     const [modalViewSubForm, setModalViewSubForm] = useState(-1)
     const [loading, setLoading] = useState(false)
     const [resultForm, setResultForm] = useState()
+    const [store, setStore] = useState()
     const { modalResultForm, setModalResultForm } = useContext(ContextForm)
     const reqForm = async () => await fetch(`/api/getResultForm?id=${modalResultForm.ncdsId}`)
         .then(res => {
@@ -30,7 +32,7 @@ export default function ResultForm() {
             else if (res.status === 404) notification.error({ message: `ไม่พบข้อมูลการประเมินผล${modalResultForm.name_th}` })
             else notification.error({ message: `ไม่สามารถดึงข้อมูลการประเมินผล${modalResultForm.name_th}` })
         })
-        .then(data => setResultForm(data))
+        .then(data => { setResultForm(data); setStore(data) })
         .catch(err => notification.error({ message: "Error", description: err.message }))
 
     const reload = (async () => {
@@ -71,7 +73,7 @@ export default function ResultForm() {
                     modalViewSubForm, setModalViewSubForm,
                     modalView, setModalView,
                     modalAddSubForm, setModalAddSubForm,
-                    loading,
+                    loading, store, setStore,
                 }}>
                     <ModalEdit />
                     <ModalAdd />
@@ -84,29 +86,36 @@ export default function ResultForm() {
 
 const TableResultForm = () => {
     const { reload, setModalEdit,
-        loading, resultForm } = useContext(ResultFormContext)
+        loading, resultForm, setResultForm, store, setStore } = useContext(ResultFormContext)
+    const inputRef = useRef()
+    const [selectRows, setSelectRows] = useState([])
     useEffect(() => { }, [resultForm])
     const columns = [
         {
-            title: <Paragraph align="center" >ระดับความเสี่ยง</Paragraph>,
+            title: <div className="text-center" >ระดับความเสี่ยง</div>,
             dataIndex: 'title',
             key: 'title',
+            filters: riskArr.map((v) => ({ text: v, value: v })),
+            onFilter: (value, record) => record.title === value,
+            sorter: (a, b) => a.title.localeCompare(b.type),
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >คะแนนเริ่มต้น</Paragraph>,
+            title: <div className="text-center" >คะแนนเริ่มต้น</div>,
             dataIndex: 'start',
             key: 'start',
+            sorter: (a, b) => a.start - b.start,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >คะแนนสิ้นสุด</Paragraph>,
+            title: <div className="text-center" >คะแนนสิ้นสุด</div>,
             dataIndex: 'end',
             key: 'end',
+            sorter: (a, b) => a.end - b.end,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >คำแนะนำ</Paragraph>,
+            title: <div className="text-center" >คำแนะนำ</div>,
             dataIndex: 'recommend',
             key: 'recommend',
             width: '30%',
@@ -114,29 +123,111 @@ const TableResultForm = () => {
         },
 
         {
-            title: <Paragraph align="left" >การจัดการ</Paragraph>,
+            title: <div className="text-left" >การจัดการ</div>,
             dataIndex: '',
             key: '',
-
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
                 {/* <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(resultForm[index])}>ดู</button> */}
                 <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(resultForm[index])}>แก้ไข</button>
                 <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(resultForm[index], reload)}>ลบ</button>
             </div>,
         },
-
     ];
+    const showConfirmDelRows = async () => {
+        console.log("delete", selectRows)
+        if (selectRows.length <= 0) {
+            notification.error({ message: "ไม่พบข้อมูลที่เลือก" })
+            return
+        }
+        const userCon = await new Promise(async (resolve, reject) => {
+            let id = []
+            for (const rows of selectRows) {
+                const a = await new Promise((res, rej) => {
+                    confirm({
+                        title: `คุณต้องการจะลบผลการประเมิน`,
+                        content: <div>
+                            <p>{rows.title}</p>
+                            <p>ช่วงคะแนน : {rows.start} - {rows.end}</p>
+                        </div>,
+                        okType:"danger",
+                        okText: "ตกลง",
+                        cancelText: "ยกเลิก",
+                        async onOk() { res(rows.id) },
+                        onCancel() { rej(); },
+                    })
+                })
+                id.push(a)
+            }
+            console.log("delete", id)
+            const res = await fetch("/api/getresultForm", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify({ id: id })
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                await reload()
+            } else if (res.status === 400) {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ข้อมูลไม่ถูกต้อง ',
+                })
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
+            }
+            resolve();
+        })
 
+    }
+    if (!resultForm) return null
+    const search = () => {
+        const userInput = inputRef.current.value
+        const findMatch = resultForm.filter(val => {
+            return val.title.toLowerCase().includes(userInput.toLowerCase())
+        })
+        console.log(userInput, findMatch)
+        if (!userInput) {
+            setResultForm(store)
+        }
+        else if (findMatch?.length <= 0) {
+            setResultForm(store)
+            notification.error({ message: "ไม่พบข้อมูล" })
+        }
+        else setResultForm(findMatch)
+    }
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectRows(selectedRows)
+        },
+    };
     // console.log(resultForm)
     return <div>
         <Table size='small' tableLayout='auto' dataSource={resultForm} columns={columns}
-            title={() => <div className="flex items-center gap-2">ตารางการประเมินผล
-                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                </button>
-                </Tooltip>
+            rowSelection={{ ...rowSelection }}
+            title={() => <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    ตารางการประเมินผล
+                    <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                    </Tooltip>
+                </div>
+                <div className='flex items-center gap-2'>
+                    {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
+                        <Button_Delete fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                    </div>}
+                    <Tooltip title={"ค้นหาหาระดับความเสี่ยง"}>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setResultForm(store)} placeholder="ระดับความเสี่ยง" className='text-black rounded-md' /></Tooltip>
+                    <Tooltip title={"ค้นหา"}>
+                        <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
+                </div>
             </div>}
         />
     </div>
@@ -218,7 +309,7 @@ const ModalAdd = () => {
                                     labelCol={{ span: 0 }}
                                     label={null}
                                 >
-                                    <div className="flex justify-center items-center gap-2 text-lg"><Button_Delete fx={()=>remove(ind)}/> ช่วงคะแนนที่ {ind + 1} </div>
+                                    <div className="flex justify-center items-center gap-2 text-lg"><Button_Delete fx={() => remove(ind)} /> ช่วงคะแนนที่ {ind + 1} </div>
                                 </Form.Item>
                                 <Form.Item
                                     labelCol={{ span: 8 }}
@@ -230,7 +321,7 @@ const ModalAdd = () => {
                                     {form.getFieldValue("resultForm")[ind]?.toggleRisk
                                         ? <Input placeholder="เช่น เสี่ยงต่ำมาก เสี่ยงสูงมาก" />
                                         : <Select >
-                                            {["เสี่ยงต่ำมาก", "เสี่ยงต่ำ", "เสี่ยงปานกลาง", "เสี่ยงสูง", "เสี่ยงสูงมาก"].map((v, i) => <Option key={v} value={v}>{v}</Option>)}
+                                            {riskArr.map((v, i) => <Option key={v} value={v}>{v}</Option>)}
                                         </Select>}
                                 </Form.Item>
                                 <div className='grid grid-cols-2 gap-2'>
@@ -358,7 +449,7 @@ const ModalEdit = () => {
                                 key={field.key}
                                 required
                             >
-                                
+
                                 <Form.Item
                                     labelCol={{ span: 5 }}
                                     label={<>ระดับความเสี่ยง </>}

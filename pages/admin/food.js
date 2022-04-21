@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext } from 'react';
-import { Button, Table, Divider, Typography, Select, Modal,  Form, Input, Upload, notification, InputNumber,  Tooltip ,Radio } from 'antd'
-import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { useState, useEffect, createContext, useContext, useRef } from 'react';
+import { Button, Table, Divider, Typography, Select, Modal, Form, Input, Upload, notification, InputNumber, Tooltip, Radio } from 'antd'
+import { UploadOutlined, MinusCircleOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import CusImage from '/components/cusImage';
 import ReactPlayer from 'react-player';
 import { Button_Delete } from '/ulity/button';
@@ -21,7 +21,7 @@ function Index() {
     const [modalEdit, setModalEdit] = useState(false)
     const [modalView, setModalView] = useState(false)
     const [loading, setLoading] = useState(false)
-    
+    const [store, setStore] = useState([])
     const [food, setFood] = useState()
     const [NCDS, setNCDS] = useState()
     const reload = async () => {
@@ -29,16 +29,18 @@ function Index() {
         await fetch("/api/getFood").then(async res => {
             if (res.status === 200) {
                 const data = await res.json()
-                setFood(data)
+                const _ = data.map(({ id, ...rest }) => ({ id: id, key: id, ...rest }))
+                setFood(_)
+                setStore(_)
             }
         })
         setLoading(false)
     }
     useEffect(() => {
-        (async()=>{
-            reload()
+        (async () => {
             const fetchNCDS = await FetchNCDS()
             Array.isArray(fetchNCDS) && setNCDS(fetchNCDS)
+            reload()
         })()
         return () => setFood()
     }, [])
@@ -61,7 +63,7 @@ function Index() {
                 modalView, setModalView,
                 modalAddType, setModalAddType,
                 loading,
-                food,
+                food, setFood, store, setStore,
             }}>
                 <ModalView />
                 <ModalAdd />
@@ -77,43 +79,65 @@ export default Index;
 
 
 
+const countOccurrences = (arr, val) => arr.reduce((a, v) => (v.FoodType.name_th === val ? a + 1 : a), 0);
+// const countOccurrences = (arr, val) => arr.reduce((a, v) => (val.includes(v.name_th) ? a + 1 : a), 0);
 
 const TableForm = () => {
-    const { food, reload,
+    const inputRef = useRef()
+    const { food, setFood, reload,
         setModalEdit,
         setModalView,
-        loading } = useContext(Context)
-
+        loading, store } = useContext(Context)
+    const [foodtype, setFoodtype] = useState([])
+    const [selectRows, setSelectRows] = useState([])
+    useEffect(() => {
+        (async () => {
+            const type = await fetch("/api/getTypeFood").then(res => res.ok && res.json())
+            setFoodtype(type)
+        })()
+    }, [])
+    if (!foodtype || !food) return null
     const columns = [
         {
-            title: <Paragraph align="center" >ชื่ออาหาร</Paragraph>,
+            title: <div classNamme="text-center" >ประเภท</div>,
+            dataIndex: 'FoodType',
+            key: 'FoodType',
+            onFilter: (value, record) => record.FoodType.name_th.includes(value),
+            sorter: (a, b) => a.name_th.localeCompare(b.name_th),
+            filters: foodtype.map(val => ({ text: `${val.name_th}(${countOccurrences(food, val.name_th)})`, value: val.name_th })),
+            render: val => <Tooltip title={val.name_th} ><Paragraph ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
+        },
+        {
+            title: <div classNamme="text-center" >ชื่ออาหาร</div>,
             dataIndex: 'name_th',
             key: 'name_th',
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
-            title: <Paragraph align="center" >คำอธิบาย</Paragraph>,
+            title: <div className="text-center" >คำอธิบาย</div>,
             dataIndex: 'detail',
             key: 'detail',
             width: '30%',
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
-            title: <Paragraph align="center" >จำนวนอ้างอิง</Paragraph>,
+            title: <div className="text-center" >จำนวนอ้างอิง</div>,
             dataIndex: 'ref',
             key: 'ref',
+            sorter: (a, b) => a.ref.length - b.ref.length,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >จำนวนโรคแนะนำ</Paragraph>,
+            title: <div className="text-center" >จำนวนโรคแนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
+            sorter: (a, b) => a.FoodNcds.length - b.FoodNcds.length,
             render: (text, val, index) => <Tooltip title={<div>
                 {food[index].FoodNcds.map((val, index) => <div key={index}>{val.ncds.name_th}({val.suggess ? "แนะนำ" : "ไม่แนะนำ"})</div>)}
             </div>}><Paragraph align="center" ellipsis={ellipsis}>{text.length}</Paragraph></Tooltip>
         },
         {
-            title: <Paragraph align="center" >การจัดการ</Paragraph>,
+            title: <div className="text-center" >การจัดการ</div>,
             dataIndex: '',
             key: '',
 
@@ -125,23 +149,102 @@ const TableForm = () => {
         },
 
     ];
+    const search = () => {
+        const userInput = inputRef.current.value
+        const findMatchNCDS = food.filter(val => {
+            return val.name_th.toLowerCase().includes(userInput.toLowerCase()) || val.name_en.toLowerCase().includes(userInput.toLowerCase())
+        })
+        console.log(userInput, findMatchNCDS)
+        if (!userInput) {
+            setFood(store)
+        }
+        else if (findMatchNCDS?.length <= 0) {
+            setFood(store)
+            notification.error({ message: "ไม่พบข้อมูล" })
+        }
+        else setFood(findMatchNCDS)
+    }
+    const showConfirmDelRows = async () => {
+        console.log("delete", selectRows)
+        if (selectRows.length <= 0) {
+            notification.error({ message: "ไม่พบข้อมูลที่เลือก" })
+            return
+        }
+        const userCon = await new Promise(async (resolve, reject) => {
+            let id = []
+            for (const rows of selectRows) {
+                const a = await new Promise((res, rej) => {
+                    confirm({
+                        title: `คุณต้องการจะลบบทความ`,
+                        content: <div>
+                            <p>{rows.name_th}({rows.name_en})</p>
+                            {/* <p>คำอธิบาย : {rows.imply}</p> */}
+                        </div>,
+                        okText: "ตกลง",
+                        cancelText: "ยกเลิก",
+                        async onOk() { res(rows.id) },
+                        onCancel() { rej(); },
+                    })
+                })
+                id.push(a)
+            }
+            console.log("delete", id)
+            const res = await fetch("/api/getFood", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify({ id: id })
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                await reload()
+            } else if (res.status === 400) {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ข้อมูลไม่ถูกต้อง ',
+                })
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
+            }
+            resolve();
+        })
+
+    }
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectRows(selectedRows)
+        },
+    };
 
 
     return <div>
         <Table size='small' tableLayout='auto' dataSource={food} columns={columns}
-            title={() => <div className="flex items-center gap-2">ตารางอาหาร
-                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                </button>
-                </Tooltip>
+            rowSelection={{ ...rowSelection }}
+            title={() => <div className="flex justify-between items-center gap-2">
+                <div className='flex items-center gap-2'>
+                    ตารางอาหาร
+                    <Tooltip title={"ดึงข้อมูลใหม่"}>
+                        <button type="button" onClick={() => reload()} ><svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg></button></Tooltip>
+                </div>
+                <div className='flex items-center gap-2'>
+                    {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
+                        <Button_Delete className="text-gray-800" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                    </div>}
+                    <Tooltip title={"ค้นหาชื่ออาหาร"}>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่ออาหาร" className='text-black rounded-md' /></Tooltip>
+                    <Tooltip title={"ค้นหา"}>
+                        <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
+                </div>
             </div>}
         />
     </div>
 }
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload , NCDS } = useContext(Context)
+    const { modalAdd, setModalAdd, reload, NCDS } = useContext(Context)
     const [foodType, setFoodType] = useState(null)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
@@ -237,7 +340,7 @@ const ModalAdd = () => {
                 name="name_th"
                 label="ชื่ออาหารไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F- ]+$/,
+                    pattern: /^[\u0E00-\u0E7F0-9- ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ภาษาไทย" />
@@ -310,7 +413,7 @@ const ModalAdd = () => {
                     <Button className="w-full" disabled={fileList && fileList.length > 0 && true} icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList.length : 0}/1)</Button>
                 </Upload>
             </Form.Item>
-            <Form.List name="FoodNcds"  rules={[{ required: true, message: "คุณลืมเพิ่มคำแนะนำสำหรับโรค" }]}>
+            <Form.List name="FoodNcds" rules={[{ required: true, message: "คุณลืมเพิ่มคำแนะนำสำหรับโรค" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
@@ -332,7 +435,7 @@ const ModalAdd = () => {
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                    <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip><div className="text-lg"> โรคที่ {ind + 1}</div> 
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip><div className="text-lg"> โรคที่ {ind + 1}</div>
                                     </div>
 
                                 </Form.Item>
@@ -409,9 +512,9 @@ const ModalAdd = () => {
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
                                 <Form.Item
                                     {...field}
-                                    labelCol={{span:5}}
+                                    labelCol={{ span: 5 }}
                                     label={<div className="flex gap-3 items-center">
-                                         <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -445,14 +548,14 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload,NCDS } = useContext(Context)
+    const { modalEdit, setModalEdit, reload, NCDS } = useContext(Context)
     const [foodType, setFoodType] = useState(null)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
     useEffect(() => {
         form.setFieldsValue(modalEdit);
-        !!modalEdit  && setFileList(modalEdit.image.map(({ id, name }) => {
+        !!modalEdit && setFileList(modalEdit.image.map(({ id, name }) => {
             return {
                 id: id,
                 status: "done",
@@ -479,11 +582,11 @@ const ModalEdit = () => {
             return
         }
         let _tempimage = []
-        
+
         if (val?.image?.fileList) {
             for (const i in val.image.fileList) {
                 const fL = val.image.fileList[i]
-                fL.response ? _tempimage.push({ name: fL.response.name }): _tempimage.push({ ...fL })
+                fL.response ? _tempimage.push({ name: fL.response.name }) : _tempimage.push({ ...fL })
 
             }
         }
@@ -555,7 +658,7 @@ const ModalEdit = () => {
                 name="name_th"
                 label="ชื่ออาหารไทย"
                 rules={[{ required: true }, {
-                    pattern: /^[\u0E00-\u0E7F- ]+$/,
+                    pattern: /^[\u0E00-\u0E7F0-9- ]+$/,
                     message: 'กรอกภาษาไทย',
                 }]}>
                 <Input placeholder="ภาษาไทย" />
@@ -650,7 +753,7 @@ const ModalEdit = () => {
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <div className="text-lg"> โรคที่ {ind + 1}</div> 
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip><div className="text-lg"> โรคที่ {ind + 1}</div>
                                     </div>
 
                                 </Form.Item>
@@ -726,10 +829,10 @@ const ModalEdit = () => {
 
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
                                 <Form.Item
-                                    labelCol={{span:5}}
+                                    labelCol={{ span: 5 }}
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                         <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
+                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -949,14 +1052,14 @@ const ModalView = () => {
             <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView.ingredient}</span></Form.Item>
             <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
             <Form.Item label={`โรคที่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
-                {suggess &&<> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
+                {suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
             </>)}
             </Form.Item>
             <Form.Item label={`โรคที่ไม่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
-                {!suggess &&<> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
+                {!suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
             </>)}
             </Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank"  href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
 
@@ -968,6 +1071,7 @@ const showConfirmDel = async (val, reload) => {
         content: <p>{val.name_th}({val.name_en})</p>,
         okText: "ตกลง",
         cancelText: "ยกเลิก",
+        okType: "danger",
         async onOk() {
             const res = await fetch("/api/getFood", {
                 headers: { 'Content-Type': 'application/json', },

@@ -82,11 +82,12 @@ model Ncds {
   foodncds     FoodNcds[]
   relationBlog relationBlog[]
   form         form[]
+  resultForm   resultForm[]
 }
 
 model Ref {
   id      Int    @id @default(autoincrement())
-  url     String  @db.LongText
+  url     String @db.LongText
   ncds    Ncds?  @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   ncdsId  Int?
   Food    Food?  @relation(fields: [foodId], references: [id], onDelete: Cascade)
@@ -167,7 +168,7 @@ model Blogs {
   imply     String         @db.LongText
   type      Type
   approve   Int?           @default(0)
-  video     String?         @db.LongText
+  video     String?        @db.LongText
   vote_1    Int?           @default(0)
   vote_2    Int?           @default(0)
   vote_3    Int?           @default(0)
@@ -218,12 +219,22 @@ model subForm {
 }
 
 model choice {
-  id     Int     @id @default(autoincrement())
-  name   String
-  detail String? @db.LongText
-  score  Int
+  id        Int      @id @default(autoincrement())
+  name      String
+  detail    String?  @db.LongText
+  score     Int
   subForm   subForm? @relation(fields: [subFormId], references: [id])
   subFormId Int?
+}
+
+model resultForm {
+  id        Int    @id @default(autoincrement())
+  title     String
+  start     Int
+  end       Int
+  ncds      Ncds   @relation(fields: [ncdsId], references: [id])
+  ncdsId    Int
+  recommend String @db.LongText
 }
 
 enum Role {

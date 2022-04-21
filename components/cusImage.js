@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
-import { Image as Img } from 'antd';
-import { CircularProgress } from '@mui/material';
+import { Image as Img , Spin  } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+// import { CircularProgress } from '@mui/material';
 import getConfig from 'next/config'
 const {  publicRuntimeConfig } = getConfig()
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 export default function CusImage({ width, height, src, name, className, preview }) {
     const [onSrc, setOnSrc] = React.useState("/placeholder.png")
     async function checkIfImageExists(url, callback) {
@@ -61,4 +63,4 @@ export default function CusImage({ width, height, src, name, className, preview 
         />
     );
 }
-const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center"}><CircularProgress className="m-auto" /></div>
+const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center"}><Spin indicator={antIcon} /></div>

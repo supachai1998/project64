@@ -9,18 +9,27 @@ export default async function handler(req, res) {
     switch (method) {
       case "POST":
         console.log(body)
-        await prisma.blogs.create({
+        const data_add = await prisma.blogs.create({
           data: body
         })
-        return res.status(200).json({ status: true })
+        return res.status(200).json(data_add)
 
       case "DELETE":
+        if (!Array.isArray(id) || !id) return res.status(400).json({ statusText: "id is required" })
+        if (Array.isArray(id)) {
 
-        await prisma.blogs.delete({
-          where: {
-            id: id,
-          }
-        })
+          id.map(async _ => await prisma.blogs.delete({
+            where: {
+              id: _,
+            }
+          }))
+        } else {
+          await prisma.blogs.delete({
+            where: {
+              id: id,
+            }
+          })
+        }
         return res.status(200).json({ status: true })
 
       case "PATCH":
@@ -69,7 +78,7 @@ export default async function handler(req, res) {
               return { id: val.id }
             }
           })
-          
+
           const createImage = image.filter(val => !val.id)
           const updateImage = image.map(val => {
             if (val.id) {
@@ -82,7 +91,7 @@ export default async function handler(req, res) {
           const deleteImage = dataOld.image.map(val => {
             if (image.every(val2 => val.id !== val2.id)) {
               return {
-                 id: val.id 
+                id: val.id
               }
             }
           })
@@ -168,7 +177,7 @@ export default async function handler(req, res) {
         let { select, id, BestBlog, approve } = query
         if (BestBlog) {
           data = await prisma.blogs.findMany({
-            
+
             where: { approve: 1 },
             orderBy: [
               { views: 'desc', },
@@ -185,10 +194,10 @@ export default async function handler(req, res) {
           if (!query.select) {
             id = parseInt(id)
             data = await prisma.blogs.findFirst({
-              
+
               where: {
                 id: id,
-                approve: 1
+                // approve: 1
               },
               include: {
                 subBlog: true,
@@ -199,7 +208,7 @@ export default async function handler(req, res) {
             })
           } else {
             data = await prisma.blogs.findFirst({
-              
+
               where: {
                 id: id,
                 approve: 1
@@ -210,7 +219,7 @@ export default async function handler(req, res) {
         }
         else if (query.type) {
           data = await prisma.blogs.findMany({
-            
+
             where: {
               type: query.type.toUpperCase(),
               approve: 1
@@ -228,13 +237,13 @@ export default async function handler(req, res) {
             _ = { ..._, [val]: true }
           }
           data = await prisma.blogs.findMany({
-            
+
             where: { approve: 1 },
             select: _
           })
         } else if (approve) {
           data = await prisma.blogs.findMany({
-            
+
             include: {
               subBlog: true,
               image: true,
@@ -250,7 +259,7 @@ export default async function handler(req, res) {
         }
         else {
           data = await prisma.blogs.findMany({
-            
+
             where: { approve: 1 },
             include: {
               subBlog: true,

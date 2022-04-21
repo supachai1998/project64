@@ -74,7 +74,7 @@ const CusModal = ({ handleClose, contentModal }) => {
 const Suggess_true = ({ data, showModal }) => {
     const router = useRouter()
     return <div>
-        <p className='w-full text-2xl text-center  text-green-600'>โรคที่สามารถรับประทานได้</p>
+        <p className='w-full text-2xl text-center  text-green-600'>โรคที่แนะนำให้รับประทานได้</p>
         <Owl_Carousel margin={0}>
             <>
                 {data.map(({

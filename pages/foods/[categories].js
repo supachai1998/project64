@@ -41,18 +41,19 @@ export default function Index() {
 
 
 const fetchData = async (categories) => {
-    const { id, title_th, title_en } = await fetch("/api/getTypeFood").then(async res => {
+    const raw = await fetch("/api/getTypeFood").then(async res => {
         if (res.ok) {
             const data = await res.json()
             if (data) {
                 console.log(data)
                 const findCatetory = data.find(item => item.id === parseInt(categories))
-
+                if(!findCatetory) return null
                 return { id: findCatetory.id, title_th: findCatetory.name_th, title_en: findCatetory.name_en }
             }
-
         } else notification.error({ message: `ไม่สามารถดึงข้อมูลประเภทอาหาร${categories}` })
     })
+    if(!raw) return null
+    const { id, title_th, title_en } = raw
     const data = await fetch(`/api/getFood?categories=${id}`).then(async res => {
         if (res.ok) {
             const _ = await res.json()

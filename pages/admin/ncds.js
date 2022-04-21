@@ -1,10 +1,10 @@
-import { useState, useEffect, createContext, useContext } from 'react';
-import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
-import { UploadOutlined,PlusOutlined } from '@ant-design/icons';
+import { useState, useEffect, createContext, useContext, useRef } from 'react';
+import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload,Collapse , notification, InputNumber, Space, Tooltip } from 'antd'
+import { UploadOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
 import ReactPlayer from 'react-player';
-import {Button_Delete} from '/ulity/button'
+import { Button_Delete } from '/ulity/button'
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -13,6 +13,7 @@ const ellipsis = {
     rows: 3,
     expandable: false,
 }
+const { Panel } = Collapse;
 const Context = createContext()
 export default function Index() {
     const [modalAdd, setModalAdd] = useState(false)
@@ -20,12 +21,15 @@ export default function Index() {
     const [modalView, setModalView] = useState(false)
     const [loading, setLoading] = useState(false)
     const [ncds, setNcds] = useState([])
+    const [store, setStore] = useState([])
     const reload = async () => {
         setLoading(true)
         await fetch("/api/getNCDS").then(async res => {
             if (res.status === 200) {
                 const data = await res.json()
-                setNcds(data)
+                const _ = data.map(({id,...rest})=>({id:id,key:id,...rest}))
+                setNcds(_)
+                setStore(_)
             }
         })
         setLoading(false)
@@ -51,7 +55,8 @@ export default function Index() {
                 setModalEdit,
                 setModalView,
                 loading,
-                ncds,
+                ncds, setNcds,
+                store, setStore
             }}>
                 <ModalAdd />
                 <ModalEdit />
@@ -86,7 +91,7 @@ const ModalView = () => {
             <Form.Item label="สัญญาณการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.signs}</span></Form.Item>
             <Form.Item label="คำแนะนำในการปฏิบัติตัว"><span className='text-md whitespace-pre-line'>{modalView.sugess}</span></Form.Item>
             <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank"  href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
 
@@ -253,7 +258,7 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบแหล่งอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} title={`แหล่งอ้างอิงที่ ${(ind + 1)}`}/></Tooltip>
+                                        <Tooltip title={"ลบแหล่งอ้างอิงที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} title={`แหล่งอ้างอิงที่ ${(ind + 1)}`} /></Tooltip>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -467,8 +472,8 @@ const ModalEdit = () => {
                                 {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
                                 <Form.Item
                                     {...field}
-                                    label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบแหล่งอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} title={`แหล่งอ้างอิงที่ ${(ind + 1)}`}/></Tooltip>
+                                    label={<div className="flex gap-3 items-center ">
+                                        <Button_Delete className="text-gray-800" fx={() => remove(field.name)} title={`แหล่งอ้างอิงที่ ${(ind + 1)}`} />
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -507,6 +512,7 @@ const showConfirmDel = async (val, reload) => {
         content: <p>{val.name_th}({val.name_en})</p>,
         okText: "ตกลง",
         cancelText: "ยกเลิก",
+        okType:"danger",
         async onOk() {
             const res = await fetch("/api/getNCDS", {
                 headers: { 'Content-Type': 'application/json', },
@@ -530,39 +536,46 @@ const showConfirmDel = async (val, reload) => {
     });
 }
 
+
+
 const TableForm = () => {
-    const { ncds, reload,
+
+    const { ncds, setNcds, reload,
         modalEdit, setModalEdit,
         modalView, setModalView,
+        store,
         loading } = useContext(Context)
+    const [selectRows, setSelectRows] = useState([])
     const columns = [
         {
-            title: <Paragraph align="center" >ชื่อโรค</Paragraph>,
+            title: <Paragraph className='mt-3' align="center" >ชื่อโรค</Paragraph>,
             dataIndex: 'name_th',
             key: 'name_th',
-            render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
+            render: (text, val, index) => <Tooltip title={val.name_th} ><Paragraph ellipsis={ellipsis}>{val.name_th}({val.name_en})</Paragraph></Tooltip>
         },
         {
-            title: <Paragraph align="center" >ความหมาย</Paragraph>,
+            title: <Paragraph className='mt-3' align="center" >ความหมาย</Paragraph>,
             dataIndex: 'imply',
             key: 'imply',
             width: '30%',
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
-            title: <Paragraph align="center" >จำนวนอ้างอิง</Paragraph>,
+            title: <Paragraph className='mt-3' align="center" >จำนวนอ้างอิง</Paragraph>,
             dataIndex: 'ref',
             key: 'ref',
-            render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
+            sorter: (a, b) => a.ref.length - b.ref.length,
+            render: val => <Paragraph className='my-auto' align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >จำนวนภาพ</Paragraph>,
+            title: <Paragraph className='mt-3' align="center" >จำนวนภาพ</Paragraph>,
             dataIndex: 'image',
             key: 'image',
+            sorter: (a, b) => a.image.length - b.image.length,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
-            title: <Paragraph align="center" >การจัดการ</Paragraph>,
+            title: <Paragraph className='mt-3' align="center" >การจัดการ</Paragraph>,
             dataIndex: '',
             key: '',
 
@@ -574,18 +587,96 @@ const TableForm = () => {
         },
 
     ];
+    const search = () => {
+        const userInput = inputRef.current.value
+        const findMatchNCDS = ncds.filter(val => {
+            return val.name_th.toLowerCase().includes(userInput.toLowerCase()) || val.name_en.toLowerCase().includes(userInput.toLowerCase())
+        })
+        console.log(userInput, findMatchNCDS)
+        if (!userInput) {
+            setNcds(store)
+        }
+        else if (findMatchNCDS?.length <= 0) {
+            setNcds(store)
+            notification.error({ message: "ไม่พบข้อมูล" })
+        }
+        else setNcds(findMatchNCDS)
+    }
+    const showConfirmDelRows = async () => {
+        console.log("delete", selectRows)
+        if (selectRows.length <= 0) {
+            notification.error({ message: "ไม่พบข้อมูลที่เลือก" })
+            return
+        }
+        const userCon = await new Promise(async (resolve, reject) => {
+            let id = []
+            for (const rows of selectRows) {
+                const a = await new Promise((res, rej) => {
+                    confirm({
+                        title: `คุณต้องการจะลบบทความ`,
+                        content: <div>
+                            <p>{rows.name_th}({rows.name_en})</p>
+                            <p>คำอธิบาย : {rows.imply}</p>
+                        </div>,
+                        okText: "ตกลง",
+                        cancelText: "ยกเลิก",
+                        async onOk() { res(rows.id) },
+                        onCancel() { rej(); },
+                    })
+                })
+                id.push(a)
+            }
+            console.log("delete", id)
+            const res = await fetch("/api/getNCDS", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify({ id: id })
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                await reload()
+            } else if (res.status === 400) {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ข้อมูลไม่ถูกต้อง ',
+                })
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
+            }
+            resolve();
+        })
 
-
+    }
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectRows(selectedRows)
+        },
+    };
+    const inputRef = useRef()
     return <div>
         <Table size='small' tableLayout='auto' dataSource={ncds} columns={columns}
-            title={() => <div className="flex items-center gap-2">ตารางโรคไม่ติดต่อเรื้อรัง
-                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                </button>
-                </Tooltip>
+            rowSelection={{ ...rowSelection }}
+            title={() => <div className="flex justify-between items-center gap-2">
+                <div className='flex items-center gap-2'>
+                    ตารางโรคไม่ติดต่อเรื้อรัง
+                    <Tooltip title={"ดึงข้อมูลใหม่"}>
+                        <button type="button" onClick={() => reload()} ><svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg></button></Tooltip>
+                </div>
+                <div className='flex items-center gap-2'>
+                    {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
+                        <Button_Delete className="text-gray-800" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                    </div>}
+                    <Tooltip title={"ค้นหาชื่อโรค"}>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อโรค" className='text-black rounded-md' /></Tooltip>
+                    <Tooltip title={"ค้นหา"}>
+                        <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
+                </div>
             </div>}
-         />
+        />
     </div>
 }

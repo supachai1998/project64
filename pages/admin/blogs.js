@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
-import { UploadOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
 import { Button_Delete } from '/ulity/button';
@@ -21,6 +21,7 @@ export default function Index() {
     const [modalView, setModalView] = useState(false)
     const [loading, setLoading] = useState(false)
     const [blogs, setBlogs] = useState([])
+    const [store, setStore] = useState([])
     const [ncdsLoading, setNCDSLoading] = useState()
     const [foodLoading, setFoodLoading] = useState()
     const [ncds, setNCDS] = useState()
@@ -29,12 +30,18 @@ export default function Index() {
         setLoading(true)
         const reqBlogs = await fetch("/api/getBlogs?approve=true")
             .then(res => res.status === 200 && res.json())
-            .then(data => setBlogs(!!data && data.length > 0 && data || []))
+            .then(data => {
+                if (!!data && data.length > 0) {
+                    const _ = data.map(({ id, ...rest }) => ({ key: id, id: id, ...rest }))
+                    setBlogs(_)
+                    setStore(_)
+                }
+            })
             .catch(err => notification.error({ message: "Error", description: err.message }))
         setLoading(false)
     }
     useEffect(() => {
-        
+
     }, []);
     useEffect(() => {
         (async () => {
@@ -46,7 +53,7 @@ export default function Index() {
             setNCDSLoading(false)
             setFoodLoading(true)
             const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
-                .then(async resp => resp.ok &&resp.json())
+                .then(async resp => resp.ok && resp.json())
                 .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
             setFoodLoading(false)
         })()
@@ -65,9 +72,9 @@ export default function Index() {
                 modalEdit, setModalEdit,
                 modalView, setModalView,
                 loading,
-                ncds,food,
-                ncdsLoading,foodLoading,
-                blogs
+                ncds, food,
+                ncdsLoading, foodLoading,
+                blogs, setBlogs, store
             }}>
                 <ModalAdd />
                 <ModalEdit />
@@ -81,15 +88,22 @@ export default function Index() {
 
 
 const TableForm = () => {
-    const { blogs, reload, loading,
+    const { blogs, setBlogs, store, reload, loading,
         setModalEdit,
         setModalView } = useContext(Context)
+
+    const inputRef = useRef()
+
+    const [selectRows, setSelectRows] = useState([])
+
     const columns = [
         {
             title: 'ประเภทบทความ',
             dataIndex: 'type',
             key: 'type',
-
+            filters: [{ text: 'โรคไม่ติดต่อ', value: "NCDS", }, { text: 'อาหาร', value: "FOOD", }, { text: 'ทั้งหมด', value: "ALL", }],
+            onFilter: (value, record) => record.type === value,
+            sorter: (a, b) => a.type.localeCompare(b.type),
             render: val => <Paragraph >
                 {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "ทั้งหมด"}
             </Paragraph>
@@ -112,25 +126,30 @@ const TableForm = () => {
             title: 'ผลโหวต',
             dataIndex: 'avg_vote',
             key: 'avg_vote',
+            sorter: (a, b) => a.avg_vote.length - b.avg_vote.length,
             render: (val) => <Tooltip title={`${val >= 0 ? val : 0}/5`}><Paragraph align="center" ellipsis={ellipsis}>{val >= 0 ? val : 0}</Paragraph></Tooltip>
         },
         {
             title: 'จำนวนหัวข้อย่อย',
             dataIndex: 'subBlog',
             key: 'subBlog',
+            sorter: (a, b) => a.subBlog.length - b.subBlog.length,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
             title: 'จำนวนโรคที่เกี่ยวข้อง',
             dataIndex: 'related',
             key: 'related',
+            sorter: (a, b) => a.related.length - b.related.length,
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
-            title: 'การอนุมัติ',
+            title: <div className='text-center'>การอนุมัติ</div>,
             dataIndex: 'approve',
             key: 'approve',
-
+            filters: [{ text: 'รออนุมัติ', value: 0, }, { text: 'อนุมัติ', value: 1, }, { text: 'ไม่อนุมัติ', value: 2, }],
+            onFilter: (value, record) => record.approve === value,
+            sorter: (a, b) => a.approve - b.approve,
             render: (val, source) => <button className="w-full ml-3 mb-2" onClick={() => showConfirmApprove(source)}>
                 {val === 1 ? <Tooltip title="อนุมัติ">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,6 +181,7 @@ const TableForm = () => {
 
     ];
     const showConfirmDel = async (val) => {
+        console.log("delete", val)
         confirm({
             title: `คุณต้องการจะลบบทความ`,
             content: <div>
@@ -169,12 +189,13 @@ const TableForm = () => {
                 <p>ประเภท : {val.type}</p>
             </div>,
             okText: "ตกลง",
+            okType:"danger",
             cancelText: "ยกเลิก",
             async onOk() {
                 const res = await fetch("/api/getBlogs", {
                     headers: { 'Content-Type': 'application/json', },
                     method: "DELETE",
-                    body: JSON.stringify(val)
+                    body: JSON.stringify({ id: val.id })
                 })
                 if (res.status === 200) {
                     notification.success({
@@ -191,6 +212,57 @@ const TableForm = () => {
             onCancel() { },
         });
     }
+    const showConfirmDelRows = async () => {
+        console.log("delete", selectRows)
+        if (selectRows.length <= 0) {
+            notification.error({ message: "ไม่พบข้อมูลที่เลือก" })
+            return
+        }
+        const userCon = await new Promise(async (resolve, reject) => {
+            let id = []
+            for (const rows of selectRows) {
+                const a = await new Promise((res, rej) => {
+                    confirm({
+                        title: `คุณต้องการจะลบบทความ`,
+                        content: <div>
+                            <p>{rows.name}</p>
+                            <p>ประเภท : {rows.type}</p>
+                        </div>,
+                        okText: "ตกลง",
+                        okType:"danger",
+                        cancelText: "ยกเลิก",
+                        async onOk() { res(rows.id) },
+                        onCancel() { rej(); },
+                    })
+                })
+                id.push(a)
+            }
+            console.log("delete", id)
+            const res = await fetch("/api/getBlogs", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify({id:id})
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                await reload()
+            } else if (res.status === 400) {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ข้อมูลไม่ถูกต้อง ',
+                })
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
+            }
+            resolve();
+        })
+
+    }
     const showConfirmApprove = async (val) => {
         const { approve } = val
         const th_approve = approve === 0 ? "รอการอนุมัติ" : approve === 1 ? "อนุมัติ" || approve === 2 : "ไม่อนุมัติ"
@@ -203,6 +275,7 @@ const TableForm = () => {
                 <p>สถานะ : {th_approve}</p>
             </div>,
             okText: th_request,
+            okType :approve === 0 || approve === 2 ? "primary" : "danger",
             cancelText: "ยกเลิก",
             async onOk() {
                 const res = await fetch("/api/getBlogs", {
@@ -226,21 +299,53 @@ const TableForm = () => {
         });
     }
     if (!blogs) return null
+    const search = () => {
+        const userInput = inputRef.current.value
+        const findMatch = blogs.filter(val => {
+            return val.name.toLowerCase().includes(userInput.toLowerCase())
+        })
+        console.log(userInput, findMatch)
+        if (!userInput) {
+            setBlogs(store)
+        }
+        else if (findMatch?.length <= 0) {
+            setBlogs(store)
+            notification.error({ message: "ไม่พบข้อมูล" })
+        }
+        else setBlogs(findMatch)
+    }
+
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectRows(selectedRows)
+        },
+    };
+
     return <div>
         <Table size='small' tableLayout='auto' dataSource={blogs} columns={columns}
-            title={() => <div className="flex items-center gap-2">ตารางบทความ
-                <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                </button>
-                </Tooltip>
+            rowSelection={{ ...rowSelection }}
+            title={() => <div className="flex justify-between items-center gap-2">
+                <div className='flex items-center gap-2'>
+                    ตารางบทความ
+                    <Tooltip title={"ดึงข้อมูลใหม่"}>
+                        <button type="button" onClick={() => reload()} ><svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg></button></Tooltip>
+                </div>
+
+                <div className='flex items-center gap-2'>
+                    {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
+                        <Button_Delete className="text-gray-800" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                    </div>}
+                    <Tooltip title={"ค้นหาชื่อบทความ"}>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อบทความ" className='text-black rounded-md' /></Tooltip>
+                    <Tooltip title={"ค้นหา"}>
+                        <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
+                </div>
             </div>}
         />
     </div>
 }
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload,ncds,food,ncdsLoading,foodLoading } = useContext(Context)
+    const { modalAdd, setModalAdd, reload, ncds, food, ncdsLoading, foodLoading } = useContext(Context)
     const [fileList, setFileList] = useState([])
     const [fileListSubBlogs, setFileListSubBlogs] = useState([])
     const [type, setType] = useState(null)
@@ -248,7 +353,7 @@ const ModalAdd = () => {
     useEffect(() => {
         form.setFieldsValue();
     }, [form, modalAdd]);
-    
+
 
     const onOk = () => {
         setModalAdd(false)
@@ -346,7 +451,7 @@ const ModalAdd = () => {
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
-                rules={[{ required: true , message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
+                rules={[{ required: true, message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
                     placeholder="เลือกประเภทอาหาร"
@@ -401,8 +506,8 @@ const ModalAdd = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
-                rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}>
-            
+                rules={[{ required: true, message: 'กรุณาเลือกรูปภาพ' }]}>
+
 
                 <Upload
                     multiple={true}
@@ -436,7 +541,7 @@ const ModalAdd = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip><div > หัวข้อย่อยที่ {ind + 1}</div> 
+                                            <Button_Delete className="text-gray-800" fx={() => remove(field.name)} /><div > หัวข้อย่อยที่ {ind + 1}</div>
                                         </div>
                                     </>
                                 </Form.Item>
@@ -512,7 +617,7 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                        <Button_Delete className="text-gray-800" fx={() => remove(field.name)} /> แหล่งอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -546,7 +651,7 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload , ncds,food,ncdsLoading,foodLoading } = useContext(Context)
+    const { modalEdit, setModalEdit, reload, ncds, food, ncdsLoading, foodLoading } = useContext(Context)
     const [type, setType] = useState(modalEdit?.type)
     const [fileList, setFileList] = useState([])
     const [fileListSubBlogs, setFileListSubBlogs] = useState([])
@@ -598,9 +703,9 @@ const ModalEdit = () => {
         val['subBlog'] = _tempsubBlog
         val['id'] = modalEdit.id
         let related = []
-        console.log(val['foodId'], val['ncdsId'])
-        if (!!val['foodId']) {
-            if (!!modalEdit.related) {
+        // console.log(val['foodId'], val['ncdsId'])
+        if (val['foodId']?.length > 0) {
+            if (modalEdit?.related?.length > 0) {
                 for (const [kk, vv] of Object.entries(modalEdit.related)) {
                     val['foodId'].map((v) => {
                         if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
@@ -608,22 +713,19 @@ const ModalEdit = () => {
                     })
                 }
                 related = related.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
-                delete val['foodId']
             } else {
                 val['foodId'].map(v => related.push({ foodId: v }))
             }
         }
-        if (!!val['ncdsId']) {
-            if (!!modalEdit.related) {
+        if (val['ncdsId']?.length > 0) {
+            if (modalEdit?.related?.length > 0) {
                 for (const [kk, vv] of Object.entries(modalEdit.related)) {
                     val['ncdsId'].map((v) => {
                         if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
                         else related.push({ ncdsId: v })
                     })
                 }
-                delete val['ncdsId']
                 related = related.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
-
             } else {
                 val['ncdsId'].map(v => related.push({ ncdsId: v }))
             }
@@ -631,6 +733,8 @@ const ModalEdit = () => {
         val["ref"] = [...val["ref"]]
         val["related"] = [...related]
 
+        delete val['foodId']
+        delete val['ncdsId']
         console.log(val)
         const res = await fetch(`/api/getBlogs`, {
             headers: { 'Content-Type': 'application/json', },
@@ -681,7 +785,7 @@ const ModalEdit = () => {
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
-                rules={[{ required: true , message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
+                rules={[{ required: true, message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
                     placeholder="เลือกประเภทอาหาร"
@@ -692,7 +796,8 @@ const ModalEdit = () => {
                     {Type.map(({ name_th, name_en }, ind) => <Option key={`${name_en}_${ind}`} value={name_en}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
-            {(type === "NCDS" || type === "ALL") && <Form.Item
+            {/* {console.log()} */}
+            {(form.getFieldValue("type") === "NCDS" || form.getFieldValue("type") === "ALL") && <Form.Item
                 name="ncdsId"
                 label="เลือกโรค"
                 initialValue={modalEdit.related.filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
@@ -703,7 +808,7 @@ const ModalEdit = () => {
                     {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>}
-            {(type === "FOOD" || type === "ALL") && <Form.Item
+            {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
                 name="foodId"
                 label="เลือกรายการอาหาร"
                 initialValue={modalEdit.related.filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
@@ -738,7 +843,7 @@ const ModalEdit = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
-                rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
+                rules={[{ required: true, message: 'กรุณาเลือกรูปภาพ' }]}
             >
 
                 <Upload
@@ -772,7 +877,7 @@ const ModalEdit = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                            <div > หัวข้อย่อยที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => { remove(field.name); setFileListSubBlogs(prev => prev.filter((v, i) => i !== ind)) }} /></Tooltip>
+                                        <Button_Delete className="text-gray-800" fx={() => { remove(field.name); setFileListSubBlogs(prev => prev.filter((v, i) => i !== ind)) }} />{`หัวข้อย่อยที่ ${ind + 1}`}
                                         </div>
                                     </>
                                 </Form.Item>
@@ -850,7 +955,7 @@ const ModalEdit = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><MinusCircleOutlined style={{ color: "red" }} onClick={() => { remove(field.name); }} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                        <Button_Delete className="text-gray-800" fx={() => { remove(field.name); }} />ลบหัวข้อที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}

@@ -21,7 +21,9 @@ export default function _Categories({ fetchData, categories, placeholder,_data, 
     const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
     const refreshData= async () =>{
         setLoading(true)
-        const { title_th, title_en, data } = await fetchData(categories)
+        const raw = await fetchData(categories)
+        if(!raw) {setLoading(false);return null}
+        const { title_th, title_en, data } = raw
         console.log(title_th, title_en, data)
         setData(data)
         setTitle_th(title_th)

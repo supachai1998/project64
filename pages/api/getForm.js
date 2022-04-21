@@ -34,9 +34,9 @@ export default async function handler(req, res,) {
               })
               // row[ncdsId] = parseInt(row[ncdsId])
               console.log(row)
-              if (dup === null) await prisma.form.create({ data: {...row}, })
-              else return res.status(400).send( {statusText:`duplicate title : ${row.title}`})
-            } catch (e) {console.error(e.message);return res.status(400).send({statusText :e.message}) }
+              if (dup === null) await prisma.form.create({ data: { ...row }, })
+              else return res.status(400).send({ statusText: `duplicate title : ${row.title}` })
+            } catch (e) { console.error(e.message); return res.status(400).send({ statusText: e.message }) }
           }
         } else {
           await prisma.form.create({
@@ -46,7 +46,14 @@ export default async function handler(req, res,) {
         return res.status(200).json({ status: true })
       case "DELETE":
         const { allForm } = query
-        if (allForm) {
+
+        if (Array.isArray(id)) {
+          id.map(async _ => await prisma.form.delete({
+            where: {
+              id: _,
+            }
+          }))
+        } else if (allForm) {
           for (const { id } of body) {
             await prisma.form.delete({
               where: {
@@ -238,5 +245,5 @@ export default async function handler(req, res,) {
         else res.status(404).send({ statusText: "data not found" })
         break;
     }
-  } catch (e) { console.log(e); res.status(500).send({statusText :"something error" ,raw :body}) }
+  } catch (e) { console.log(e); res.status(500).send({ statusText: "something error", raw: body }) }
 }

@@ -39,10 +39,10 @@ export default function Index(props) {
         const data_food = await fetch(`/api/getFood?id=${food}`).then(res => res.ok && res.json())
         if (data_categories) {
             const data = data_categories.find(({ name_en }) => name_en === categories)
-            console.log(data)
             if (data) setCategory(data.name_th)
         }
         if (data_food) {
+            console.log(data_food)
             setData(data_food)
             setTitle(data_food.name_th)
         }
@@ -50,10 +50,10 @@ export default function Index(props) {
     }
     useEffect(() => {
         setDefaultSelectedKeys(`foods_${categories}`)
-        if (categories && food && !data) {
+        if (categories && food ) {
             fetchData()
         }
-    }, [categories, data, food])
+    }, [categories, food , query])
     const handleCancel = () => {
         setContent()
     }

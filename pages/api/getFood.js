@@ -15,14 +15,22 @@ export default async function handler(req, res) {
                         data: body
                     })
                     return res.status(200).json({ status: true })
-                } catch (e) { return res.status(400).json({ status: false, error: e , data : body }) }
+                } catch (e) { return res.status(400).json({ status: false, error: e, data: body }) }
             case "DELETE":
-
-                await prisma.food.delete({
-                    where: {
-                        id: id,
-                    }
-                })
+                if (Array.isArray(id)) {
+                    id.map(async _ => await prisma.food.delete({
+                        where: {
+                            id: _,
+                        }
+                    }))
+                }
+                else {
+                    await prisma.food.delete({
+                        where: {
+                            id: id,
+                        }
+                    })
+                }
                 return res.status(200).json({ status: true })
             case "PATCH":
                 if (query.views) {
@@ -128,24 +136,42 @@ export default async function handler(req, res) {
                 return res.status(200).json({ status: true })
             default:
 
-                const { select, BestFood , self , categories , name } = query
+                const { select, BestFood, self, categories, name, blog } = query
                 id = parseInt(query.id) || null
                 if (BestFood) {
-                    data = [...await prisma.food.findMany({
-                        where:{
-                            NOT :{ id : parseInt(self)}
-                        },
-                        orderBy: [
-                            { views: 'desc', },
-                            { calories: 'asc', },
-                        ],
-                        include: {
-                            image: true,
-                            ref: true,
-                        },
-                        take: 6,
-                    })].filter(({id}) => id !== parseInt(self))
-                    if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
+                    if (blog) {
+                        data = await prisma.food.findMany({
+                            orderBy: [
+                                { views: 'desc', },
+                                { calories: 'asc', },
+                            ],
+                            include: {
+                                image: true,
+                                ref: true,
+                            },
+                            take: 6,
+                        })
+                    }
+                    else {
+                        data = await prisma.food.findMany({
+                            orderBy: [
+                                { views: 'desc', },
+                                { calories: 'asc', },
+                            ],
+                            include: {
+                                image: true,
+                                ref: true,
+                            },
+                            take: 6,
+                        })
+                    }
+                    if (!!data && data.length > 0) {
+                        if (self) {
+                            data = data.filter(val => parseInt(val.id) !== parseInt(self))
+                            return res.status(200).json(data)
+                        }
+                        else  return res.status(200).json(data) 
+                    } else { return res.status(404).json({ statusText: "data not found" }) }
                 }
                 if (categories) {
                     data = await prisma.food.findMany({
@@ -223,7 +249,7 @@ export default async function handler(req, res) {
                         include: {
                             image: true,
                             ref: true,
-                            FoodType:true,
+                            FoodType: true,
                             FoodNcds: {
                                 include: {
                                     ncds: {

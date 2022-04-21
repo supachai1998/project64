@@ -1,16 +1,19 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, message, Button, Tooltip, Modal, Select,notification } from 'antd'
-import { SearchOutlined, CameraOutlined, SwapOutlined } from '@ant-design/icons';
+import { Input, message, Button, Tooltip, Modal, Select, notification, Spin } from 'antd'
+import { SearchOutlined, CameraOutlined, LoadingOutlined, SwapOutlined } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
-import { CircularProgress, LinearProgress } from "@mui/material";
+// import { CircularProgress, LinearProgress } from "@mui/material";
 import Resizer from "react-image-file-resizer";
 import { noti } from '/components/noti'
+import { LinearProgressBar } from '../ulity/progress';
 // <CameraOutlined />
 const { Search } = Input
-export default function CusInput({setData ,loading, setLoading }) {
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+
+export default function CusInput({ setData, loading, setLoading, store = [] , only="" }) {
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
   // const [loading, setLoading] = useState(false)
@@ -19,14 +22,15 @@ export default function CusInput({setData ,loading, setLoading }) {
     const val = refSearchInput.current?.state?.value || input
     if (!!val && val.length > 2) {
       setLoading(true)
-      const data = await fetch(`/api/superSearch?txt=${val}`).then(res => res.ok && res.json())
-      if (!data) notification.error({message:"ไม่พบข้อมูล}"})
+      const data = await fetch(`/api/superSearch?txt=${val}${only ? `&only=${only}` : "&only=ALL"}`).then(res => res.ok && res.json())
+      if (!data) notification.error({ message: "ไม่พบข้อมูล" })
       else setData(data)
       setLoading(false)
       refSearchInput.current.state.value = null
     } else {
       const time = setTimeout(async () => {
-        setData([])
+        if (store?.length > 0) setData(store)
+        else setData([])
       }, 1000);
       return () => clearTimeout(time)
     }
@@ -38,7 +42,10 @@ export default function CusInput({setData ,loading, setLoading }) {
 
   const onChange = () => {
     const val = refSearchInput.current.state.value
-    if (!!val && val.length <= 1) setData([]) //remove input to set data
+    if (!!val && val.length <= 1) {
+      if (store?.length > 0) setData(store)
+      else setData([])
+    }
   }
   return (
     <div className="grid w-full rounded-xl">
@@ -53,16 +60,19 @@ export default function CusInput({setData ,loading, setLoading }) {
               <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
                 <CameraOutlined />
                 {loading
-                  ? <LinearProgress className="w-20" />
+                  ? <LinearProgressBar className="w-20" />
                   : <>
                     <button onClick={() => setStatusWebCam(true)} >ถ่ายภาพอาหาร</button>
                   </>}
               </label>
             </Tooltip>
 
-            <CustomUpload setInput={setInput}  loading={loading} setLoading={setLoading}/>
+            <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} />
             <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"
-              placeholder={"ชื่ออาหาร , ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
+              placeholder={only==="food" ?"ชื่ออาหาร" :
+                            only==="ncds" ?"ชื่อโรค" : 
+                            only==="blog" ?"ชื่อบทความ" 
+                            :"ชื่ออาหาร ,  ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
           </div>
         </div>
       }
@@ -112,7 +122,7 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
     setFacingMode(facingMode === "environment" ? "facing" : "environment")
   }
   const handleError = async (e) => {
-    notification.error({message:e.message})
+    notification.error({ message: e.message })
     handleCloseCamera()
   }
 
@@ -148,7 +158,7 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
             สลับกล้อง
           </Button>
           <Button
-            icon={loading ? <CircularProgress style={{ width: "20px", height: "20px", marginRight: "3%" }} /> : <CameraOutlined />}
+            icon={loading ? <Spin indicator={antIcon} style={{ width: "20px", height: "20px", marginRight: "3%" }} /> : <CameraOutlined />}
             shape="round"
             onClick={handleCaptureCamera}
             disable={loading}>
@@ -184,13 +194,13 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
         .then(async res => res.ok && res.json())
         .then(data => data)
         .catch(error => {
-          notification.error({message:!!error}.message ? error.message : "ไม่สามารถเชื่อม api")
+          notification.error({ message: !!error }.message ? error.message : "ไม่สามารถเชื่อม api")
           setMachinePredict(null)
           setImageSrc([])
         });
       console.log(data)
       if (!data) {
-        notification.error({message:"ไม่สามารถเชื่อม api"})
+        notification.error({ message: "ไม่สามารถเชื่อม api" })
         setMachinePredict(null)
         setImageSrc([])
       }
@@ -198,11 +208,11 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
         const { type, name, confident, error } = data
         switch (type) {
           case 'ไม่ใช่อาหาร':
-            notification.error({message:"ไม่ใช่อาหาร"})
+            notification.error({ message: "ไม่ใช่อาหาร" })
             setImageSrc([])
             break;
           case 'ไม่ใช่ภาพ':
-            notification.error({message:"ไม่ใช่ภาพ"})
+            notification.error({ message: "ไม่ใช่ภาพ" })
             setImageSrc([])
             break;
           default:
@@ -252,7 +262,7 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
   )
 }
 
-const CustomUpload = ({ setInput ,loading, setLoading}) => {
+const CustomUpload = ({ setInput, loading, setLoading }) => {
   const [machinePredict, setMachinePredict] = useState(null)
   const onChange = (e) => {
     (async () => {
@@ -273,14 +283,14 @@ const CustomUpload = ({ setInput ,loading, setLoading}) => {
         .then(response => response.json())
         .then(({ type, name, confident, error }) => {
           setLoading(false)
-          if (error) { notification.error({message:error}) }
+          if (error) { notification.error({ message: error?.message }) }
           else {
             switch (type) {
               case 'ไม่ใช่อาหาร':
-                notification.error({message:"ไม่ใช่อาหาร"})
+                notification.error({ message: "ไม่ใช่อาหาร" })
                 break;
               case 'ไม่ใช่ภาพ':
-                notification.error({message:"ไม่ใช่ภาพ"})
+                notification.error({ message: "ไม่ใช่ภาพ" })
                 break;
               default:
                 setMachinePredict({ name: name, confident: confident, url: url })
@@ -289,7 +299,7 @@ const CustomUpload = ({ setInput ,loading, setLoading}) => {
 
           }
         })
-        .catch(error => { setLoading(false); console.error(error); notification.error({message:"ไม่สามารประมวลผลได้}"}) });
+        .catch(error => { setLoading(false); console.error(error); notification.error({ message: "ไม่สามารประมวลผลได้}" }) });
 
     })()
   }
@@ -308,7 +318,7 @@ const CustomUpload = ({ setInput ,loading, setLoading}) => {
             <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
           </svg>
           {loading
-            ? <LinearProgress className="w-20" />
+            ? <LinearProgressBar className="w-20" />
             : <><span className="text-sm leading-normal">เลือกภาพอาหาร</span>
               <input type="file" className="hidden" accept="image/*" onChange={onChange} /></>}
         </label>

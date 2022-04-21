@@ -11,17 +11,25 @@ export default async function handler(req, res) {
         const _body = JSON.parse(body)
         try {
           await prisma.ncds.create({
-              data: _body
+            data: _body
           })
           return res.status(200).json({ status: true })
-      } catch (e) {console.error(e); return res.status(500).json({ status: false, error: e , data : _body }) }
+        } catch (e) { console.error(e); return res.status(500).json({ status: false, error: e, data: _body }) }
       case "DELETE":
-
-        await prisma.ncds.delete({
-          where: {
-            id: id,
-          }
-        })
+        // if (!Array.isArray(id) || !id) return res.status(400).json({ statusText: "id is required" })
+        if (Array.isArray(id)) {
+          id.map(async _ => await prisma.ncds.delete({
+            where: {
+              id: _,
+            }
+          }))
+        } else {
+          await prisma.ncds.delete({
+            where: {
+              id: id,
+            }
+          })
+        }
         return res.status(200).json({ status: true })
 
       case "PATCH":
@@ -119,7 +127,7 @@ export default async function handler(req, res) {
         if (id) {
           if (!query.select) {
             data = await prisma.ncds.findFirst({
-              
+
               where: { id: id },
               include: {
                 image: true,
@@ -130,7 +138,7 @@ export default async function handler(req, res) {
             })
           } else {
             data = await prisma.ncds.findFirst({
-              
+
               where: { id: id },
               select: { [select]: true }
             })
@@ -138,7 +146,7 @@ export default async function handler(req, res) {
         }
         else if (query.type) {
           data = await prisma.ncds.findMany({
-            
+
             where: { type: query.type },
             include: {
               image: true,
@@ -156,7 +164,7 @@ export default async function handler(req, res) {
           })
         } else {
           data = await prisma.ncds.findMany({
-            
+
             include: {
               image: true,
               ref: true

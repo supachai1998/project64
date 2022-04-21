@@ -37,7 +37,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(isMobile)
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState()
-  const [title, setTitle] = useState()
+  const [title, setTitle] = useState(project_name)
   const [ncds, setNCDS] = useState()
   const [blogs, setBlogs] = useState([
     { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
@@ -166,6 +166,7 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
             {!!blogs && blogs.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`blogs_${name_en.toLowerCase()}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
+            <Menu.Item key={`blogs_write`} onClick={() => handleSubMenuClick("blogs_write")}>เขียนบทความ</Menu.Item>
           </SubMenu>
         </>
           : <>
