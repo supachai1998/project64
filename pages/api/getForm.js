@@ -182,10 +182,56 @@ export default async function handler(req, res,) {
 
       default:
         const _id = parseInt(query.id)
+        const {user} = query
         if (_id) {
-          if (!query.select) {
+          if(user){
+              const formExits = await prisma.form.findMany({
+                where: { ncdsId: _id },
+                select: {
+                  id: true,
+                  title: true,
+                  ncdsId: true,
+                  subForm: {
+                    include: {
+                      choice: {
+                        orderBy: {
+                          score: "desc"
+                        }
+                      }
+                    },
+                  },
+                  ncds: {
+                    select: {
+                      id: true,
+                      name_th: true,
+                      name_en: true
+                    }
+                  }
+                },
+  
+              })
+              if(formExits.length <= 0){
+                return res.status(400).json({
+                  statusText: "data form not found"
+                })
+              }else{
+                const resultForm = await prisma.resultForm.findMany({
+                  where: { ncdsId: _id },
+                })
+                if(resultForm?.length <= 0) return res.status(401).json({
+                  statusText: "data resultForm not found"
+                })
+                const subFormExits = formExits.every(val => val.subForm.length > 0)
+                if(subFormExits){
+                  return res.status(200).json(formExits)
+                }else{
+                  return res.status(403).json({
+                    statusText: "data subform not found"
+                  })
+                }
+              }
+          }else if (!query.select) {
             data = await prisma.form.findMany({
-
               where: { ncdsId: _id },
               select: {
                 id: true,

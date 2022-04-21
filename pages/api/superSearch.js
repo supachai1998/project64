@@ -2,7 +2,7 @@ import { prisma } from "/prisma/client";
 export default async function handler(req, res) {
     const { body, method, query } = req;
     let data = []
-    let { txt, type, only } = query
+    let { txt, type, only, categories, self } = query
     res.setHeader('Content-Type', 'application/json');
     try {
         switch (method) {
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
                 switch (type) {
                     default: {
                         let data_fetch
-                        console.log(only)
+                        // console.log(only)
                         if (only === "food" || only === "ALL") {
                             data_fetch = await prisma.food.findMany({
                                 where: { name_th: { contains: txt } },
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
                             })
                         }
                         // console.log(data.length,data_fetch)
-                        if (only === "ncds" || only === "ALL") {
+                        if (only === "ncds") {
                             data = [...data, ...data_fetch]
                             data_fetch = await prisma.ncds.findMany({
                                 where: { name_th: { contains: txt } },
@@ -49,9 +49,13 @@ export default async function handler(req, res) {
                             // console.log(data.length,data_fetch)
                             data = [...data, ...data_fetch]
                         }
-                        if (only === "ncds" || only === "ALL") {
+                        if (only === "blogs" || only === "ALL") {
                             data_fetch = await prisma.blogs.findMany({
-                                where: { name: { contains: txt } },
+                                where: {
+                                    name: { contains: txt },
+                                    ...(categories && { type: categories.toUpperCase() })
+                                },
+
                                 include: {
                                     image: true,
                                 }
@@ -74,6 +78,9 @@ export default async function handler(req, res) {
                         }
                         // console.log(data.length,data_fetch)
                     }
+                }
+                if (self) {
+                    data.filter(({ id }) => parseInt(id) !== parseInt(self))
                 }
                 if (!!data && data.length > 0) return res.status(200).json(data)
                 return res.status(404).json({ error: "Not Found", query: txt })

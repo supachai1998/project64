@@ -92,7 +92,7 @@ export default function Index(props) {
                                     <a href={url} target="_blank" key={index} className='text-left no-underline text-black' rel="noreferrer">{index === data.ref.length - 1 ? `อ้างอิง ${index + 1}` : `อ้างอิง ${index + 1},`}</a>
                                 )}
                             </div>
-                            <button href="#" className="w-32 text-lg border  rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>
+                            {data?.video &&<button href="#" className="w-32 text-lg border  rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button>}
                         </div>
                     </div>
                 </div>

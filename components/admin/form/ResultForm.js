@@ -29,8 +29,8 @@ export default function ResultForm() {
     const reqForm = async () => await fetch(`/api/getResultForm?id=${modalResultForm.ncdsId}`)
         .then(res => {
             if (res.status === 200) return res.json()
-            else if (res.status === 404) notification.error({ message: `ไม่พบข้อมูลการประเมินผล${modalResultForm.name_th}` })
-            else notification.error({ message: `ไม่สามารถดึงข้อมูลการประเมินผล${modalResultForm.name_th}` })
+            else if (res.status === 404) notification.error({ message: `ไม่พบข้ผลการประเมิน${modalResultForm.name_th}` })
+            else notification.error({ message: `ไม่สามผลการประเมิน${modalResultForm.name_th}` })
         })
         .then(data => { setResultForm(data); setStore(data) })
         .catch(err => notification.error({ message: "Error", description: err.message }))
@@ -50,7 +50,7 @@ export default function ResultForm() {
         setModalResultForm(-1)
     }
     return (
-        <Modal title={`การประเมินผล${modalResultForm.name_th}`}
+        <Modal title={`การปรผลการประเมิน${modalResultForm.name_th}`}
             visible={modalResultForm !== -1 ? true : false}
             okText={<>ตกลง</>}
             cancelText={<>ยกเลิก</>}
@@ -63,7 +63,7 @@ export default function ResultForm() {
             <div className="ease-div flex flex-col gap-4 w-full">
                 <div className="flex justify-between mt-4">
                     <div className="text-xl"></div>
-                    <Button onClick={() => setModalAdd(true)}>เพิ่มการประเมินผล</Button>
+                    <Button onClick={() => setModalAdd(true)}>เพิ่มกาผลการประเมิน</Button>
                 </div>
                 <ResultFormContext.Provider value={{
                     reload,
@@ -128,8 +128,8 @@ const TableResultForm = () => {
             key: '',
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
                 {/* <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(resultForm[index])}>ดู</button> */}
-                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(resultForm[index])}>แก้ไข</button>
-                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(resultForm[index], reload)}>ลบ</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val, reload)}>ลบ</button>
             </div>,
         },
     ];
@@ -211,7 +211,7 @@ const TableResultForm = () => {
             rowSelection={{ ...rowSelection }}
             title={() => <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                    ตารางการประเมินผล
+                    ตารางผลการประเมิน
                     <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
                         <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -266,7 +266,7 @@ const ModalAdd = () => {
         setModalAdd(false)
     }
 
-    return <Modal title={`เพิ่มการประเมินผล${modalResultForm.name_th}`}
+    return <Modal title={`เพิ่มกาผลการประเมิน${modalResultForm.name_th}`}
         visible={modalAdd}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -409,7 +409,7 @@ const ModalEdit = () => {
     const onReset = () => {
         form.setFieldsValue();
     }
-    return <Modal title={`แก้ไขการประเมินผล${modalResultForm.name_th}`}
+    return <Modal title={`แก้ไขกผลการประเมิน${modalResultForm.name_th}`}
         visible={modalEdit}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}

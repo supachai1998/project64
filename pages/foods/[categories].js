@@ -12,6 +12,7 @@ const _Categories = dynamic(() => import("/components/foods/categories.js"),
 
 export default function Index() {
     const [_data, setData] = useState()
+    const [store, setStore] = useState()
     const router = useRouter()
     const { categories } = router.query
     useEffect(()=>{
@@ -25,7 +26,7 @@ export default function Index() {
                             <CustImage src={"https://s359.kapook.com/pagebuilder/1f12afa5-ed83-4fd6-b9e7-8c670d941668.jpg"} alt={"0"} className="" width="100%" height="100%" preview={false} />
                         </div> */}
 
-                    <_Categories _data={_data} setData={setData} fetchData={fetchData} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
+                    <_Categories _data={_data} setData={setData} store={store} setStore={setStore} fetchData={fetchData} categories={categories} placeholder={"ชื่ออาหาร , ปริมาณพลังงานที่ได้รับ"} />
 
                 </div>
             }
@@ -45,7 +46,6 @@ const fetchData = async (categories) => {
         if (res.ok) {
             const data = await res.json()
             if (data) {
-                console.log(data)
                 const findCatetory = data.find(item => item.id === parseInt(categories))
                 if(!findCatetory) return null
                 return { id: findCatetory.id, title_th: findCatetory.name_th, title_en: findCatetory.name_en }

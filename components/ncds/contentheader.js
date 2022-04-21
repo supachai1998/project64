@@ -43,13 +43,13 @@ export default function ContentHeader({ headerData, url_yt }) {
                     <hr className="sm:my-5 sm:visible invisible" />
                 </div>
             ))}
-            <div className="flex justify-end items-start w-full sm:mt-0 mt-2">
+            {url_yt &&<div className="flex justify-end items-start w-full sm:mt-0 mt-2">
 
                 <button href="#" className="w-32 sm:text-lg border flex gap-2 justify-center items-center   rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: "วิดีโอ", video: url_yt }) }}>
                     <i><VideoCameraOutlined className='text-lg' /></i>
                     <span>ดูวิดีโอ</span>
                 </button>
-            </div>
+            </div>}
             {content && <CusModal handleCancel={handleCancel} content={content} />}
         </div>
     )

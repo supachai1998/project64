@@ -1,11 +1,9 @@
 import { prisma } from "/prisma/client";
 import { Button, Divider, Form, Input, message, notification, Modal, Table, Tooltip, Select } from "antd";
 import { useEffect, useState } from "react";
-import LibraryAddCheckIcon from '@mui/icons-material/LibraryAddCheck';
-import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Autorenew } from "@mui/icons-material";
 import { Role } from ".prisma/client";
+
+import { CheckCircleIcon , BanIcon , RefreshIcon } from '@heroicons/react/solid'
 
 const { confirm } = Modal;
 const { Option } = Select
@@ -149,7 +147,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
     const showConfirmDel = async (val) => {
         confirm({
             title: `คุณต้องการจะลบผู้ใช้ ${val.name}`,
-            // icon: <DeleteIcon color="warning"/>,
+            // icon: <Ban color="warning"/>,
             content: <div>
                 {/* <h1>ข้อมูลผู้ใช้</h1> */}
                 <p>อีเมล : {val.email}</p>
@@ -209,7 +207,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
             dataIndex: 'delete',
             key: 'delete',
 
-            render: val => <>{val ? <Tooltip title="ถูกปิดกั้น"><DoNotDisturbIcon className="text-red-500" /></Tooltip> : <Tooltip title="อนุมัติ"><LibraryAddCheckIcon className="text-green-500" /></Tooltip>}</>
+            render: val => <>{val ? <Tooltip title="ถูกปิดกั้น"><BanIcon className="w-5 h-5 text-red-500" /></Tooltip> : <Tooltip title="อนุมัติ"><CheckCircleIcon className="text-green-500 w-5 h-5" /></Tooltip>}</>
         },
         {
             title: 'การจัดการ',
@@ -234,7 +232,7 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
         <div>
             <div className="flex gap-3 items-center my-3">
                 <span>ตารางจัดการข้อมูลผู้ใช้</span>
-                <Button onClick={reload} icon={<Autorenew className={`text-blue-700 text-xs ${reloading && "animate-spin"}`} />} />
+                <Button onClick={reload} icon={<RefreshIcon className={`text-blue-700 w-4 h-4 text-xs ${reloading && "animate-spin"}`} />} />
             </div>
             <Table dataSource={admin} columns={columns} />
             <Modal title="แก้ไขข้อมูลผู้ใช้" visible={!!valUser && true} onOk={handleOk} onCancel={handleCancel} footer={null}>

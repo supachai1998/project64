@@ -24,31 +24,35 @@ export default async function handler(req, res,) {
             const dataQuery = await prisma.resultForm.findMany({
               where: { ncdsId: data.ncdsId }
             })
-            // find score between in data start to end
-            const result = dataQuery.findIndex(v => {
-              return score >= v.start && score <= v.end // range of score
-            })
-            // console.log(result)
-            let _data = dataQuery[result]
-            if (!_data) {
-              const lastData = dataQuery[dataQuery.length - 1]
-              if (score >= lastData.end) {
-                _data = lastData
-                // console.log(lastData)
+            if (dataQuery?.length > 0) {
+              // find score between in data start to end
+              const result = dataQuery.findIndex(v => {
+                return score >= v.start && score <= v.end // range of score
+              })
+              // console.log(result)
+              let _data = dataQuery[result]
+              if (!_data) {
+                const lastData = dataQuery[dataQuery.length - 1]
+                if (score >= lastData.end) {
+                  _data = lastData
+                  // console.log(lastData)
+                }
               }
-            }
-            // console.log(_data)
-            const sliceData = dataQuery.slice(0, result)
-            if (result > 0) {
-              const getRecommend = sliceData.map((v, ind) => {
-                const split = v.recommend.split('\n')
-                const re = split.map((v, i) => { count += 1; return v.replace(/^[0-9]*\./, `${count}.`) })
-                return re
-              }).reduce((a, b) => { return a.concat(b) }).map(v => `${v}`).join("\n")
-              return res.status(200).json({ title: _data?.title, index: result, of: dataQuery.length, recommend: getRecommend })
-            }else{
-              return res.status(200).json({ title: _data?.title, index: result, of: dataQuery.length, recommend: _data?.recommend })
+              // console.log(_data)
+              const sliceData = dataQuery.slice(0, result)
+              if (result > 0) {
+                const getRecommend = sliceData.map((v, ind) => {
+                  const split = v.recommend.split('\n')
+                  const re = split.map((v, i) => { count += 1; return v.replace(/^[0-9]*\./, `${count}.`) })
+                  return re
+                }).reduce((a, b) => { return a.concat(b) }).map(v => `${v}`).join("\n")
+                return res.status(200).json({ title: _data?.title, index: result, of: dataQuery.length, recommend: getRecommend })
+              } else {
+                return res.status(200).json({ title: _data?.title, index: result, of: dataQuery.length, recommend: _data?.recommend })
 
+              }
+            }else{
+              return res.status(404).json({ statusText: "ไม่พบข้อมูล" , error:"ไม่พบข้อมูลผลการประเมิน" })
             }
           }
           // create many record
@@ -125,5 +129,5 @@ export default async function handler(req, res,) {
         if (!!data && data.length > 0) return res.status(200).json(data)
         else return res.status(404).send({ statusText: "ไม่พบข้อมูล" })
     }
-  } catch (e) { console.log(e); res.status(500).send({ statusText: "something error",e:e.message, raw: body }) }
+  } catch (e) { console.log(e); res.status(500).send({ statusText: "something error", e: e.message, raw: body }) }
 }

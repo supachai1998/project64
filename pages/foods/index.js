@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router'
-import { Card, Divider, notification, Tooltip, Rate, Input } from 'antd';
+import { Card, notification, Tooltip, Rate } from 'antd';
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useContext } from 'react';
+import {_AppContext} from '/pages/_app'
 
 
 
@@ -12,25 +13,29 @@ const CusInput = dynamic(() => import('/components/cusInput.js'));
 
 
 export default function Index() {
+    const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
+
     const [_data, setData] = useState()
     const [store, setStore] = useState()
     const [loading, setLoading] = useState()
     const router = useRouter()
     useEffect(() => {
         (async () => {
+            setTitle("อาหารทั้งหมด")
+            setDefaultSelectedKeys("foods")
             const data = await fetchData()
             setData(data)
             setStore(data)
         })()
-    }, [])
+    }, [router])
     if (!_data) return <div className='min-h-screen'></div>
     return (
-        <div className="mt-3">
-            <div className="justify-center min-h-screen mx-auto md:px-5">
+        <div className="mt-3 min-h-screen">
+            <div className="justify-center  mx-auto md:px-5">
                 <div className="my-5">
                     <CusInput only="food" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading}/>
                 </div>
-                <div className='grid grid-cols-5 gap-3'>
+                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-3'>
                     {_data.map(({
                         id,
                         name_th,
@@ -73,7 +78,7 @@ export default function Index() {
                                 className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                                 <div className="relative w-full" >
                                     {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height="200px" preview={false} />}
-                                    {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>}
+                                    {/* {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>} */}
                                     {calories && <Tooltip title="ปริมาณแคลอรี่"><p className="absolute bottom-0 left-0 p-2 text-xs text-left bg-opacity-60 bg-gray-50 sm:text-sm rounded-xl">{calories} KgCal</p></Tooltip>}
                                 </div>
                                 <div className={name ? "w-full h-full flex flex-col  p-3 " : " sm:w-1.5/2 h-full flex flex-col overflow-auto"}>

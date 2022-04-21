@@ -16,7 +16,6 @@ import {
   AppleOutlined,
   FormOutlined,
   MedicineBoxOutlined,
-  PieChartOutlined,
   ProfileOutlined,
   HomeOutlined as HomeIcon,
   LogoutOutlined as LogoutOutlined

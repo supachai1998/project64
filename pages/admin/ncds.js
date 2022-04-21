@@ -580,9 +580,9 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(ncds[index])}>ดู</button>
-                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(ncds[index])}>แก้ไข</button>
-                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(ncds[index], reload)}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(val)}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val, reload)}>ลบ</button>
             </div>,
         },
 

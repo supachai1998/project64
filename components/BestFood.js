@@ -22,36 +22,30 @@ export default function BestFood() {
 
         return data
     }
+    const asPath = router.asPath.split("/")
+
     useEffect(() => {
         (async () => {
-            console.log(router.query)
-            let api = ""
-            if(food){
-                api = `/api/getFood?BestFood=${true}&self=${food}`
-            }else if (categories) {
-                api = `/api/getFood?BestFood=${true}&self=${categories}`
-            }else if (blog) {
-                api = `/api/getFood?BestFood=${true}&blog=${blog}`
-            }else{
-                api = `/api/getFood?BestFood=${true}`
-            }
-            if (api !== "") {
-                const data = await fetchData(api)
-                !!data && setData([...data])
-            }
+            let api = `/api/getFood?BestFood=${true}`
+            if (asPath[1]) api += `&type=${asPath[1]}`
+            if (asPath[2]) api += `&categories=${asPath[2]}`
+            if (asPath[3]) api += `&self=${asPath[3]}`
+            const data = await fetchData(api)
+            !!data && setData([...data])
+
         })()
 
-    }, [ blog, categories, food, router.query])
+    }, [blog, categories, food, router.query])
 
     if (!_data && !Array.isArray(_data)) return null
-    const handleLinkClick = (foodTypeId,id) => {
+    const handleLinkClick = (foodTypeId, id) => {
         router.push(`/foods/${foodTypeId}/${id}`)
     }
     return (
 
         <Owl_Carousel
             title={"อาหารยอดนิยม"}
-            link={blog ? `/foods/${blog}`:`/foods`}
+            link={ `/foods`}
             info_top={`พบ ${_data.length} รายการ`}
             info_down={`อ่านทั้งหมด`}
         >
@@ -73,7 +67,7 @@ export default function BestFood() {
                             </div>
                             <hr className='mb-3' />
                             <div className='flex justify-center justify-items-center pb-3'>
-                                <a onClick={()=>handleLinkClick(foodTypeId,id)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
+                                <a onClick={() => handleLinkClick(foodTypeId, id)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
                             </div>
 
                         </div>

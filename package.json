@@ -17,6 +17,7 @@
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
+    "@heroicons/react": "^1.0.6",
     "@next-auth/prisma-adapter": "^0.5.2-next.15",
     "@prisma/client": "^3.8.1",
     "antd": "^4.16.13",

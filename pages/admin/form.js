@@ -132,7 +132,7 @@ const TableForm = () => {
             key: '',
             width: "20%",
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(index)}>การประเมินผล</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(_formGroupBy.findIndex(({id})=>id === val.id))}>การประเมินผล</button>
                 <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalResultForm(val)}>ผลประเมิน</button>
                 {/* <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_form[index].data, reload)}>ลบ</button> */}
             </div>,
@@ -273,9 +273,9 @@ const TableFormSub = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(_formGroupBy[modalViewSubForm].data[index])}>ดู</button>
-                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(_formGroupBy[modalViewSubForm].data[index])}>แก้ไข</button>
-                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_formGroupBy[modalViewSubForm].data[index], reload)}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(val)}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val, reload)}>ลบ</button>
             </div>,
         },
 
@@ -1076,6 +1076,7 @@ const showConfirmDel = async (val, reload) => {
     confirm({
         title: <>คุณต้องการจะลบการประเมินผล</>,
         content: <ul>
+           <li> ชื่อหัวข้อ : {val.title} </li><br />
             {val.subForm.map(({ name, choice }, ind) =>
                 <li key={name}>{ind + 1}. {name} <br />
                     {choice.map(({ name, score }, ind2) => <li key={name} className="ml-3">{ind + 1}.{ind2 + 1} {name}</li>)}

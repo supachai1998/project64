@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router'
 import { Steps, Button, Radio, message, Modal, Tooltip, Checkbox, Select, notification, } from 'antd';
-import { useState, useEffect, useRef , useContext } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
-import {_AppContext} from '/pages/_app'
+import { _AppContext } from '/pages/_app'
 
 const { Step } = Steps;
 const { Option } = Select
@@ -15,32 +15,37 @@ export default function Index() {
     const { categories } = router.query
     const [curIndPart, setcurIndPart] = useState(0);
     const [result, setResult] = useState();
-    const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
+    const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
     const fetchData = async () => {
         setloading(true)
-        const data = await fetch(`/api/getForm?id=${categories}`).then(res => res.ok && res.json())
-        // setChoice(data.subForm.map(({ choice }) => setChoice(prev => [...prev, 0])))
-        const setSelect = data.map((v1) => ({
-            ...v1, subForm: v1.subForm.map((v2) => ({
-                ...v2, choice: v2.choice.map((v3) => ({
-                    ...v3, select: false
+        const data = await fetch(`/api/getForm?id=${categories}&user=${true}`).then(res => res.ok && res.json())
+
+        if (!!data) {
+            // setChoice(data.subForm.map(({ choice }) => setChoice(prev => [...prev, 0])))
+            const setSelect = data.map((v1) => ({
+                ...v1, subForm: v1.subForm.map((v2) => ({
+                    ...v2, choice: v2.choice.map((v3) => ({
+                        ...v3, select: false
+                    }))
                 }))
             }))
-        }))
-        if(data){
-            setTitle(`แบบประเมิน${data[0].ncds.name_th}`)
+
+            setTitle(`แบบประเมิน${data[0]?.ncds?.name_th}`)
+            setDatas(setSelect)
         }
-        setDatas(setSelect)
         setloading(false)
     }
 
     useEffect(() => {
-        setDefaultSelectedKeys(`/form/${categories}`)
+        setDefaultSelectedKeys(`form_${categories}`)
         if (categories) {
             fetchData()
         }
         return () => setDatas()
     }, [categories])
+    if (loading) return <div className='min-h-screen'>กำลังดึงข้อมูล</div>
+    if (!datas || datas?.length <= 0) return <div className='min-h-screen'>ไม่พบข้อมูล</div>
+
 
     const next = () => {
         setcurIndPart(curIndPart + 1);
@@ -79,16 +84,17 @@ export default function Index() {
             console.log(getSum)
             // send getSum to getResultForm API method POST body
             const req = await fetch('/api/getResultForm', { method: "POST", body: JSON.stringify({ ncdsId: datas[0].ncdsId, score: getSum }) })
-            .then(res=>res.ok&&res.json())
-            .catch(e=>notification.error({message:e.message}))
+                .then(res => res.json())
+                .then(data => data.error ? notification.error({ message: data.error }) : data)
+                .catch(e => notification.error({ message: e?.message || e }))
             setResult(req)
-        
+            // console.log(req)
+
         }
         // console.log(noAnswer)
     }
 
-    if (loading) return <div className='min-h-screen'>กำลังดึงข้อมูล</div>
-    if (datas?.length <= 0) return <div className='min-h-screen'>ไม่พบข้อมูล</div>
+
 
     return <>
         <div className="min-h-screen h-full sm:w-1/2 mx-auto bg-white rounded-lg shadow-md px-3 py-2">
@@ -144,13 +150,13 @@ export default function Index() {
                     )}
                 </div>
             </div>
-            <Result result={result} setResult={setResult} ncdsId={datas[0].ncds.id}/>
+            <Result result={result} setResult={setResult} ncdsId={datas[0].ncds.id} />
         </div>
     </>
 
 }
 
-const Result = ({ result, setResult,ncdsId }) => {
+const Result = ({ result, setResult, ncdsId }) => {
     const router = useRouter()
     const handleCancel = () => {
         setResult();
@@ -179,11 +185,11 @@ const Result = ({ result, setResult,ncdsId }) => {
 }
 const Icon = ({ title }) => (<>
     {/* <Tooltip title={`${avg.toFixed(0)}%`}> */}
-        {title === "เสี่ยงต่ำมาก" ? <div className="text-7xl text-green-500 flex flex-col gap-2"> <SmileOutlined /> <span className='text-3xl'>เสี่ยงต่ำมาก </span></div>
-            : title === "เสี่ยงต่ำ" ? <div className="text-7xl text-green-900 flex flex-col gap-2"> <SmileOutlined /><span className='text-3xl'>เสี่ยงต่ำ </span></div>
-                : title === "เสี่ยงปานกลาง" ? <div className="text-7xl text-yellow-500 flex flex-col gap-2"> <SmileOutlined /><span className='text-3xl'>เสี่ยงปานกลาง </span></div>
-                    : title === "เสี่ยงสูง" ? <div className="text-7xl text-red-900 flex flex-col gap-2"> <FrownOutlined /><span className='text-3xl'>เสี่ยงสูง </span></div>
-                        :title === "เสี่ยงสูงมาก" ?<div className="text-7xl text-red-500 flex flex-col gap-2"><FrownOutlined /><span className='text-3xl'>เสี่ยงสูงมาก </span></div>
+    {title === "เสี่ยงต่ำมาก" ? <div className="text-7xl text-green-500 flex flex-col gap-2"> <SmileOutlined /> <span className='text-3xl'>เสี่ยงต่ำมาก </span></div>
+        : title === "เสี่ยงต่ำ" ? <div className="text-7xl text-green-900 flex flex-col gap-2"> <SmileOutlined /><span className='text-3xl'>เสี่ยงต่ำ </span></div>
+            : title === "เสี่ยงปานกลาง" ? <div className="text-7xl text-yellow-500 flex flex-col gap-2"> <SmileOutlined /><span className='text-3xl'>เสี่ยงปานกลาง </span></div>
+                : title === "เสี่ยงสูง" ? <div className="text-7xl text-red-900 flex flex-col gap-2"> <FrownOutlined /><span className='text-3xl'>เสี่ยงสูง </span></div>
+                    : title === "เสี่ยงสูงมาก" ? <div className="text-7xl text-red-500 flex flex-col gap-2"><FrownOutlined /><span className='text-3xl'>เสี่ยงสูงมาก </span></div>
                         : <div className="text-7xl text-white-500 flex flex-col gap-2">{title}</div>}
     {/* </Tooltip> */}
 </>)

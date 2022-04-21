@@ -136,53 +136,104 @@ export default async function handler(req, res) {
                 return res.status(200).json({ status: true })
             default:
 
-                const { select, BestFood, self, categories, name, blog } = query
+                const { select, BestFood, self, categories, name, type } = query
                 id = parseInt(query.id) || null
                 if (BestFood) {
-                    if (blog) {
-                        data = await prisma.food.findMany({
-                            orderBy: [
-                                { views: 'desc', },
-                                { calories: 'asc', },
-                            ],
-                            include: {
-                                image: true,
-                                ref: true,
-                            },
-                            take: 6,
-                        })
+                    switch (type) {
+                        case "blogs": {
+                            data = await prisma.food.findMany({
+                                orderBy: [
+                                    { views: 'desc', },
+                                    { calories: 'asc', },
+                                ],
+                                include: {
+                                    image: true,
+                                    ref: true,
+                                },
+                                take: 6,
+                            })
+                        } break;
+                        case "ncds": {
+                            data = await prisma.food.findMany({
+                                where: {
+                                    ...(categories && {
+                                        FoodNcds: {
+                                            some: {
+                                                suggess: true,
+                                                ncdsId: parseInt(categories)
+                                            },
+                                        }
+                                    })
+                                },
+                                orderBy: [
+                                    { views: 'desc', },
+                                    { calories: 'asc', },
+                                ],
+                                include: {
+                                    image: true,
+                                    ref: true,
+                                },
+                                take: 6,
+                            })
+                        } break;
+
+                        default: {
+                            data = await prisma.food.findMany({
+                                orderBy: [
+                                    { views: 'desc', },
+                                    { calories: 'asc', },
+                                ],
+                                include: {
+                                    image: true,
+                                    ref: true,
+                                },
+                                take: 6,
+                            })
+                        } break;
                     }
-                    else {
-                        data = await prisma.food.findMany({
-                            orderBy: [
-                                { views: 'desc', },
-                                { calories: 'asc', },
-                            ],
-                            include: {
-                                image: true,
-                                ref: true,
-                            },
-                            take: 6,
-                        })
-                    }
+
                     if (!!data && data.length > 0) {
                         if (self) {
                             data = data.filter(val => parseInt(val.id) !== parseInt(self))
                             return res.status(200).json(data)
                         }
-                        else  return res.status(200).json(data) 
+                        else return res.status(200).json(data)
                     } else { return res.status(404).json({ statusText: "data not found" }) }
                 }
                 if (categories) {
-                    data = await prisma.food.findMany({
+                    if (name) {
+                        console.log(categories, name)
+                        data = await prisma.food.findMany({
+                            where: {
+                                name_th: { contains: name },
+                                foodTypeId: parseInt(categories),
+                            },
+                            include: {
+                                image: true,
+                                ref: true,
+                            },
+                        }) ||
+                            await prisma.food.findMany({
+                                where: {
+                                    name_en: { contains: name },
+                                    foodTypeId: parseInt(categories),
+                                },
+                                include: {
+                                    image: true,
+                                    ref: true,
+                                },
+                            })
+                    } else {
+                        data = await prisma.food.findMany({
 
-                        where: { foodTypeId: parseInt(categories) },
-                        include: {
-                            image: true,
-                            ref: true,
-                        }
-                    })
-                    if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
+                            where: { foodTypeId: parseInt(categories) },
+                            include: {
+                                image: true,
+                                ref: true,
+                            }
+                        })
+                    }
+                    if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json({ statusText: "data not found" }) }
                 }
                 if (name) {
                     data = await prisma.food.findMany({
@@ -223,6 +274,7 @@ export default async function handler(req, res) {
                                 include: {
                                     ncds: {
                                         select: {
+                                            id: true,
                                             name_th: true,
                                             name_en: true,
                                             image: {

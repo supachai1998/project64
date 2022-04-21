@@ -12,8 +12,15 @@ export default function DisplayBlogReadMore() {
   const [_data, setData] = useState()
 
   const router = useRouter()
+  const asPath = router.asPath.split("/")
+  console.log(asPath)
   const fetchData = async () => {
-    const data = await fetch(`/api/getBlogs?BestBlog=${true}`).then(async res => {
+    let api = `/api/getBlogs?BestBlog=${true}`
+    if(asPath[1])api+=`&type=${asPath[1]}`
+    if(asPath[2])api+=`&categories=${asPath[2]}`
+    if(asPath[3])api+=`&self=${asPath[3]}`
+
+    const data = await fetch(api).then(async res => {
       if (res.ok) {
         const _ = await res.json()
         return _
@@ -36,7 +43,7 @@ export default function DisplayBlogReadMore() {
   return (
     <Owl_Carousel
       title="บทความยอดนิยม"
-      link="/blog"
+      link="/blogs"
       info_top={`พบ ${_data.length} รายการ`}
       info_down={`อ่านทั้งหมด`}
     >

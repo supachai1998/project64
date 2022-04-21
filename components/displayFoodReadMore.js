@@ -1,6 +1,6 @@
 // import '@fontawesome-free/css/all.css'
 
-import { Carousel, Tooltip, Divider, Rate, Select } from 'antd';
+import { Tooltip,  Rate } from 'antd';
 
 import router from 'next/router';
 import dynamic from 'next/dynamic'

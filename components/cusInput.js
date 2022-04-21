@@ -1,32 +1,39 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, message, Button, Tooltip, Modal, Select, notification, Spin } from 'antd'
-import { SearchOutlined, CameraOutlined, LoadingOutlined, SwapOutlined } from '@ant-design/icons';
+import { Input, message, Button, Tooltip, Modal, notification, Spin } from 'antd'
+import { CameraOutlined, LoadingOutlined, SwapOutlined } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
 // import { CircularProgress, LinearProgress } from "@mui/material";
 import Resizer from "react-image-file-resizer";
-import { noti } from '/components/noti'
 import { LinearProgressBar } from '../ulity/progress';
+import { useRouter } from 'next/router';
+
 // <CameraOutlined />
 const { Search } = Input
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-export default function CusInput({ setData, loading, setLoading, store = [] , only="" }) {
+export default function CusInput({ setData, loading, setLoading, store = [], only = "" }) {
+  const router = useRouter()
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
-  // const [loading, setLoading] = useState(false)
   const [input, setInput] = useState(null)
   const handleSearch = async () => {
+    const asPath = router.asPath.split("/")
+    let api = `/api/superSearch?${only ? `&only=${only}` : "&only=ALL"}`
+    if (asPath[1]) api += `&type=${asPath[1]}`
+    if (asPath[2]) api += `&categories=${asPath[2]}`
+    if (asPath[3]) api += `&self=${asPath[3]}`
     const val = refSearchInput.current?.state?.value || input
     if (!!val && val.length > 2) {
       setLoading(true)
-      const data = await fetch(`/api/superSearch?txt=${val}${only ? `&only=${only}` : "&only=ALL"}`).then(res => res.ok && res.json())
+      api += `&txt=${val}`
+      const data = await fetch(api).then(res => res.ok && res.json())
       if (!data) notification.error({ message: "ไม่พบข้อมูล" })
       else setData(data)
       setLoading(false)
-      refSearchInput.current.state.value = null
+      // refSearchInput.current.state.value = null
     } else {
       const time = setTimeout(async () => {
         if (store?.length > 0) setData(store)
@@ -35,9 +42,15 @@ export default function CusInput({ setData, loading, setLoading, store = [] , on
       return () => clearTimeout(time)
     }
 
+
   }
   useEffect(() => {
-    handleSearch()
+    const val = refSearchInput.current?.state?.value || input
+    !!val && val.length > 2 && handleSearch()
+    return () => {
+      if (store?.length > 0) setData(store)
+      else setData([])
+    }
   }, [input, setInput])
 
   const onChange = () => {
@@ -48,15 +61,16 @@ export default function CusInput({ setData, loading, setLoading, store = [] , on
     }
   }
   return (
-    <div className="grid w-full rounded-xl">
-      {statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
+    <div className="grid w-full rounded-xl ">
+      {only !== "blogs" && statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
         : <div className="grid grid-cols-1 gap-3 mx-10 row-span-full">
           <div className="grid ">
-            <label className='sm:text-2xl text-xl'>ค้นหา</label>
+            <label className='sm:text-2xl text-xl'>ค้นหา {input}</label>
           </div>
-          <div className="grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row">
+          <div className={only !== "blogs" ? "grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row" :
+            "flex justify-end"}>
 
-            <Tooltip title="ถ่ายภาพ">
+            {only !== "blogs" && <Tooltip title="ถ่ายภาพ">
               <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
                 <CameraOutlined />
                 {loading
@@ -65,14 +79,14 @@ export default function CusInput({ setData, loading, setLoading, store = [] , on
                     <button onClick={() => setStatusWebCam(true)} >ถ่ายภาพอาหาร</button>
                   </>}
               </label>
-            </Tooltip>
+            </Tooltip>}
 
-            <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} />
+            {only !== "blogs" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} />}
             <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"
-              placeholder={only==="food" ?"ชื่ออาหาร" :
-                            only==="ncds" ?"ชื่อโรค" : 
-                            only==="blog" ?"ชื่อบทความ" 
-                            :"ชื่ออาหาร ,  ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
+              placeholder={only === "food" ? "ชื่ออาหาร" :
+                only === "ncds" ? "ชื่อโรค" :
+                  only === "blogs" ? "ชื่อบทความ"
+                    : "ชื่ออาหาร ,  ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
           </div>
         </div>
       }

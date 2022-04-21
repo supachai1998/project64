@@ -174,20 +174,48 @@ export default async function handler(req, res) {
 
 
       default:
-        let { select, id, BestBlog, approve } = query
+        let { select, id, BestBlog, approve, self, type, categories } = query
         if (BestBlog) {
-          data = await prisma.blogs.findMany({
+          switch (type) {
+            case "ncds": {
+              data = await prisma.blogs.findMany({
+                where: {
+                  approve: 1,
+                  // ...(type && { type: type.toUpperCase() }),
+                  ...(categories && { related: { some: { ncdsId: parseInt(categories) } } })
+                },
+                orderBy: [
+                  { views: 'desc', },
+                ],
+                include: {
+                  image: true,
+                  ref: true,
+                },
+                take: 5,
+              })
+            } break
+            default: {
+              data = await prisma.blogs.findMany({
+                where: {
+                  approve: 1,
+                  // ...(type && { type: type.toUpperCase() }),
+                  // ...(categories && { related: { some: { ncdsId: parseInt(categories) } } })
+                },
+                orderBy: [
+                  { views: 'desc', },
+                ],
+                include: {
+                  image: true,
+                  ref: true,
+                },
+                take: 5,
+              })
+            }
+          }
 
-            where: { approve: 1 },
-            orderBy: [
-              { views: 'desc', },
-            ],
-            include: {
-              image: true,
-              ref: true,
-            },
-            take: 5,
-          })
+          if (self) {
+            data = data.filter(({ id }) => parseInt(id) !== parseInt(self))
+          }
         }
         else if (id) {
 

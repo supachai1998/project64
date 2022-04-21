@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import { Steps, Button, message, Tooltip, Checkbox, Row, Col, Divider } from 'antd';
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { motion, } from 'framer-motion';
 const { Step } = Steps;
 
 export default function Index() {
@@ -58,15 +57,13 @@ export default function Index() {
 
                 <div className="flex flex-col w-full gap-4 p-3 bg-gray-300 rounded-lg ">
                     {content.map((con, i) => (
-                        <motion.div
-                            variants={fadeInUp}
-                            whileTap={{ scale: .97 }}
+                        <div
                             key={i} title={con.detail} className="w-full h-full break-all">
                             <Checkbox value={con.score} onChange={onChange} checked={con.checked} disabled={con.disabled} name={con.title} >{con.title}
                                 {"\t"}<span className="text-gray-600 ">{con.detail}</span>
                             </Checkbox>
 
-                        </motion.div>
+                        </div>
                     ))}
 
                 </div>
@@ -98,164 +95,3 @@ export default function Index() {
         </div>
     )
 }
-
-
-const choice = [
-    {
-        title: "คุณมีอาการดังต่อไปนี้หรือไม่ ",
-        content: [
-            {
-                title: "ปวดหัว",
-                detail: "รายละเอียด xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                score: 1,
-            },
-            {
-                title: "ตัวร้อน",
-                detail: "รายละเอียด 1 2 3 4 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                score: 2,
-            },
-            {
-                title: "ไม่สบาย",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 3,
-            },
-            {
-                title: "วินเวียน",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 4,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-    {
-        title: "พฤติกรรมการรับประทานอาหาร ",
-        content: [
-            {
-                title: "กินเผ็ด",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "เปรี้ยว",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 6,
-            },
-            {
-                title: "หวาน",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 7,
-            },
-            {
-                title: "เผ็ดมากๆ",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 1,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-    {
-        title: "พฤติกรรมการนอน",
-        content: [
-            {
-                title: "นอนไม่ค่อยหลับ",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 2,
-            },
-            {
-                title: "นอนหลับๆตื่นๆ",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 3,
-            },
-            {
-                title: "นอนไม่เป็นเวลา",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 4,
-            },
-            {
-                title: "นอนเต็มอิ่ม",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 4,
-            },
-            {
-                title: "ยังไม่ได้นอน~~~",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-    {
-        title: "พฤติกรรมการนั่ง",
-        content: [
-            {
-                title: "กินเผ็ด1",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "เปรี้ยว2",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "หวาน3",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "เผ็ดมากๆ4",
-                detail: "รายละเอียด 1 2 3 4",
-                score: 5,
-            },
-            {
-                title: "ไม่มีอาการ",
-                detail: "",
-                score: 0,
-            },
-        ]
-    },
-]
-
-// Our custom easing
-let easing = [0.6, -0.05, 0.01, 0.99];
-
-// animate: defines animation
-// initial: defines initial state of animation or stating point.
-// exit: defines animation when component exits
-
-// Custom variant
-const fadeInUp = {
-    initial: {
-        y: 60,
-        opacity: 0,
-        transition: { duration: 0.6, ease: easing }
-    },
-    animate: {
-        y: 0,
-        opacity: 1,
-        transition: {
-            duration: 0.6,
-            ease: easing
-        }
-    }
-};
-
-const stagger = {
-    animate: {
-        transition: {
-            staggerChildren: 0.1
-        }
-    }
-};
