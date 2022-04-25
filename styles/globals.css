@@ -2,7 +2,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import '~antd/dist/antd.css';
 @layer components {
   .card {
     background-color: theme('colors.white');
@@ -227,10 +227,27 @@ a:link,a:visited  {
 
 /* custom curve ant design button */
 .ant-btn{
-  border-radius: 10px!important;
-  @apply flex justify-center items-center !important
+  border-radius: 8px!important;
+  @apply flex items-center justify-center my-auto  !important
 }
 
+.ant-btn > *  {
+
+  position: relative;
+  bottom:3px;
+  /* @apply mb-auto */
+}
+.ant-btn > .anticon {
+  position: relative;
+  bottom : auto;
+  @apply mb-auto
+}
+.anticon-search {
+  @apply flex justify-center items-center my-auto
+}
+.ant-input-group > .ant-input:first-child, .ant-input-group-addon:first-child {
+  border-right-width : 0px 
+}
 /* custom fontsize header ant table */
 .ant-table-thead{
   font-size: .9rem;
@@ -240,7 +257,7 @@ a:link,a:visited  {
 .ant-radio-inner,
 .ant-radio-inner:after {
   border-radius: 10px !important;
-  background-color: #7367f0;
+  /* background-color: #7367f0; */
 }
 .ant-radio-inner:after {
   border: none !important;
@@ -370,7 +387,7 @@ a {
 }
 .search-search{
   /* .input .search .loading with enterButton; */
-  @apply lg:w-1/4   rounded-md;
+  @apply lg:w-full   rounded-md;
 }
 .search-span{
   @apply justify-center text-right text-sm;
@@ -407,4 +424,13 @@ a {
 }
 .ant-notification {
   z-index: 9999999 !important;
+}
+
+
+/* ant color */
+.green-ghost-green{@apply border-green-500 hover:border-green-300 text-green-500 hover:text-green-400}
+.green{@apply bg-green-500 hover:bg-green-700}
+
+.no_overflow{
+  @apply overflow-ellipsis truncate 
 }

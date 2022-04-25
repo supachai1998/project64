@@ -1,6 +1,5 @@
 import { useState, useEffect, createContext, useContext, useRef, useCallback } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Collapse, List, Steps, Form, Input, notification, InputNumber, Tooltip, Popconfirm } from 'antd'
-import { UploadOutlined, DeleteOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Board from '../../components/admin/DisplayBoard';
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -9,6 +8,17 @@ const { Option } = Select
 import { groupByNcds } from '../../ulity/group';
 import { Button_Delete, Button_Collapsed } from '../../ulity/button';
 import ResultForm from '/components/admin/form/ResultForm';
+// Report
+import { FilePdfOutlined, DownloadOutlined, UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { CSVLink } from "react-csv"
+import { Chart as ChartJS, ArcElement, Tooltip as Too, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import { useReactToPrint } from 'react-to-print';
+import moment from 'moment'
+import 'moment/locale/th'
+moment.locale('th')
+ChartJS.register(ArcElement, Too, Legend);
+// END Report
 const ellipsis = {
     rows: 3,
     expandable: false,
@@ -30,6 +40,40 @@ export default function Index() {
     const [_form, setForm] = useState([])
     const [store, setStore] = useState([])
     const [_formGroupBy, setFormGroupBy] = useState([])
+
+    const componentRef = useRef();
+    const inputRef = useRef()
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
+    const columns = [
+        {
+            title: <div className="text-left" >ชื่อโรค</div>,
+            dataIndex: 'name_th',
+            key: 'name_th',
+            render: (text, val, index) => <Tooltip title={`${val.name_th} (${val.name_en})`} ><div >{val.name_th}</div></Tooltip>
+        },
+        {
+            title: <div className="text-center" >หัวข้อ</div>,
+            dataIndex: 'data',
+            key: 'data',
+            render: val => <div className="text-left" >{val.map((v,ind)=><p key={v.title}>{ind +1}. {v.title}</p>)}</div>
+        },
+        {
+            title: <div className="text-center" >จำนวนคำถาม</div>,
+            dataIndex: 'data',
+            key: 'data',
+            render: val => <div className="text-center" >{val.map(({ subForm }) => <li key={subForm.id}>{subForm.length}</li>)}</div>
+        },
+        {
+            title: <div className="text-center" >คะแนน</div>,
+            dataIndex: 'data',
+            key: 'data',
+            render: val => <div className="text-center" >{val.map(({ subForm }) => <li key={subForm.id}>{subForm.reduce((sum,{choice})=> sum+=choice.reduce((sum2,{score})=> sum2+=score,0),0)}</li>)}</div>
+        },
+
+    ];
+
     const reqForm = async () => await fetch("/api/getForm")
         .then(res => res.status === 200 ? res.json() : notification.error({ message: "ไม่สามารถดึงข้อมูลการประเมินผล" }))
         .then(data => data)
@@ -48,7 +92,7 @@ export default function Index() {
             }))
             setFormGroupBy(_)
             setStore(_)
-            // console.log(g)
+            console.log(_)
         } else {
             setForm([])
             setFormGroupBy([])
@@ -68,10 +112,22 @@ export default function Index() {
 
     return (
         <div className="ease-div flex flex-col gap-4 w-full">
-            <Board data={{}} />
+            <Chart NCDS={NCDS} _form={_form} _formGroupBy={_formGroupBy} />
             <div className="flex justify-between mt-4">
                 <div className="text-xl"></div>
-                <Button onClick={() => setModalAdd(true)}>เพิ่มการประเมินผล</Button>
+                <div className="flex gap-3">
+                    <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
+                    <Button className='green-ghost-green' icon={<DownloadOutlined />}>
+                        <CSVLink
+                            filename={`ตารางอาหาร ${inputRef.current?.value}-${moment().format("LLLL")}.csv`}
+                            data={!!_formGroupBy ? _formGroupBy.map(({ name_th, name_en, data }) => ({ name_th, name_en, subFormTotal: data.length, choiceTotal: data.map(({ subForm }) => subForm.length).reduce((a, b) => a + b) })) : []}
+                            onClick={() => notification.success({ message: "ดาวน์โหลดไฟล์" })}
+                        >
+                            <span className="text-green-500">CSV</span>
+                        </CSVLink>
+                    </Button>
+                    <Button onClick={() => setModalAdd(true)}>เพิ่มการประเมินผล</Button>
+                </div>
             </div>
             <ContextForm.Provider value={{
                 reload,
@@ -84,7 +140,7 @@ export default function Index() {
                 modalResultForm, setModalResultForm,
                 loading,
                 _form, NCDS,
-                store, setStore
+                store, setStore, inputRef
             }}>
                 <ModalEdit />
                 <ModalView />
@@ -94,16 +150,18 @@ export default function Index() {
                 <TableForm />
                 <ResultForm />
             </ContextForm.Provider>
+            <div className='hidden' ref={componentRef}>
+                <Table size='small' title={() => <span className="text-lg">แบบประเมิน {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={_formGroupBy} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+            </div>
         </div>
     )
 }
 
 const TableForm = () => {
-    const inputRef = useRef()
     const { _formGroupBy, setFormGroupBy, reload,
         setModalViewSubForm,
         setModalResultForm,
-        loading, store } = useContext(ContextForm)
+        loading, store, inputRef } = useContext(ContextForm)
     const columns = [
         {
             title: <div className="text-left" >ชื่อโรค</div>,
@@ -132,7 +190,7 @@ const TableForm = () => {
             key: '',
             width: "20%",
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(_formGroupBy.findIndex(({id})=>id === val.id))}>การประเมินผล</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(_formGroupBy.findIndex(({ id }) => id === val.id))}>การประเมินผล</button>
                 <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalResultForm(val)}>ผลประเมิน</button>
                 {/* <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_form[index].data, reload)}>ลบ</button> */}
             </div>,
@@ -381,7 +439,7 @@ const TableFormSub = () => {
                 </div>
                 <div className='flex items-center gap-2'>
                     {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
-                        <Button_Delete fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                        <Button_Delete className='text-gray-200' fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
                     </div>}
                     <Tooltip title={"ค้นหาชื่อหัวข้อ"}>
                         <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อหัวข้อ" className='text-black rounded-md' /></Tooltip>
@@ -464,7 +522,7 @@ const ModalAdd = () => {
         })
             .then(async res => {
                 if (res.ok) {
-                    onReset()
+                    form.resetFields();
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     setModalAdd(false)
                 } else {
@@ -1076,7 +1134,7 @@ const showConfirmDel = async (val, reload) => {
     confirm({
         title: <>คุณต้องการจะลบการประเมินผล</>,
         content: <ul>
-           <li> ชื่อหัวข้อ : {val.title} </li><br />
+            <li> ชื่อหัวข้อ : {val.title} </li><br />
             {val.subForm.map(({ name, choice }, ind) =>
                 <li key={name}>{ind + 1}. {name} <br />
                     {choice.map(({ name, score }, ind2) => <li key={name} className="ml-3">{ind + 1}.{ind2 + 1} {name}</li>)}
@@ -1174,3 +1232,47 @@ const FetchNCDS = async () => {
     }
     return null
 }
+
+const Chart = ({ NCDS,
+    _form,
+    _formGroupBy }) => {
+    const [color, setColor] = useState()
+    // useEffect(() => {
+    //     if (type && !color) setColor(type.map(v => randomRGB()))
+    // }, [type])
+    if (!!!_form || !!!_formGroupBy) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
+    </div>
+    // console.log(_formGroupBy)
+
+
+
+
+    // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
+    return (
+    <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+        {_formGroupBy?.map((v, ind) => <div key={ind} className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">จำนวนคำถาม{v.name_th}</p><Doughnut data={{
+            labels: v.data.map(({ title }) => title),
+            datasets: [{
+                data: v.data.map(({subForm}) =>subForm.length),
+                backgroundColor: v.data.map(() => randomRGB()),
+                borderWidth: 0,
+            }],
+        }} />
+        </div>)}
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คะแนนทั้งหมด</p><Doughnut data={{
+            labels: _formGroupBy.map(({ name_th }) => name_th),
+            datasets: [{
+                //  data =>_formGroupBy => subForm => choice => score
+                data: _formGroupBy.reduce((acc, val) => [...acc,val.data.reduce((acc2, val2) => acc2 + val2.subForm.reduce((acc3, val3) => acc3 + val3.choice.reduce((acc4, val4) => acc4 + val4.score, 0), 0), 0)], []),
+                backgroundColor: _formGroupBy.map(() => randomRGB()),
+                borderWidth: 0,
+            }],
+        }} />
+        </div>
+    </div>)
+}
+const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
+
+const randomRGB = () => `rgb(${randomNum()}, ${randomNum()}, ${randomNum()})`;

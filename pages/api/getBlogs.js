@@ -8,14 +8,14 @@ export default async function handler(req, res) {
   try {
     switch (method) {
       case "POST":
-        console.log(body)
+        // console.log(body)
         const data_add = await prisma.blogs.create({
           data: body
         })
         return res.status(200).json(data_add)
 
       case "DELETE":
-        if (!Array.isArray(id) || !id) return res.status(400).json({ statusText: "id is required" })
+        if (!!!id) return res.status(400).json({ statusText: "id is required" })
         if (Array.isArray(id)) {
 
           id.map(async _ => await prisma.blogs.delete({
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
             if (val.id) {
               return {
                 where: { id: val.id },
-                data: { name: val.name, detail: val.detail, image: val.image }
+                data: { name: val.name, detail: val.detail, image: ((val?.image?.status === "removed" || val?.image?.file?.status === "removed") ? "" : (val?.image?.name) ? val.image.name : val?.image) }
               }
             }
           })
@@ -216,6 +216,7 @@ export default async function handler(req, res) {
           if (self) {
             data = data.filter(({ id }) => parseInt(id) !== parseInt(self))
           }
+
         }
         else if (id) {
 
@@ -247,7 +248,6 @@ export default async function handler(req, res) {
         }
         else if (query.type) {
           data = await prisma.blogs.findMany({
-
             where: {
               type: query.type.toUpperCase(),
               approve: 1
@@ -271,7 +271,7 @@ export default async function handler(req, res) {
           })
         } else if (approve) {
           data = await prisma.blogs.findMany({
-
+            orderBy: [{ approve: 'asc' }, { updatedAt: 'desc' }],
             include: {
               subBlog: true,
               image: true,
@@ -306,6 +306,7 @@ export default async function handler(req, res) {
     }
     if (!Array.isArray(data)) {
       data["image"] = data.image.map(({ id, name }) => {
+
         return {
           id: id,
           status: "done",
@@ -313,11 +314,38 @@ export default async function handler(req, res) {
           name: name
         }
       })
+      data["subBlog"] = data.subBlog.map(({ image, ...rest }) => {
+        if (!image) return { ...rest }
+        return {
+          ...rest,
+          image: {
+            id: image,
+            status: "done",
+            url: `/static/${image}`,
+            name: image
+          }
+        }
+      })
       const total_vote = data.vote_1 + data.vote_2 + data.vote_3 + data.vote_4 + data.vote_5
       const avg_vote = parseFloat(((1 * data.vote_1 + 2 * data.vote_2 + 3 * data.vote_3 + 4 * data.vote_4 + 5 * data.vote_5) / total_vote).toFixed(2)) || 0
       return res.status(200).json({ ...data, total_vote, avg_vote })
     } else if (Array.isArray(data) && data.length > 0) {
       data = data.map(item => {
+        let subBlog = []
+        if (item?.subBlog?.length > 0) {
+            subBlog = item.subBlog.map(({ image, ...rest }) => {
+            if (!image) return { ...rest }
+            return {
+              ...rest,
+              image: {
+                id: image,
+                status: "done",
+                url: `/static/${image}`,
+                name: image
+              }
+            }
+          })
+        }
         const image = item.image.map(({ id, name }) => {
           return {
             id: id,
@@ -328,7 +356,8 @@ export default async function handler(req, res) {
         })
         const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
         const avg_vote = parseFloat(((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote).toFixed(2)) || 0
-        return { ...item, avg_vote, total_vote, image }
+        if (subBlog.length > 0)  return { ...item, avg_vote, total_vote, image, subBlog }
+        else return { ...item, avg_vote, total_vote, image }
       })
       return res.status(200).json(data)
     }

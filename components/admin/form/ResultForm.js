@@ -29,7 +29,7 @@ export default function ResultForm() {
     const reqForm = async () => await fetch(`/api/getResultForm?id=${modalResultForm.ncdsId}`)
         .then(res => {
             if (res.status === 200) return res.json()
-            else if (res.status === 404) notification.error({ message: `ไม่พบข้ผลการประเมิน${modalResultForm.name_th}` })
+            else if (res.status === 404) notification.error({ message: `ไม่พบข้อผลการประเมิน${modalResultForm.name_th}` })
             else notification.error({ message: `ไม่สามผลการประเมิน${modalResultForm.name_th}` })
         })
         .then(data => { setResultForm(data); setStore(data) })
@@ -50,7 +50,7 @@ export default function ResultForm() {
         setModalResultForm(-1)
     }
     return (
-        <Modal title={`การปรผลการประเมิน${modalResultForm.name_th}`}
+        <Modal title={`ผลการประเมิน${modalResultForm.name_th}`}
             visible={modalResultForm !== -1 ? true : false}
             okText={<>ตกลง</>}
             cancelText={<>ยกเลิก</>}
@@ -63,7 +63,7 @@ export default function ResultForm() {
             <div className="ease-div flex flex-col gap-4 w-full">
                 <div className="flex justify-between mt-4">
                     <div className="text-xl"></div>
-                    <Button onClick={() => setModalAdd(true)}>เพิ่มกาผลการประเมิน</Button>
+                    <Button onClick={() => setModalAdd(true)}>เพิ่มผลการประเมิน</Button>
                 </div>
                 <ResultFormContext.Provider value={{
                     reload,
@@ -266,7 +266,7 @@ const ModalAdd = () => {
         setModalAdd(false)
     }
 
-    return <Modal title={`เพิ่มกาผลการประเมิน${modalResultForm.name_th}`}
+    return <Modal title={`เพิ่มผลการประเมิน${modalResultForm.name_th}`}
         visible={modalAdd}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}

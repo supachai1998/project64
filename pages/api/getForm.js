@@ -182,55 +182,56 @@ export default async function handler(req, res,) {
 
       default:
         const _id = parseInt(query.id)
-        const {user} = query
+        const { user, haveData } = query
+
         if (_id) {
-          if(user){
-              const formExits = await prisma.form.findMany({
-                where: { ncdsId: _id },
-                select: {
-                  id: true,
-                  title: true,
-                  ncdsId: true,
-                  subForm: {
-                    include: {
-                      choice: {
-                        orderBy: {
-                          score: "desc"
-                        }
+          if (user) {
+            const formExits = await prisma.form.findMany({
+              where: { ncdsId: _id },
+              select: {
+                id: true,
+                title: true,
+                ncdsId: true,
+                subForm: {
+                  include: {
+                    choice: {
+                      orderBy: {
+                        score: "desc"
                       }
-                    },
-                  },
-                  ncds: {
-                    select: {
-                      id: true,
-                      name_th: true,
-                      name_en: true
                     }
-                  }
+                  },
                 },
-  
-              })
-              if(formExits.length <= 0){
-                return res.status(400).json({
-                  statusText: "data form not found"
-                })
-              }else{
-                const resultForm = await prisma.resultForm.findMany({
-                  where: { ncdsId: _id },
-                })
-                if(resultForm?.length <= 0) return res.status(401).json({
-                  statusText: "data resultForm not found"
-                })
-                const subFormExits = formExits.every(val => val.subForm.length > 0)
-                if(subFormExits){
-                  return res.status(200).json(formExits)
-                }else{
-                  return res.status(403).json({
-                    statusText: "data subform not found"
-                  })
+                ncds: {
+                  select: {
+                    id: true,
+                    name_th: true,
+                    name_en: true
+                  }
                 }
+              },
+
+            })
+            if (formExits.length <= 0) {
+              return res.status(400).json({
+                statusText: "data form not found"
+              })
+            } else {
+              const resultForm = await prisma.resultForm.findMany({
+                where: { ncdsId: _id },
+              })
+              if (resultForm?.length <= 0) return res.status(401).json({
+                statusText: "data resultForm not found"
+              })
+              const subFormExits = formExits.every(val => val.subForm.length > 0)
+              if (subFormExits) {
+                return res.status(200).json(formExits)
+              } else {
+                return res.status(403).json({
+                  statusText: "data subform not found"
+                })
               }
-          }else if (!query.select) {
+            }
+          } else if (!query.select) {
             data = await prisma.form.findMany({
               where: { ncdsId: _id },
               select: {
@@ -265,27 +266,79 @@ export default async function handler(req, res,) {
             })
           }
           if (data) return res.status(200).json(data)
-        } else {
-          data = await prisma.form.findMany({
-
+        } else if (haveData) {
+          let haveForm = new Set();
+          const formExits = await prisma.form.findMany({
             select: {
-              id: true,
-              title: true,
               ncdsId: true,
               subForm: {
-                include: {
-                  choice: true
-                },
-              },
-              ncds: {
                 select: {
-                  id: true,
-                  name_th: true,
-                  name_en: true
+                  id: true
                 }
               }
-            },
+            }
           })
+          for (const { ncdsId, subForm } of formExits) {
+            if (subForm.length > 0) {
+              const resultForm = await prisma.resultForm.findMany({
+                where: { ncdsId: ncdsId },
+                select: { id: true }
+              })
+              if (resultForm.length > 0) {
+                haveForm.add(ncdsId)
+
+              }
+            }
+          }
+          return res.json([...haveForm])
+        } else {
+          try {
+            data = await prisma.form.findMany({
+
+              select: {
+                id: true,
+                title: true,
+                ncdsId: true,
+                subForm: {
+                  include: {
+                    choice: true
+                  },
+                },
+                ncds: {
+                  select: {
+                    id: true,
+                    name_th: true,
+                    name_en: true
+                  }
+                }
+              },
+            })
+          } catch (e) {
+            if (e.message.includes("Field ncds is required to return data, got `null`")) {
+              const total = await prisma.form.findMany()
+              for (const x of total) {
+                try {
+                  await prisma.form.findFirst({
+                    where: { id: x.id },
+                    select: {
+                      ncds: {
+                        select: {
+                          id: true,
+                          name_th: true,
+                          name_en: true
+                        }
+                      }
+                    }
+                  })
+                } catch (e) {
+                  console.error("data ", x, "has problem try delete")
+                  await prisma.form.delete({
+                    where: { id: x.id }
+                  })
+                }
+              }
+            }
+          }
         }
         if (!!data && data.length > 0) return res.status(200).json(data)
         else res.status(404).send({ statusText: "data not found" })

@@ -5,7 +5,6 @@ import { Input, message, Button, Tooltip, Modal, notification, Spin } from 'antd
 import { CameraOutlined, LoadingOutlined, SwapOutlined } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
-// import { CircularProgress, LinearProgress } from "@mui/material";
 import Resizer from "react-image-file-resizer";
 import { LinearProgressBar } from '../ulity/progress';
 import { useRouter } from 'next/router';
@@ -143,9 +142,10 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
 
   return (
     <div className="fixed top-0 left-0 z-10 flex w-full h-screen min-h-screen px-2 bg-gray-700">
-      <div className="relative h-auto mx-auto">
+      <div className="relative my-auto h-auto mx-auto">
         <Webcam
-          width={600}
+          className='lg:w-5/6 w-full flex justify-center items-center mx-auto my-auto  h-full '
+          // width={600}
           height="100%"
           audio={false}
           ref={webcamRef}
@@ -154,7 +154,7 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
           videoConstraints={videoConstraints}
           onUserMediaError={handleError}
         />
-        <div className={leftHand ? "left-0" : "right-3  top-2" + " absolute flex flex-col h-full gap-10 "}>
+        <div className={leftHand ? "left-0" : " top-0 right-0 lg:right-32" + " absolute  "}>
           <Button
             shape="round"
             type="primary"
@@ -163,7 +163,7 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
             ปิด
           </Button>
         </div>
-        <div className={"absolute flex w-full gap-10 -mt-10 justify-center overflow-hidden"}>
+        <div className={"absolute flex w-full gap-10 bottom-2 justify-center overflow-hidden"}>
           <Button
             // <SwapOutlined />
             icon={<SwapOutlined />}
@@ -333,7 +333,7 @@ const CustomUpload = ({ setInput, loading, setLoading }) => {
           </svg>
           {loading
             ? <LinearProgressBar className="w-20" />
-            : <><span className="text-sm leading-normal">เลือกภาพอาหาร</span>
+            : <><span className="text-sm leading-normal my-1">เลือกภาพอาหาร</span>
               <input type="file" className="hidden" accept="image/*" onChange={onChange} /></>}
         </label>
       </Tooltip>

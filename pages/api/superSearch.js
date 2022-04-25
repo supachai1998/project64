@@ -27,10 +27,11 @@ export default async function handler(req, res) {
                                     image: true,
                                 }
                             })
+                            data = [...data, ...data_fetch]
                         }
                         // console.log(data.length,data_fetch)
                         if (only === "ncds") {
-                            data = [...data, ...data_fetch]
+                            
                             data_fetch = await prisma.ncds.findMany({
                                 where: { name_th: { contains: txt } },
                                 include: {

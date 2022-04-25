@@ -13,7 +13,7 @@ export default function DisplayBlogReadMore() {
 
   const router = useRouter()
   const asPath = router.asPath.split("/")
-  console.log(asPath)
+  // console.log(asPath)
   const fetchData = async () => {
     let api = `/api/getBlogs?BestBlog=${true}`
     if(asPath[1])api+=`&type=${asPath[1]}`

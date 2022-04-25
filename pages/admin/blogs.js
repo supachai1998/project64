@@ -1,10 +1,22 @@
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, notification, InputNumber, Space, Tooltip } from 'antd'
-import { UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
 import { Button_Delete } from '/ulity/button';
 import ReactPlayer from 'react-player';
+
+// Report
+import { FilePdfOutlined, DownloadOutlined, UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { CSVLink } from "react-csv"
+import { Chart as ChartJS, ArcElement, Tooltip as Too, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import { useReactToPrint } from 'react-to-print';
+import moment from 'moment'
+import 'moment/locale/th'
+moment.locale('th')
+ChartJS.register(ArcElement, Too, Legend);
+// END Report
+
+
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -26,6 +38,78 @@ export default function Index() {
     const [foodLoading, setFoodLoading] = useState()
     const [ncds, setNCDS] = useState()
     const [food, setFood] = useState()
+
+
+    const inputRef = useRef()
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
+    const columns = [
+        {
+            title: 'ประเภทบทความ',
+            dataIndex: 'type',
+            key: 'type',
+            render: val => <div >
+                {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "ทั้งหมด"}
+            </div>
+        },
+        {
+            title: 'ชื่อบทความ',
+            dataIndex: 'name',
+            key: 'name',
+            width: "10%",
+            render: val => <div >{val}</div>
+        },
+        {
+            title: 'คำอธิบาย',
+            dataIndex: 'imply',
+            key: 'imply',
+            width: "20%",
+            render: val => <div >{val}</div>
+        },
+        
+        {
+            title: 'ชื่อหัวข้อย่อย',
+            dataIndex: 'subBlog',
+            key: 'subBlog',
+            render: val => <>{val.map((v,ind)=><div key={ind} className="text-left" >{ind+1}. {v.name}</div>)}</>
+        },
+        {
+            title: 'ความสัมพันธ์',
+            dataIndex: 'related',
+            key: 'related',
+            render: val => <>{val?.map((v,ind)=><div key={ind}>{ind+1}. {v?.ncds?.name_th || v?.Foods?.name_th}</div>)}</>
+        },
+        {
+            title: 'ผลโหวต',
+            dataIndex: 'avg_vote',
+            key: 'avg_vote',
+            render: (val) => <div className="text-center" ellipsis={ellipsis}>{val >= 0 ? val : 0}</div>
+        },
+        {
+            title: <div className='text-center'>การอนุมัติ</div>,
+            dataIndex: 'approve',
+            key: 'approve',
+            render: (val, source) => <button className="w-full ml-3 mb-2" >
+                {val === 1 ? <Tooltip title="อนุมัติ">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg></Tooltip>
+                    : val === 2 ?
+                        <Tooltip title="ไม่อนุมัติ"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                        </svg></Tooltip>
+                        : <Tooltip title="รออนุมัติ">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 animate-pulse text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </Tooltip>
+                }
+            </button>
+        },
+    ];
+
     const reload = async () => {
         setLoading(true)
         const reqBlogs = await fetch("/api/getBlogs?approve=true")
@@ -40,9 +124,7 @@ export default function Index() {
             .catch(err => notification.error({ message: "Error", description: err.message }))
         setLoading(false)
     }
-    useEffect(() => {
 
-    }, []);
     useEffect(() => {
         (async () => {
             setNCDSLoading(true)
@@ -61,10 +143,23 @@ export default function Index() {
     }, [])
     return (
         <div className="ease-div flex flex-col gap-4 w-full">
-            <Board data={{}} />
+            <Chart ncds={ncds} food={food} blogs={blogs} />
+            <hr />
             <div className="flex justify-between mt-4">
                 <div className="text-xl"></div>
-                <Button onClick={() => setModalAdd(true)}>เพิ่มบทความ</Button>
+                <div className='flex justify-center items-center gap-3'>
+                    <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
+                    <Button className='green-ghost-green' icon={<DownloadOutlined />}>
+                        <CSVLink
+                            filename={`ตารางบทความ ${inputRef.current?.value}-${moment().format("LLLL")}.csv`}
+                            data={blogs.map(({ name, imply, type, video, approve, avg_vote, total_vote, views }) => ({ name, imply, type, video, approve, avg_vote, total_vote, views }))}
+                            onClick={() => notification.success({ message: "ดาวน์โหลดไฟล์" })}
+                        >
+                        <span className="text-green-500">CSV</span>
+                        </CSVLink>
+                    </Button>
+                    <Button onClick={() => setModalAdd(true)}>เพิ่มบทความ</Button>
+                </div>
             </div>
             <Context.Provider value={{
                 reload,
@@ -74,13 +169,17 @@ export default function Index() {
                 loading,
                 ncds, food,
                 ncdsLoading, foodLoading,
-                blogs, setBlogs, store
+                blogs, setBlogs, store ,
+                inputRef
             }}>
                 <ModalAdd />
                 <ModalEdit />
                 <ModalView />
                 <TableForm />
             </Context.Provider>
+            <div className='hidden' ref={componentRef}>
+                <Table size='small' title={() => <span className="text-lg">บทความ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={blogs} columns={columns} footer={()=><div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+            </div>
         </div>
     )
 }
@@ -90,10 +189,8 @@ export default function Index() {
 const TableForm = () => {
     const { blogs, setBlogs, store, reload, loading,
         setModalEdit,
-        setModalView } = useContext(Context)
-
-    const inputRef = useRef()
-
+        setModalView ,inputRef } = useContext(Context)
+        
     const [selectRows, setSelectRows] = useState([])
 
     const columns = [
@@ -104,7 +201,7 @@ const TableForm = () => {
             filters: [{ text: 'โรคไม่ติดต่อ', value: "NCDS", }, { text: 'อาหาร', value: "FOOD", }, { text: 'ทั้งหมด', value: "ALL", }],
             onFilter: (value, record) => record.type === value,
             sorter: (a, b) => a.type.localeCompare(b.type),
-            render: val => <Paragraph >
+            render: val => <Paragraph className='mt-3' >
                 {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "ทั้งหมด"}
             </Paragraph>
         },
@@ -119,7 +216,7 @@ const TableForm = () => {
             title: 'คำอธิบาย',
             dataIndex: 'imply',
             key: 'imply',
-
+            width: "20%",
             render: val => <Tooltip title={val}><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
@@ -173,9 +270,9 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(blogs[index])}>ดู</button>
-                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(blogs[index])}>แก้ไข</button>
-                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(blogs[index])}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(val)}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val)}>ลบ</button>
             </div>,
         },
 
@@ -189,7 +286,7 @@ const TableForm = () => {
                 <p>ประเภท : {val.type}</p>
             </div>,
             okText: "ตกลง",
-            okType:"danger",
+            okType: "danger",
             cancelText: "ยกเลิก",
             async onOk() {
                 const res = await fetch("/api/getBlogs", {
@@ -229,7 +326,7 @@ const TableForm = () => {
                             <p>ประเภท : {rows.type}</p>
                         </div>,
                         okText: "ตกลง",
-                        okType:"danger",
+                        okType: "danger",
                         cancelText: "ยกเลิก",
                         async onOk() { res(rows.id) },
                         onCancel() { rej(); },
@@ -241,7 +338,7 @@ const TableForm = () => {
             const res = await fetch("/api/getBlogs", {
                 headers: { 'Content-Type': 'application/json', },
                 method: "DELETE",
-                body: JSON.stringify({id:id})
+                body: JSON.stringify({ id: id })
             })
             if (res.status === 200) {
                 notification.success({
@@ -275,7 +372,7 @@ const TableForm = () => {
                 <p>สถานะ : {th_approve}</p>
             </div>,
             okText: th_request,
-            okType :approve === 0 || approve === 2 ? "primary" : "danger",
+            okType: approve === 0 || approve === 2 ? "primary" : "danger",
             cancelText: "ยกเลิก",
             async onOk() {
                 const res = await fetch("/api/getBlogs", {
@@ -300,9 +397,9 @@ const TableForm = () => {
     }
     if (!blogs) return null
     const search = () => {
-        const userInput = inputRef.current.value
+        let userInput = inputRef.current.value
         const findMatch = blogs.filter(val => {
-            return val.name.toLowerCase().includes(userInput.toLowerCase())
+            return val.name.toLowerCase().includes(userInput.toLowerCase()) || val.type.toLowerCase().includes(userInput.toLowerCase())
         })
         console.log(userInput, findMatch)
         if (!userInput) {
@@ -321,8 +418,10 @@ const TableForm = () => {
         },
     };
 
-    return <div>
-        <Table size='small' tableLayout='auto' dataSource={blogs} columns={columns}
+    
+    return <div >
+        <Table size='small' tableLayout='auto'
+            dataSource={blogs} columns={columns}
             rowSelection={{ ...rowSelection }}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
@@ -332,16 +431,19 @@ const TableForm = () => {
                 </div>
 
                 <div className='flex items-center gap-2'>
+
                     {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
-                        <Button_Delete className="text-gray-800" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                        <Button_Delete className="text-gray-100" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
                     </div>}
+
                     <Tooltip title={"ค้นหาชื่อบทความ"}>
-                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อบทความ" className='text-black rounded-md' /></Tooltip>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setBlogs(store)} placeholder="ชื่อบทความ" className='text-black rounded-md p-0.5' /></Tooltip>
                     <Tooltip title={"ค้นหา"}>
                         <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
                 </div>
             </div>}
         />
+
     </div>
 }
 const ModalAdd = () => {
@@ -411,6 +513,7 @@ const ModalAdd = () => {
             reload()
             setModalAdd(false)
             fetch(`/api/uploads`)
+            form.resetFields();
         } else notification.error({
             message: 'ไม่สามารถเพิ่มข้อมูลได้',
             description: res.message,
@@ -674,14 +777,6 @@ const ModalEdit = () => {
     }
 
     const onSubmit = async (val) => {
-        if (!Array.isArray(val?.image?.fileList || val?.image)) {
-            notification.error({ message: "คุณไม่ได้เพิ่มรูปภาพ" })
-            return
-        }
-        if (!Array.isArray(val?.subBlog)) {
-            notification.error({ message: "คุณไม่ได้เพิ่มบทความย่อย" })
-            return
-        }
         let _tempimage = []
         if (val?.image?.fileList) {
             for (const i in val.image.fileList) {
@@ -697,6 +792,7 @@ const ModalEdit = () => {
                 ...(val?.image?.fileList?.length > 0) && { image: val.image.fileList[0].response.name }
             }
         })
+        console.log(val.subBlog)
         delete val['image']
         delete val['subBlog']
         val['image'] = _tempimage
@@ -747,14 +843,13 @@ const ModalEdit = () => {
             notification.success({
                 message: "แก้ไขข้อมูลสำเร็จ"
             })
-            reload()
             setModalEdit(false)
             fetch(`/api/uploads`)
+            reload()
         } else notification.error({
             message: 'ไม่สามารถแก้ไขข้อมูลได้',
             description: res.message,
         })
-
     }
     const onFinishFailed = () => {
 
@@ -877,7 +972,7 @@ const ModalEdit = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                        <Button_Delete className="text-gray-800" fx={() => { remove(field.name); setFileListSubBlogs(prev => prev.filter((v, i) => i !== ind)) }} />{`หัวข้อย่อยที่ ${ind + 1}`}
+                                            <Button_Delete className="text-gray-800" fx={() => { remove(field.name); setFileListSubBlogs(prev => prev.filter((v, i) => i !== ind)) }} />{`หัวข้อย่อยที่ ${ind + 1}`}
                                         </div>
                                     </>
                                 </Form.Item>
@@ -902,6 +997,7 @@ const ModalEdit = () => {
                                 >
                                     <TextArea rows={4} placeholder="เนื้อความ" />
                                 </Form.Item>
+                                {console.log(form?.getFieldValue("subBlog"))}
                                 <Form.Item
                                     {...field}
                                     key={`image ${ind}`}
@@ -917,9 +1013,15 @@ const ModalEdit = () => {
                                         action="/api/uploads"
                                         listType="picture"
                                         // onChange={(e) => onChangeSubBlogs(ind, e)}
+                                        defaultFileList={form?.getFieldValue("subBlog")?.length > 0 ? (
+                                            form?.getFieldValue("subBlog")?.[ind]?.fileList ?
+                                                form?.getFieldValue("subBlog")?.[ind]?.fileList :
+                                                form?.getFieldValue("subBlog")?.[ind]?.image?.name ?
+                                                    [form?.getFieldValue("subBlog")?.[ind]?.image] : []
+                                        ) : []}
                                         className="upload-list-inline"
                                     >
-                                        <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป{!!fileListSubBlogs && fileListSubBlogs[ind] ? 1 : 0}/1</Button>
+                                        <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป</Button>
                                     </Upload>
                                 </Form.Item>
                             </Form.Item>
@@ -1020,15 +1122,14 @@ const ModalView = () => {
                 {modalView.subBlog.map(({ name, image, detail }, index) => <div key={`${name}_${index}`}>
                     <Form labelCol={{ span: 4 }} labelAlign="left">
                         <Form.Item label={`หัวข้อย่อย ${index + 1}`}></Form.Item>
-                        <Form.Item label={`รูปภาพ`}>{image ? <CusImage className="rounded-md shadow-lg" width="250px" height="150px" src={image} /> : "ไม่พบรูปภาพ"}</Form.Item>
+                        <Form.Item label={`รูปภาพ`}>{image?.name ? <CusImage className="rounded-md shadow-lg" width="250px" height="150px" src={image.url} /> : "ไม่พบรูปภาพ"}</Form.Item>
                         <Form.Item label={`ชื่อหัวข้อย่อย`}><span className='text-md whitespace-pre-line'>{name}</span></Form.Item>
                         <Form.Item label={`เนื้อหา`}><span className='text-md whitespace-pre-line'>{detail}</span></Form.Item>
                     </Form>
                 </div>)}
             </Form.Item>
-
-            <Form.Item label="วิดีโอ">{modalView.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><span key={url} className='text-md whitespace-pre-line'>{url}</span><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
+            <Form.Item label="วิดีโอ">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><a key={url} rel="noopener noreferrer" target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line'>{url}</a><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
 
         </Form>
     </Modal>
@@ -1039,3 +1140,61 @@ const Type = [
     { name_en: "FOOD", name_th: "อาหาร" },
     { name_en: "ALL", name_th: "ทั้งหมด" },
 ]
+
+const Chart = ({ food, ncds, blogs }) => {
+
+    // console.log(blogs)
+    const type_blog = {
+        labels: ["โรคไม่ติดต่อ", "อาหาร", "ทั้งหมด"],
+        datasets: [{
+            data: blogs.reduce((acc, { type }) => {
+                switch (type) {
+                    case "NCDS": acc[0] += 1; break;
+                    case "FOOD": acc[1] += 1; break;
+                    case "ALL": acc[2] += 1; break;
+                }
+                return acc
+            }, [0, 0, 0]),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    }
+    const approve_blog = {
+        labels: ["รออนุมัติ", "อนุมัติ", "ไม่อนุมัติ"],
+        datasets: [{
+            data: blogs.reduce((acc, { approve }) => {
+                switch (approve) {
+                    case 0: acc[0] += 1; break;
+                    case 1: acc[1] += 1; break;
+                    case 2: acc[2] += 1; break;
+                }
+                return acc
+            }, [0, 0, 0]),
+            backgroundColor: [
+                'rgba(255, 206, 86, 0.2)',
+                '#caefe3',
+                'rgba(255, 99, 132, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255, 206, 86, 1)',
+                '#10b981',
+                'rgba(255, 99, 132, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    }
+    // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
+    return (<div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">ประเภท</p><Doughnut data={type_blog} /></div>
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">การอนุมัติ</p><Doughnut data={approve_blog} /></div>
+    </div>)
+}

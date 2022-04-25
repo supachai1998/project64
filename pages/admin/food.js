@@ -1,9 +1,21 @@
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, Form, Input, Upload, notification, InputNumber, Tooltip, Radio } from 'antd'
-import { UploadOutlined, MinusCircleOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import CusImage from '/components/cusImage';
 import ReactPlayer from 'react-player';
 import { Button_Delete } from '/ulity/button';
+
+// Report
+import { FilePdfOutlined, DownloadOutlined, UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { CSVLink } from "react-csv"
+import { Chart as ChartJS, ArcElement, Tooltip as Too, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import { useReactToPrint } from 'react-to-print';
+import moment from 'moment'
+import 'moment/locale/th'
+moment.locale('th')
+ChartJS.register(ArcElement, Too, Legend);
+// END Report
+
 
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -24,8 +36,59 @@ function Index() {
     const [store, setStore] = useState([])
     const [food, setFood] = useState()
     const [NCDS, setNCDS] = useState()
+    const [type, setType] = useState()
+
+    const componentRef = useRef();
+    const inputRef = useRef()
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
+    const columns = [
+        {
+            title: <div classNamme="text-center" >ประเภท</div>,
+            dataIndex: 'FoodType',
+            key: 'FoodType',
+            render: val => <Tooltip title={val.name_th} ><div >{val.name_th}</div></Tooltip>
+        },
+        {
+            title: <div classNamme="text-center" >ชื่ออาหาร</div>,
+            dataIndex: 'name_th',
+            key: 'name_th',
+            render: val => <Tooltip title={val} ><div >{val}</div></Tooltip>
+        },
+        {
+            title: <div className="text-center" >คำอธิบาย</div>,
+            dataIndex: 'detail',
+            key: 'detail',
+            width: '30%',
+            render: val => <Tooltip title={val} ><div >{val}</div></Tooltip>
+        },
+        
+        {
+            title: <div className="text-center" >แนะนำ</div>,
+            dataIndex: 'FoodNcds',
+            key: 'FoodNcds',
+            render: (text, val, index) => <>{val.FoodNcds.filter((v,ind)=>v.suggess).map((v,ind)=><div key={v}>{ind+1}. {v.ncds.name_th}<br/><span className="text-xs">{v.detail}</span></div>)}</>
+        },
+        {
+            title: <div className="text-center" >ไม่แนะนำ</div>,
+            dataIndex: 'FoodNcds',
+            key: 'FoodNcds',
+            render: (text, val, index) => <>{val.FoodNcds.filter((v,ind)=>!v.suggess).map((v,ind)=><div key={v}>{ind+1}. {v.ncds.name_th}<br/><span className="text-xs">{v.detail}</span></div>)}</>
+        },
+        {
+            title: <div className="text-center" >จำนวนอ้างอิง</div>,
+            dataIndex: 'ref',
+            key: 'ref',
+            width:"5%",
+            render: val => <>{val.map((v,ind)=><div key={v} className="text-left text-xs" >{ind+1}. {v.url}</div>)}</>
+        },
+    ];
+
     const reload = async () => {
         setLoading(true)
+        const fetchTypeFood = await FetchTypeFood()
+        Array.isArray(fetchTypeFood) && setType(fetchTypeFood)
         await fetch("/api/getFood").then(async res => {
             if (res.status === 200) {
                 const data = await res.json()
@@ -42,15 +105,26 @@ function Index() {
             Array.isArray(fetchNCDS) && setNCDS(fetchNCDS)
             reload()
         })()
-        return () => setFood()
+        // return () => setFood()
     }, [])
+    // if(!food || !type) return null
     return (
         <div
             className="ease-div flex flex-col gap-4">
-            {/* <Board /> */}
+            <Chart type={type} food={food} />
             <div className="flex justify-between mt-4">
                 <div className="text-xl"></div>
                 <div className="flex gap-3">
+                    <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
+                    <Button className='green-ghost-green' icon={<DownloadOutlined />}>
+                        <CSVLink
+                            filename={`ตารางอาหาร ${inputRef.current?.value}-${moment().format("LLLL")}.csv`}
+                            data={!!food ? food.map(({ FoodType, name_th, name_en, proceduce, calories, ingredient, video, views }) => ({ FoodType: FoodType.name_th, name_th, name_en, proceduce, calories, ingredient, video, views })) : []}
+                            onClick={() => notification.success({ message: "ดาวน์โหลดไฟล์" })}
+                        >
+                            <span className="text-green-500">CSV</span>
+                        </CSVLink>
+                    </Button>
                     <Button onClick={() => setModalAddType(true)}>จัดการประเภทอาหาร</Button>
                     <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูลอาหาร</Button>
                 </div>
@@ -62,8 +136,10 @@ function Index() {
                 modalEdit, setModalEdit,
                 modalView, setModalView,
                 modalAddType, setModalAddType,
+                type, setType,
                 loading,
                 food, setFood, store, setStore,
+                inputRef,
             }}>
                 <ModalView />
                 <ModalAdd />
@@ -71,6 +147,9 @@ function Index() {
                 <ModalManageType />
                 <TableForm />
             </Context.Provider>
+            <div className='hidden' ref={componentRef}>
+                <Table size='small' title={() => <span className="text-lg">อาหาร {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={food} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+            </div>
         </div>
     )
 }
@@ -83,11 +162,11 @@ const countOccurrences = (arr, val) => arr.reduce((a, v) => (v.FoodType.name_th 
 // const countOccurrences = (arr, val) => arr.reduce((a, v) => (val.includes(v.name_th) ? a + 1 : a), 0);
 
 const TableForm = () => {
-    const inputRef = useRef()
+    
     const { food, setFood, reload,
         setModalEdit,
         setModalView,
-        loading, store } = useContext(Context)
+        loading, store ,inputRef } = useContext(Context)
     const [foodtype, setFoodtype] = useState([])
     const [selectRows, setSelectRows] = useState([])
     useEffect(() => {
@@ -105,7 +184,7 @@ const TableForm = () => {
             onFilter: (value, record) => record.FoodType.name_th.includes(value),
             sorter: (a, b) => a.name_th.localeCompare(b.name_th),
             filters: foodtype.map(val => ({ text: `${val.name_th}(${countOccurrences(food, val.name_th)})`, value: val.name_th })),
-            render: val => <Tooltip title={val.name_th} ><Paragraph ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
+            render: val => <Tooltip title={val.name_th} ><Paragraph className="mt-3" ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
         },
         {
             title: <div classNamme="text-center" >ชื่ออาหาร</div>,
@@ -128,12 +207,14 @@ const TableForm = () => {
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
-            title: <div className="text-center" >จำนวนโรคแนะนำ</div>,
+            title: <div className="text-center" >จำนวนคำแนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
+            filters: [{ text: 'แนะนำ', value: true }, { text: 'ไม่แนะนำ', value: false }],
             sorter: (a, b) => a.FoodNcds.length - b.FoodNcds.length,
+            onFilter: (value, record) => record.FoodNcds.every(v => v.suggess === value),
             render: (text, val, index) => <Tooltip title={<div>
-                {food[index].FoodNcds.map((val, index) => <div key={index}>{val.ncds.name_th}({val.suggess ? "แนะนำ" : "ไม่แนะนำ"})</div>)}
+                {val.FoodNcds.map((val, index) => <div key={index}>{val.ncds.name_th}({val.suggess ? "แนะนำ" : "ไม่แนะนำ"})</div>)}
             </div>}><Paragraph align="center" ellipsis={ellipsis}>{text.length}</Paragraph></Tooltip>
         },
         {
@@ -142,9 +223,9 @@ const TableForm = () => {
             key: '',
 
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(food[index])}>ดู</button>
-                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(food[index])}>แก้ไข</button>
-                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(food[index], reload)}>ลบ</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(val)}>ดู</button>
+                <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
+                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val, reload)}>ลบ</button>
             </div>,
         },
 
@@ -152,7 +233,7 @@ const TableForm = () => {
     const search = () => {
         const userInput = inputRef.current.value
         const findMatchNCDS = food.filter(val => {
-            return val.name_th.toLowerCase().includes(userInput.toLowerCase()) || val.name_en.toLowerCase().includes(userInput.toLowerCase())
+            return val.name_th.toLowerCase().includes(userInput.toLowerCase()) || val.name_en.toLowerCase().includes(userInput.toLowerCase()) 
         })
         console.log(userInput, findMatchNCDS)
         if (!userInput) {
@@ -175,7 +256,7 @@ const TableForm = () => {
             for (const rows of selectRows) {
                 const a = await new Promise((res, rej) => {
                     confirm({
-                        title: `คุณต้องการจะลบบทความ`,
+                        title: `คุณต้องการจะลบอาหาร`,
                         content: <div>
                             <p>{rows.name_th}({rows.name_en})</p>
                             {/* <p>คำอธิบาย : {rows.imply}</p> */}
@@ -232,10 +313,10 @@ const TableForm = () => {
                 </div>
                 <div className='flex items-center gap-2'>
                     {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
-                        <Button_Delete className="text-gray-800" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                        <Button_Delete className="text-gray-100" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
                     </div>}
                     <Tooltip title={"ค้นหาชื่ออาหาร"}>
-                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่ออาหาร" className='text-black rounded-md' /></Tooltip>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFood(store)} placeholder="ชื่ออาหาร" className='text-black rounded-md' /></Tooltip>
                     <Tooltip title={"ค้นหา"}>
                         <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
                 </div>
@@ -245,7 +326,7 @@ const TableForm = () => {
 }
 const ModalAdd = () => {
     const { modalAdd, setModalAdd, reload, NCDS } = useContext(Context)
-    const [foodType, setFoodType] = useState(null)
+    const [type, setFoodType] = useState(null)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
@@ -281,6 +362,7 @@ const ModalAdd = () => {
         })
             .then(res => {
                 if (res.ok) {
+                    form.resetFields();
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     setModalAdd(false)
                     fetch(`/api/uploads?name=food`)
@@ -333,7 +415,7 @@ const ModalAdd = () => {
                     optionFilterProp="children"
                     // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
                     filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
+                    {!!type && type.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item
@@ -549,7 +631,7 @@ const ModalAdd = () => {
 }
 const ModalEdit = () => {
     const { modalEdit, setModalEdit, reload, NCDS } = useContext(Context)
-    const [foodType, setFoodType] = useState(null)
+    const [type, setFoodType] = useState(null)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
@@ -651,7 +733,7 @@ const ModalEdit = () => {
                     optionFilterProp="children"
                     // filterOption={(input, option) => option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
                     filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {!!foodType && foodType.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
+                    {!!type && type.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th} ({name_en})</Option>)}
                 </Select>
             </Form.Item>
             <Form.Item
@@ -864,16 +946,9 @@ const ModalEdit = () => {
     </Modal>
 }
 const ModalManageType = () => {
-    const { modalAddType, setModalAddType } = useContext(Context)
-    const [foodType, setType] = useState(null)
+    const { modalAddType, setModalAddType, type, setType, reload } = useContext(Context)
     const [foodTypeEdit, setFoodTypeEdit] = useState(null)
-    const reload = async () => {
-        const fetchTypeFood = await FetchTypeFood()
-        Array.isArray(fetchTypeFood) && setType(fetchTypeFood)
-    }
-    useEffect(() => {
-        reload()
-    }, [])
+
 
     const [form] = Form.useForm();
 
@@ -894,6 +969,7 @@ const ModalManageType = () => {
                 notification.success({ message: "แก้ไขข้อมูลสำเร็จ" })
                 reload()
                 setFoodTypeEdit(null)
+                form.resetFields();
             } else {
                 notification.error({ message: "ไม่สามารถแก้ไขข้อมูลได้" })
             }
@@ -907,6 +983,7 @@ const ModalManageType = () => {
             if (!data.message) {
                 notification.success({ message: "เพิ่มข้อมูลสำเร็จ" })
                 reload()
+                form.resetFields();
             } else {
                 notification.error({ message: "ไม่สามารถเพิ่มข้อมูลได้" })
             }
@@ -1020,7 +1097,7 @@ const ModalManageType = () => {
                 </div>
             </Form>
             <Divider />
-            {!!foodType && <Table dataSource={foodType} columns={columns} />}
+            {!!type && <Table dataSource={type} columns={columns} />}
         </Modal>
 
     </>
@@ -1031,7 +1108,6 @@ const ModalView = () => {
     const onCancel = () => {
         setModalView(false)
     }
-    console.log(modalView)
     if (!modalView) return null
     return <Modal title={modalView.name_th}
         visible={modalView}
@@ -1110,3 +1186,58 @@ const FetchNCDS = async () => {
     }
     return null
 }
+
+const Chart = ({ food, type }) => {
+    const [color, setColor] = useState()
+    useEffect(() => {
+        if (type && !color) setColor(type.map(v => randomRGB()))
+    }, [type])
+    if (!food || !type) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
+    </div>
+    // console.log(food,type)
+    const count_type = type?.reduce((acc, val) => {
+        const count_food = food?.reduce((acc, val_food) => val.name_th === val_food.FoodType.name_th ? acc + 1 : acc, 0)
+        acc.push(count_food)
+        return acc
+    }, [])
+    const TYPE = {
+        labels: type?.map(({ name_th }) => name_th),
+        datasets: [{
+            data: count_type,
+            backgroundColor: color,
+            borderWidth: 0,
+        }],
+    }
+    const count_suggess = food?.reduce((acc, val_food) => {
+        const count_food_suggess = val_food.FoodNcds.reduce((acc, val) => val.suggess ? acc + 1 : acc, 0)
+        const count_food_notsuggess = val_food.FoodNcds.reduce((acc, val) => !val.suggess ? acc + 1 : acc, 0)
+        acc[0] += count_food_suggess
+        acc[1] += count_food_notsuggess
+        return acc
+    }, [0, 0])
+    const suggess = {
+        labels: ["แนะนำ", "ไม่แนะนำ"],
+        datasets: [{
+            data: count_suggess,
+            backgroundColor: [
+                '#caefe3',
+                'rgba(255, 99, 132, 0.2)'
+            ],
+            borderColor: [
+                '#10b981',
+                'rgba(255, 99, 132, 1)',
+            ],
+            borderWidth: 1,
+        }],
+    }
+    // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
+    return (<div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">ประเภท</p><Doughnut data={TYPE} /></div>
+        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คำแนะนำ</p><Doughnut data={suggess} /></div>
+    </div>)
+}
+const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
+
+const randomRGB = () => `rgb(${randomNum()}, ${randomNum()}, ${randomNum()})`;

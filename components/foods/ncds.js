@@ -73,6 +73,8 @@ const CusModal = ({ handleClose, contentModal }) => {
 };
 const Suggess_true = ({ data, showModal }) => {
     const router = useRouter()
+    const count_suggess = data.map(item => item.suggess).filter(item => item).length
+    if(count_suggess===0) return null
     return <div>
         <p className='w-full text-2xl text-center  text-green-600'>โรคที่แนะนำให้รับประทานได้</p>
         <Owl_Carousel margin={0}>
@@ -95,7 +97,7 @@ const Suggess_true = ({ data, showModal }) => {
                         {suggess &&
                             <div key={index} className="card-suggession">
                                 <>
-                                    <CusImage className="rounded-md w-full h-full" src={ncds?.image?.at(0).name} alt={ref} width="100%" height="100%" preview={false} />
+                                    <CusImage className="rounded-md w-full h-full" src={ncds?.image?.at(0).name} alt={ref} width="100%" height={250} preview={false} />
                                     <div className="card-suggestion-header-content">
                                         <div className="flex flex-col  ">
                                             <span className="card-header"> {ncds?.name_th} </span>
@@ -125,6 +127,8 @@ const Suggess_true = ({ data, showModal }) => {
 }
 const Suggess_false = ({ data, showModal }) => {
     const router = useRouter()
+    const count_notsuggess = data.map(item => item.suggess).filter(item => !item).length
+    if(count_notsuggess===0) return null
     return <div>
         <p className='w-full text-2xl text-center  text-red-600'>โรคที่ไม่แนะนำให้รับประทาน</p>
         <Owl_Carousel margin={0}>
@@ -147,7 +151,7 @@ const Suggess_false = ({ data, showModal }) => {
                             <div key={index} className="card-suggession">
                                 <>
 
-                                    <CusImage className="rounded-md" src={ncds?.image?.at(0).name} alt={ref} width="100%" height="100%" preview={false} />
+                                    <CusImage className="rounded-md" src={ncds?.image?.at(0).name} alt={ref} width="100%" height={250} preview={false} />
                                     <div className="card-suggestion-header-content">
                                         <div className="flex flex-col  ">
                                             <span className="card-header"> {ncds?.name_th} </span>

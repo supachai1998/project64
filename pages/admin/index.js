@@ -126,15 +126,6 @@ const HeaderAdmin = ({ titleAdmin, onSelectPage }) => {
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "บทความ" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("บทความ")}>บทความ</button >
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "อาหาร" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("อาหาร")}>อาหาร</button >
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "แบบประเมินโรค" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</button >
-
-
-                <Select
-                    className="w-36 rounded"
-                    placeholder="รายงาน"
-                    onChange={(k) => onSelectPage(k)}>
-                    <Option key="รายงานแบบประเมินโรค" >แบบประเมินโรค</Option>
-                    <Option key="รายงานบทความ" >บทความ</Option>
-                </Select>
             </div>
             <hr />
         </div>

@@ -46,6 +46,13 @@ module.exports = {
         'mid': '10rem',
         'super': '15rem'
       },
+      spacing: {
+        '34': '8.25rem',
+        '74': '18.5rem',
+        '76': '19.45rem',
+        '8xl': '96rem',
+        '9xl': '128rem',
+      },
       // fontFamily: {
       //   "Poppins": ['Poppins', 'sans-serif'],
       //   "Kanit": ['Kanit', 'sans-serif'],

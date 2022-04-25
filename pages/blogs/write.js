@@ -3,8 +3,8 @@ import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, U
 import { UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 
 import { Button_Delete } from '/ulity/button';
-import {_AppContext} from '/pages/_app'
-import router from 'next/router';
+import { _AppContext } from '/pages/_app'
+import router, { useRouter } from 'next/router';
 
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -16,28 +16,20 @@ const ellipsis = {
 }
 
 export default function Index() {
-    const {setTitle,setDefaultSelectedKeys} = useContext(_AppContext)
+    const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
+    const router = useRouter()
+    const { id } = router.query
     const [modalAdd, setModalAdd] = useState(false)
     const [ncdsLoading, setNCDSLoading] = useState()
     const [foodLoading, setFoodLoading] = useState()
     const [ncds, setNCDS] = useState()
     const [food, setFood] = useState()
-    const [store, setStore] = useState()
-    const [blogs, setBlogs] = useState()
-    const [loading, setLoading] = useState()
-    const reload = async () => {
-        setLoading(true)
-        const reqBlogs = await fetch("/api/getBlogs?approve=true")
-            .then(res => res.status === 200 && res.json())
-            .then(data => {
-                if (!!data && data.length > 0) {
-                    setBlogs(data)
-                    setStore(data)
-                }
-            })
-            .catch(err => notification.error({ message: "Error", description: err.message }))
-        setLoading(false)
-    }
+    const [edit, setEdit] = useState()
+    const [fileList, setFileList] = useState([])
+    const [fileListSubBlogs, setFileListSubBlogs] = useState([])
+    const [type, setType] = useState(null)
+    const [form] = Form.useForm();
+
     useEffect(() => {
         setTitle("เขียนบทความ")
         setDefaultSelectedKeys("blogs_write")
@@ -45,7 +37,6 @@ export default function Index() {
     useEffect(() => {
         (async () => {
             setNCDSLoading(true)
-            reload()
             const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
                 .then(async resp => resp.ok && resp.json())
                 .then(data => setNCDS(data)).catch(err => notification.error({ message: "Error", description: err.message }))
@@ -56,15 +47,17 @@ export default function Index() {
                 .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
             setFoodLoading(false)
         })()
-        return () => setBlogs([])
     }, [])
-    const [fileList, setFileList] = useState([])
-    const [fileListSubBlogs, setFileListSubBlogs] = useState([])
-    const [type, setType] = useState(null)
-    const [form] = Form.useForm();
+    const query = async () => {
+        if (id) {
+            const data = await fetch(`/api/getBlogs?id=${id}`).then(res => res.ok && res.json())
+            form.setFieldsValue(data);
+            setEdit(data)
+        } else form.setFieldsValue();
+    }
     useEffect(() => {
-        form.setFieldsValue();
-    }, [form, modalAdd]);
+        query()
+    }, [form, modalAdd, router.query]);
 
 
     const onOk = () => {
@@ -75,81 +68,153 @@ export default function Index() {
     }
 
     const onSubmit = async (val) => {
-        if (!Array.isArray(val?.image?.fileList)) {
-            notification.error({ message: "คุณไม่ได้เพิ่มรูปภาพ" })
-            return
-        }
-        if (!Array.isArray(val?.subBlog)) {
-            notification.error({ message: "คุณไม่ได้เพิ่มบทความย่อย" })
-            return
-        }
-        const _tempimage = val?.image?.fileList
-        console.log(val.subBlog)
-        const _tempsubBlog = val?.subBlog.map((val) => {
-            return {
-                ...val,
-                ...(val?.image?.fileList?.length > 0) && { image: val.image.fileList[0].response.name }
+        if (id) {
+            let _tempimage = []
+            if (val?.image?.fileList) {
+                for (const i in val.image.fileList) {
+                    const fL = val.image.fileList[i]
+                    fL.response ? _tempimage.push({ name: fL.response.name }) : _tempimage.push({ ...fL })
+
+                }
             }
-        })
-        delete val['image']
-        delete val['subBlog']
-        const subBlog = { create: _tempsubBlog }
-        const image = { create: _tempimage.map(({ response }) => ({ name: response.name })) }
-        val['image'] = image
-        val['subBlog'] = subBlog
-        let related = []
-        if (val['foodId']) {
-            related = [...related, ...val['foodId'].map((v) => { return { foodId: v } })]
-            delete val['foodId']
-        }
-        if (val['ncdsId']) {
-            related = [...related, ...val['ncdsId'].map((v) => { return { ncdsId: v } })]
-            delete val['ncdsId']
-        }
-        val['related'] = { create: [...related] }
-        val["ref"] = { create: [...val["ref"]] }
-        console.log(val)
-        const res = await fetch(`/api/getBlogs`, {
-            headers: { 'Content-Type': 'application/json', },
-            method: "POST",
-            body: JSON.stringify(val)
-        })
-
-        // console.log('send:', val);
-        if (res.status === 200) {
-            notification.success({
-                message: "เพิ่มข้อมูลสำเร็จ"
+            else { _tempimage = val?.image }
+            const _tempsubBlog = val?.subBlog.map((val) => {
+                return {
+                    ...val,
+                    ...(val?.image?.fileList?.length > 0) && { image: val.image.fileList[0].response.name }
+                }
             })
-            fetch(`/api/uploads`)
-            const v = await res.json()
-            console.log(v)
-            router.push(`/blogs/${v.type.toLowerCase()}/${v.id}`)
-        } else notification.error({
-            message: 'ไม่สามารถเพิ่มข้อมูลได้',
-            description: res.message,
-        })
+            delete val['image']
+            delete val['subBlog']
+            val['image'] = _tempimage
+            val['subBlog'] = _tempsubBlog
+            val['id'] = edit.id
+            val['approve'] = 0
+            let related = []
+            // console.log(val['foodId'], val['ncdsId'])
+            if (val['foodId']?.length > 0) {
+                if (edit?.related?.length > 0) {
+                    for (const [kk, vv] of Object.entries(edit.related)) {
+                        val['foodId'].map((v) => {
+                            if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
+                            else related.push({ foodId: v })
+                        })
+                    }
+                    related = related.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
+                } else {
+                    val['foodId'].map(v => related.push({ foodId: v }))
+                }
+            }
+            if (val['ncdsId']?.length > 0) {
+                if (edit?.related?.length > 0) {
+                    for (const [kk, vv] of Object.entries(edit.related)) {
+                        val['ncdsId'].map((v) => {
+                            if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
+                            else related.push({ ncdsId: v })
+                        })
+                    }
+                    related = related.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
+                } else {
+                    val['ncdsId'].map(v => related.push({ ncdsId: v }))
+                }
+            }
+            val["ref"] = [...val["ref"]]
+            val["related"] = [...related]
 
+            delete val['foodId']
+            delete val['ncdsId']
+            console.log(val)
+            const res = await fetch(`/api/getBlogs`, {
+                headers: { 'Content-Type': 'application/json', },
+                method: "PATCH",
+                body: JSON.stringify({ old: edit, new: val })
+            })
+
+            // console.log('send:', val);
+            if (res.status === 200) {
+                notification.success({
+                    message: "แก้ไขข้อมูลสำเร็จ"
+                })
+                setEdit(false)
+                fetch(`/api/uploads`)
+                router.push(`/blogs/${val.type.toLowerCase()}/${val.id}`)
+            } else notification.error({
+                message: 'ไม่สามารถแก้ไขข้อมูลได้',
+                description: res.message,
+            })
+        }
+        else {
+            const _tempimage = val?.image?.fileList
+            console.log(val.subBlog)
+            const _tempsubBlog = val?.subBlog.map((val) => {
+                return {
+                    ...val,
+                    ...(val?.image?.fileList?.length > 0) && { image: val.image.fileList[0].response.name }
+                }
+            })
+            delete val['image']
+            delete val['subBlog']
+            const subBlog = { create: _tempsubBlog }
+            const image = { create: _tempimage.map(({ response }) => ({ name: response.name })) }
+            val['image'] = image
+            val['subBlog'] = subBlog
+            let related = []
+            if (val['foodId']) {
+                related = [...related, ...val['foodId'].map((v) => { return { foodId: v } })]
+                delete val['foodId']
+            }
+            if (val['ncdsId']) {
+                related = [...related, ...val['ncdsId'].map((v) => { return { ncdsId: v } })]
+                delete val['ncdsId']
+            }
+            val['related'] = { create: [...related] }
+            val["ref"] = { create: [...val["ref"]] }
+            console.log(val)
+            const res = await fetch(`/api/getBlogs`, {
+                headers: { 'Content-Type': 'application/json', },
+                method: "POST",
+                body: JSON.stringify(val)
+            })
+
+            // console.log('send:', val);
+            if (res.status === 200) {
+                notification.success({
+                    message: "เพิ่มข้อมูลสำเร็จ"
+                })
+                fetch(`/api/uploads`)
+                const v = await res.json()
+                console.log(v)
+                router.push(`/blogs/${v.type.toLowerCase()}/${v.id}`)
+            } else notification.error({
+                message: 'ไม่สามารถเพิ่มข้อมูลได้',
+                description: res.message,
+            })
+        }
     }
     const onFinishFailed = () => {
 
     }
     const onReset = () => {
-        setFileList(null)
+        form.resetFields()
+    }
+    const onFill = () => {
+        form.setFieldsValue(edit)
     }
     const onChange = ({ fileList: newFileList }) => {
+        // console.log(newFileList)
         setFileList(newFileList);
     }
-    const onChangeSubBlogs = ({ fileList: newFileList }) => {
-        setFileListSubBlogs(newFileList);
-    }
+    // const onChangeSubBlogs = ({ fileList: newFileList }) => {
+    //     setFileListSubBlogs(newFileList);
+    // }
     const onTypeChange = (val) => {
         val !== 1 && setType(val)
     }
-    return <div className='min-h-screen'>
+    return <div className='min-h-screen sm:-m-2 py-10 px-1 bg-white'>
         <Form
             form={form}
             // initialValues={{}}
-            labelCol={{ span: 3 }}
+            labelCol={{ sm: { span: 8 }, md: { span: 6 }, lg: { span: 4 }, xl: { span: 3 } }}
             onFinish={onSubmit}
             onFinishFailed={onFinishFailed}
             scrollToFirstError={true}
@@ -168,26 +233,50 @@ export default function Index() {
                     {Type.map(({ name_th, name_en }, ind) => <Option key={`${name_en}_${ind}`} value={name_en}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
-            {(type === "NCDS" || type === "ALL") && <Form.Item
-                name="ncdsId"
-                label="เลือกโรค"
-                rules={[{ required: true }]}>
-                <Select mode="multiple"
-                    loading={ncdsLoading}
-                    filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
-                </Select>
-            </Form.Item>}
-            {(type === "FOOD" || type === "ALL") && <Form.Item
-                name="foodId"
-                label="เลือกรายการอาหาร"
-                rules={[{ required: true }]}>
-                <Select mode="multiple"
-                    loading={foodLoading}
-                    filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                    {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
-                </Select>
-            </Form.Item>}
+            {id ? <>
+                {(form.getFieldValue("type") === "NCDS" || form.getFieldValue("type") === "ALL") && <Form.Item
+                    name="ncdsId"
+                    label="เลือกโรค"
+                    initialValue={edit?.related?.filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
+                    rules={[{ required: true }]}>
+                    <Select mode="multiple"
+                        loading={ncdsLoading}
+                        filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                        {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                    </Select>
+                </Form.Item>}
+                {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
+                    name="foodId"
+                    label="เลือกรายการอาหาร"
+                    initialValue={edit?.related?.filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
+                    rules={[{ required: true }]}>
+                    <Select mode="multiple"
+                        loading={foodLoading}
+                        filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                        {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                    </Select>
+                </Form.Item>}</> : <>
+                {(type === "NCDS" || type === "ALL") && <Form.Item
+                    name="ncdsId"
+                    label="เลือกโรค"
+                    rules={[{ required: true }]}>
+                    <Select mode="multiple"
+                        loading={ncdsLoading}
+                        filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                        {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                    </Select>
+                </Form.Item>}
+                {(type === "FOOD" || type === "ALL") && <Form.Item
+                    name="foodId"
+                    label="เลือกรายการอาหาร"
+                    rules={[{ required: true }]}>
+                    <Select mode="multiple"
+                        loading={foodLoading}
+                        filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
+                        {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                    </Select>
+                </Form.Item>}
+                </>}
             <Form.Item
                 name="name"
                 label="ชื่อบทความ"
@@ -209,6 +298,7 @@ export default function Index() {
                 }]}>
                 <Input placeholder="https://youtube.com/watch?" />
             </Form.Item>
+            {/* {console.log(form.getFieldValue())} */}
             <Form.Item
                 name="image"
                 label="รูปภาพ"
@@ -221,18 +311,24 @@ export default function Index() {
                     maxCount={1}
                     action="/api/uploads"
                     listType="picture"
-                    defaultFileList={fileList}
+                    defaultFileList={form?.getFieldValue("image")}
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/1)</Button>
+
+                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({
+                        form?.getFieldValue("image")?.fileList ?
+                            form.getFieldValue("image")?.fileList?.length :
+                            form.getFieldValue("image")?.filter(({ status }) => status === "done").length || 0
+                    }/1)</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="subBlog" rules={[{ required: true, message: "คุณลืมเพิ่มหัวข้อย่อย" }]} >
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
-                        {!!fields && fields.map((field, ind) => (
+                        {!!fields?.length > 0 && fields?.map((field, ind) => (
+
                             <Form.Item
                                 {...fields}
                                 noStyle
@@ -276,14 +372,19 @@ export default function Index() {
                                     label="รูปภาพ"
                                 // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
                                 >
-
+                                    {/* {console.log(form?.getFieldValue("subBlog")?.length >0 ? form?.getFieldValue("subBlog")?.[ind]?.image : [])} */}
                                     <Upload
                                         multiple={true}
                                         accept='image/png,image/jpeg'
                                         maxCount={1}
                                         action="/api/uploads"
                                         listType="picture"
-                                        defaultFileList={[]}
+                                        defaultFileList={form?.getFieldValue("subBlog")?.length > 0 ? (
+                                            form?.getFieldValue("subBlog")?.[ind]?.fileList ?
+                                                form?.getFieldValue("subBlog")?.[ind]?.fileList :
+                                                form?.getFieldValue("subBlog")?.[ind]?.image ?
+                                                    [form?.getFieldValue("subBlog")?.[ind]?.image] : []
+                                        ) : []}
                                         // onChange={onChangeSubBlogs}
                                         className="upload-list-inline"
                                     >
@@ -349,9 +450,12 @@ export default function Index() {
 
                 )}
             </Form.List>
+
+
             <div className="flex justify-end gap-2">
-                <Button htmlType="reset">ล้างค่า</Button>
-                <Button type="primary" htmlType="submit">เพิ่มข้อมูล</Button>
+                <button type="button" onClick={onReset}>ล้างค่า</button>
+                {id && <button type="button" onClick={onFill}>ย้อนค่าเดิม</button>}
+                <button className={`${id ? "bg-yellow-200 hover:bg-yellow-300" : "bg-blue-200 hover:bg-blue-300"} px-2`} type="submit">{id ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}</button>
             </div>
         </Form>
     </div>

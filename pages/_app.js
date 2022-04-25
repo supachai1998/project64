@@ -1,5 +1,5 @@
-import '../styles/globals.css'
-import 'antd/dist/antd.css';
+import '/styles/globals.css'
+// import 'antd/dist/antd.css';
 import "nprogress/nprogress.css";
 
 import 'owl.carousel/dist/assets/owl.carousel.css';
@@ -30,7 +30,7 @@ const animationZoomHover = "transition duration-500 ease-in-out transform  hover
 
 export const _AppContext = createContext()
 
-const project_name = 'ใส่ใจโรคไม่ติดต่อเรื้อรัง (NCDs Care)'
+export const project_name = 'ใส่ใจโรคไม่ติดต่อเรื้อรัง (NCDs Care)'
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   // const [queryClient] = React.useState(() => new QueryClient())
   const router = useRouter()
@@ -38,19 +38,32 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [defaultSelectedKeys, setDefaultSelectedKeys] = useState()
   const [title, setTitle] = useState(project_name)
   const [ncds, setNCDS] = useState()
+  const [form, setForm] = useState()
   const [blogs, setBlogs] = useState([
     { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
   ])
 
   const toggle = () => { setCollapsed(!collapsed) }
+  const reload = async () => {
+    const n = await fetch(`/api/getNCDS?select=name_th,name_en,id`)
+      .then(async res => res.ok && res.json())
+      .then(data => data)
+      .catch(err => notification.error({ message: err.message }))
+    const q_f = await fetch(`/api/getForm?haveData=${true}`)
+      .then(async res => res.ok && res.json())
+      .then(data => data)
+      .catch(err => notification.error({ message: err.message }))
+    const f = n.filter(({ id }) => q_f.find(v => v === id))
+    setNCDS(n)
+    setForm(f)
+  }
+  useEffect(() => {
+
+  }, [])
 
   useEffect(() => {
-    !ncds && fetch(`/api/getNCDS?select=name_th,name_en,id`)
-      .then(async res => res.ok && res.json())
-      .then(data => setNCDS(data))
-      .catch(err => notification.error({ message: err.message }))
-      // call api machine learning 
-    !ncds && fetch(`/api/predict`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
+    // call api machine learning 
+    !ncds && fetch(`http://192.168.43.65:8000`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
   }, [])
 
   const handleMenuClick = (val) => {
@@ -65,10 +78,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
     setCollapsed(true)
   }
   const handleMenu = (en, th) => {
-    
+
     setDefaultSelectedKeys(en);
     // console.log(en)
-    if(!en) setTitle(project_name); else setTitle(th);
+    if (!en) setTitle(project_name); else setTitle(th);
     router.push(`/${en}`);
     setCollapsed(true)
   }
@@ -85,7 +98,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
           <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         </Head>
 
-        <NavBar blogs={blogs} ncds={ncds} handleMenuClick={handleMenuClick} handleMenu={handleMenu} handleSubMenuClick={handleSubMenuClick} collapsed={collapsed} setCollapsed={setCollapsed} defaultSelectedKeys={defaultSelectedKeys} />
+        <NavBar blogs={blogs} form={form} ncds={ncds} reload={reload} handleMenuClick={handleMenuClick} handleMenu={handleMenu} handleSubMenuClick={handleSubMenuClick} collapsed={collapsed} setCollapsed={setCollapsed} defaultSelectedKeys={defaultSelectedKeys} />
 
         <Layout className="site-layout">
           <Header className="flex justify-start space-x-6 item-center site-layout-background" style={{ margin: 0, padding: 0 }} >
@@ -119,7 +132,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 }
 export default MyApp
 
-const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
+const NavBar = ({ blogs, form, ncds, reload, handleMenu, handleSubMenuClick, collapsed, setCollapsed, defaultSelectedKeys, handleMenuClick }) => {
   const [foodType, setFoodType] = useState(null)
   const { status } = useSession()
   useEffect(() => {
@@ -131,8 +144,11 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
   }, [status])
   useEffect(() => {
     (async () => {
-      const data = await fetch("/api/getTypeFood").then(res => res.ok && res.json())
-      Array.isArray(data) && setFoodType(data)
+      if (status === "unauthenticated") {
+        reload()
+        const data = await fetch(`/api/getTypeFood?order=des`).then(res => res.ok && res.json())
+        Array.isArray(data) && setFoodType(data)
+      }
     })()
   }, [status])
   return <>
@@ -152,13 +168,13 @@ const NavBar = ({ blogs, ncds, handleMenu, handleSubMenuClick, collapsed, setCol
             )}
           </SubMenu>
           <SubMenu key="form" icon={<ProfileOutlined />} title="แบบประเมินโรค">
-            {!!ncds && ncds.map(({ id, name_en, name_th }, index) =>
+            {!!form && form.map(({ id, name_en, name_th }, index) =>
               <Menu.Item key={`form_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="foods" icon={<AppleOutlined />} title="ประเภทอาหาร" >
-            {!!foodType && foodType?.map(({ id, name_en, name_th }, index) =>
-              <Menu.Item key={`foods_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}</Menu.Item>
+            {!!foodType && foodType?.map(({ id, name_en, name_th, count }, index) =>
+              <Menu.Item key={`foods_${id}`} onClick={() => handleSubMenuClick(name_th)}>{name_th}({count})</Menu.Item>
             )}
           </SubMenu>
           <SubMenu key="blogs" icon={<FormOutlined />} title="บทความ">

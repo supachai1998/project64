@@ -1,10 +1,20 @@
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
-import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload,Collapse , notification, InputNumber, Space, Tooltip } from 'antd'
-import { UploadOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, Upload, Collapse, notification, InputNumber, Space, Tooltip } from 'antd'
 import Board from '../../components/admin/DisplayBoard';
 import CusImage from '/components/cusImage';
 import ReactPlayer from 'react-player';
 import { Button_Delete } from '/ulity/button'
+// Report
+import { FilePdfOutlined, DownloadOutlined, UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { CSVLink } from "react-csv"
+import { Chart as ChartJS, ArcElement, Tooltip as Too, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
+import { useReactToPrint } from 'react-to-print';
+import moment from 'moment'
+import 'moment/locale/th'
+moment.locale('th')
+ChartJS.register(ArcElement, Too, Legend);
+// END Report
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -22,12 +32,80 @@ export default function Index() {
     const [loading, setLoading] = useState(false)
     const [ncds, setNcds] = useState([])
     const [store, setStore] = useState([])
+
+    const componentRef = useRef();
+    const inputRef = useRef()
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+    });
+    const columns = [
+        {
+            title: < >ชื่อโรคภาษาไทย</>,
+            dataIndex: 'name_th',
+            key: 'name_th',
+            width: "5%",
+            render: (text, val, index) =>  <div className="h-76 overflow-hidden">{val.name_th}</div>
+        },
+        {
+            title: < >ชื่อโรคภาษาอังกฤษ</>,
+            dataIndex: 'name_en',
+            key: 'name_en',
+            width: "5%",
+            render: (text, val, index) =>  <div className="h-76 overflow-hidden">{val.name_en}</div>
+        },
+        {
+            title: < >ความหมาย</>,
+            dataIndex: 'imply',
+            key: 'imply',
+            width: '10%',
+            render: val => <div className="h-76 overflow-hidden">{val}</div>
+        },
+        {
+            title: < >สาเหตุการเกิดโรค</>,
+            dataIndex: 'cause',
+            key: 'cause',
+            render: val => <div className="h-76 overflow-hidden">{val}</div>
+        },
+        {
+            title: < >ลดความเสี่ยงการเกิดโรค</>,
+            dataIndex: 'reduce',
+            key: 'reduce',
+            render: val => <div className="h-76 overflow-hidden">{val}</div>
+        },
+        {
+            title: < >สัญญาณการเกิดโรค</>,
+            dataIndex: 'signs',
+            key: 'signs',
+            render: val => <div className="h-76 overflow-hidden">{val}</div>
+        },
+        {
+            title: < >คำแนะนำในการปฏิบัติตัว</>,
+            dataIndex: 'sugess',
+            key: 'sugess',
+            render: val => <div className="h-76 overflow-hidden">{val}</div>
+        },
+        {
+            title: < >แหล่งอ้างอิง</>,
+            dataIndex: 'ref',
+            key: 'ref',
+            render: val => <ul >{val.map(v=><li key={v.url} >{(v.url).match(/(?:[\w-]+\.)+[\w-]+/)}</li>)}</ul>
+        },
+        {
+            title: < >จำนวนภาพ</>,
+            dataIndex: 'image',
+            key: 'image',
+            render: val => <div >{val.length}</div>
+        },
+
+    ];
+
+
     const reload = async () => {
         setLoading(true)
         await fetch("/api/getNCDS").then(async res => {
             if (res.status === 200) {
                 const data = await res.json()
-                const _ = data.map(({id,...rest})=>({id:id,key:id,...rest}))
+                const _ = data.map(({ id, ...rest }) => ({ id: id, key: id, ...rest }))
                 setNcds(_)
                 setStore(_)
             }
@@ -41,9 +119,18 @@ export default function Index() {
     return (
         <div
             className="ease-div flex flex-col gap-4">
-            <Board data={{}} />
             {/* <Spin spinning={loading}> */}
-            <div className="flex justify-end mt-4 mb-2">
+            <div className="flex justify-end mt-4 mb-2 gap-3">
+                <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
+                <Button className='green-ghost-green' icon={<DownloadOutlined />}>
+                    <CSVLink
+                        filename={`ตารางอาหาร ${inputRef.current?.value}-${moment().format("LLLL")}.csv`}
+                        data={!!ncds ? ncds.map(({ name_th,name_en,imply,video,cause,reduce,signs,sugess,views,ref }) => ({name_th,name_en,imply,video,cause,reduce,signs,sugess,views,ref:ref.map(v=>v.url) })) : []}
+                        onClick={() => notification.success({ message: "ดาวน์โหลดไฟล์" })}
+                    >
+                        <span className="text-green-500">CSV</span>
+                    </CSVLink>
+                </Button>
                 <Button onClick={() => setModalAdd(true)}>เพิ่มข้อมูล</Button>
             </div>
             <Context.Provider value={{
@@ -56,14 +143,17 @@ export default function Index() {
                 setModalView,
                 loading,
                 ncds, setNcds,
-                store, setStore
+                store, setStore,
+                inputRef
             }}>
                 <ModalAdd />
                 <ModalEdit />
                 <ModalView />
                 <TableForm />
             </Context.Provider>
-            {/* </Spin> */}
+            <div className='hidden' ref={componentRef}>
+                <Table size='small' title={() => <span className="text-lg">โรคไม่ติดต่อ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={ncds} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+            </div>
         </div>
     )
 }
@@ -90,7 +180,7 @@ const ModalView = () => {
             <Form.Item label="ลดความเสี่ยงการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.reduce}</span></Form.Item>
             <Form.Item label="สัญญาณการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.signs}</span></Form.Item>
             <Form.Item label="คำแนะนำในการปฏิบัติตัว"><span className='text-md whitespace-pre-line'>{modalView.sugess}</span></Form.Item>
-            <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
+            <Form.Item label="วิดีโอ">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
             <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
@@ -126,6 +216,7 @@ const ModalAdd = () => {
         })
             .then(res => {
                 if (res.ok) {
+                    form.resetFields();
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     setModalAdd(false)
                     fetch(`/api/uploads?name=ncds`)
@@ -512,7 +603,7 @@ const showConfirmDel = async (val, reload) => {
         content: <p>{val.name_th}({val.name_en})</p>,
         okText: "ตกลง",
         cancelText: "ยกเลิก",
-        okType:"danger",
+        okType: "danger",
         async onOk() {
             const res = await fetch("/api/getNCDS", {
                 headers: { 'Content-Type': 'application/json', },
@@ -544,14 +635,16 @@ const TableForm = () => {
         modalEdit, setModalEdit,
         modalView, setModalView,
         store,
-        loading } = useContext(Context)
+        loading,
+        inputRef } = useContext(Context)
     const [selectRows, setSelectRows] = useState([])
     const columns = [
         {
             title: <Paragraph className='mt-3' align="center" >ชื่อโรค</Paragraph>,
             dataIndex: 'name_th',
             key: 'name_th',
-            render: (text, val, index) => <Tooltip title={val.name_th} ><Paragraph ellipsis={ellipsis}>{val.name_th}({val.name_en})</Paragraph></Tooltip>
+            width: "20%",
+            render: (text, val, index) => <Tooltip title={val.name_th} ><Paragraph className='mt-3' ellipsis={ellipsis}>{val.name_th}({val.name_en})</Paragraph></Tooltip>
         },
         {
             title: <Paragraph className='mt-3' align="center" >ความหมาย</Paragraph>,
@@ -657,7 +750,6 @@ const TableForm = () => {
             setSelectRows(selectedRows)
         },
     };
-    const inputRef = useRef()
     return <div>
         <Table size='small' tableLayout='auto' dataSource={ncds} columns={columns}
             rowSelection={{ ...rowSelection }}
@@ -669,10 +761,10 @@ const TableForm = () => {
                 </div>
                 <div className='flex items-center gap-2'>
                     {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
-                        <Button_Delete className="text-gray-800" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
+                        <Button_Delete className="text-gray-200" fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
                     </div>}
                     <Tooltip title={"ค้นหาชื่อโรค"}>
-                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อโรค" className='text-black rounded-md' /></Tooltip>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setNcds(store)} placeholder="ชื่อโรค" className='text-black rounded-md' /></Tooltip>
                     <Tooltip title={"ค้นหา"}>
                         <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
                 </div>

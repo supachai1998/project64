@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router'
 import { Tooltip, Modal, Rate, notification } from 'antd';
-import { useState, useEffect,useContext } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import dynamic from 'next/dynamic'
 import { getCookie, setCookies } from 'cookies-next';
 import { serverip } from '/config/serverip'
-import {_AppContext} from '/pages/_app'
+import { _AppContext } from '/pages/_app'
 
 
 const BestFood = dynamic(() => import('../../../components/BestFood'))
@@ -20,7 +20,8 @@ export default function Index(props) {
   const [casImg, setCasImg] = useState(0)
   const [data, setData] = useState(null)
   const [loading, setloading] = useState(false)
-  const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
+  const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
+  const [userVote, setUserVote] = useState()
   const fetechData = async () => {
     setloading(true)
     const data = await fetch(`/api/getBlogs?id=${blog}`).then(res => res.ok && res.json())
@@ -37,9 +38,13 @@ export default function Index(props) {
     }
   }
   useEffect(() => {
+    setUserVote(getCookie(`getBlogs${blog}`))
     setDefaultSelectedKeys(`blogs_${categories}`)
     if (blog && categories) {
       fetechData()
+    }
+    return () =>{
+      setUserVote()
     }
   }, [blog, categories])
   useEffect(() => {
@@ -65,7 +70,9 @@ export default function Index(props) {
           // console.log(result)
           if (result) {
             // console.log("fetechData")
+            setCookies(`getBlogs${blog}`, true, {  maxAge: 60 * 60 * 24 * 30 })
             await fetechDataRate()
+            setUserVote(true)
             notification.success({ message: 'ให้คะแนนบทความสำเร็จ', })
           } else {
             notification.error({ message: 'ไม่สามารถให้คะแนนบทความ', })
@@ -76,18 +83,23 @@ export default function Index(props) {
       });
     }
   }
-  if(data.approve === 2) return <div className="flex flex-col min-h-screen text-center text-4xl text-red-600">ไม่สามารถเข้าถึงบทความ</div>
-  return (
+  if (data.approve === 2) return <div className="flex flex-col min-h-screen text-center text-4xl text-red-600">ไม่สามารถเข้าถึงบทความ</div>
+  return (<>
+    {data.approve === 0 && <div className="flex flex-col  justify-end items-center bg-white rounded-lg py-10 my-10 gap-3">
+        <span className="text-red-500 text-3xl mx-auto  px-10 w-full whitespace-pre-line ">บทความยังไม่ได้รับการอนุมัติ จะไม่ถูกแสดงผลบนเว็บไซต์จนกว่าจะได้รับการอนุมัติ</span>
+        <button className="bg-yellow-200 w-24 hover:bg-yellow-300 text-sm  text-gray-800" onClick={()=>router.push({pathname:`/blogs/write`,query:{id:data.id} })}>แก้ไข</button>
+        <button className="bg-red-200 w-24 hover:bg-red-300 text-sm  text-gray-800" onClick={()=>{showConfirmDel(data,router);}}>ลบ</button>
+    </div>}
     <div className="flex flex-col min-h-screen ">
-      <div className="text-center w-full">
+      <div className="text-center w-full ">
         {/* Custom image */}
         <div className='flex flex-col justify-center items-center gap-4'>
           {/* {console.log(data.approve)} */}
-        {data.approve === 0 && <div className='text-3xl mx-auto px-10 text-red-500 bg-white rounded-lg py-10 my-10 whitespace-pre'>บทความยังไม่ได้รับการอนุมัติ {"\n"}จะไม่ถูกแสดงผลบนเว็บไซต์จนกว่าจะได้รับการอนุมัติ</div>}
-          <div className="sm:w-8/12 w-full sm:h-96 h-60 relative">
+
+          <div className="sm:w-7/12 w-full sm:h-96 h-60 relative">
             {!!data?.image && <CustImage className="rounded-lg " src={data?.image[casImg]?.name} alt={data.name} width="100%" height="100%" />}
             <div className='right-0 bottom-1 absolute rounded-md py-1 px-2 bg-gray-900 text-white items-center flex gap-2'>
-              <span className='mt-1'>{data.avg_vote}</span><Rate disabled={data.approve === 0} value={data.avg_vote} onChange={rateChange} tooltips={[`${data.vote_1} โหวต`, `${data.vote_2} โหวต`, `${data.vote_3} โหวต`, `${data.vote_4} โหวต`, `${data.vote_5} โหวต`,]} />
+              <span className='mt-1'>{data.avg_vote}</span><Rate disabled={data.approve === 0 || userVote} defaultValue={userVote && data.avg_vote} onChange={rateChange} tooltips={[`${data.vote_1} โหวต`, `${data.vote_2} โหวต`, `${data.vote_3} โหวต`, `${data.vote_4} โหวต`, `${data.vote_5} โหวต`,]} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -102,10 +114,10 @@ export default function Index(props) {
           <div className='hidden group-hover:block ease '><Rate tooltips={["1 ดาว", "2 ดาว", "3 ดาว", "4 ดาว", "5 ดาว",]} onChange={rateChange} /></div>
         </div> */}
         <div className='border-green-800 border-b-2 border-solid sm:w-8/12 w-10/12 mx-auto ' />
-        <div className="flex flex-col gap-2 w-full sm:w-6/12   mt-10 sm:mx-auto">
-          {[...data.subBlog].map(({ id, name, image, detail }, ind) => <div key={name + ind} className="flex flex-col sm:flex-row shadow-sm bg-white sm:py-3 sm:px-3 rounded-xl  w-full h-full gap-3 ">
+        <div className="flex flex-col gap-2 w-full sm:w-6/12  mb-5  mt-10 sm:mx-auto bg-white">
+          {[...data.subBlog].map(({ id, name, image, detail }, ind) => <div key={name + ind} className="flex flex-col sm:flex-row   sm:py-3 sm:px-3 rounded-xl  w-full h-full gap-3 ">
             <div className={`flex flex-col w-full h-full  text-left `}>
-              {image && <div className="flex justify-center"><CustImage className="rounded-md h-full" src={image} alt={name} width="50vw" height="50vh" /></div>}
+              {image?.name && <div className="flex justify-center mx-auto  w-full sm:w-11/12"><CustImage className="rounded-md mx-auto h-full" src={image.url} alt={name} width="100%" height="40vh" /></div>}
               <div className="text-2xl sm:text-3xl sm:px-0 px-2 ease my-5">{name}</div>
               <hr className="my-3" />
               <div className="text-lg sm:px-0 font-thin px-2 ease whitespace-pre-line my-5">{detail}</div>
@@ -113,6 +125,8 @@ export default function Index(props) {
             {/* {image && ind % 2 === 1 && <div className="sm:w-3/5  my-auto h-full  ease "><CustImage className="rounded-md h-full" src={image} alt={name} width="100%" height="100%" /></div>} */}
             <hr className="my-3" />
           </div>)}
+            <hr className="my-3" />
+          <div className="mb-6 flex flex-col">{data.ref.map(({ url }, i) => <a href={url.split(",").at(-1)} target="_blank" rel="noopener noreferrer" key={i} className="text-gray-600 text-sm">อ้างอิง {url}</a>)}</div>
         </div>
         <p className='text-right'>ยอดเข้าชม {data.views} ยอด</p>
       </div>
@@ -122,6 +136,7 @@ export default function Index(props) {
         <BestBlog />
       </div>
     </div>
+  </>
   )
 }
 
@@ -146,4 +161,37 @@ export async function getServerSideProps({ req, res, query }) {
   return {
     props: {},
   }
+}
+
+const showConfirmDel = async (val,router) => {
+  console.log("delete", val)
+  confirm({
+      title: `คุณต้องการจะลบบทความ`,
+      content: <div>
+          <p>{val.name}</p>
+          <p>ประเภท : {val.type}</p>
+      </div>,
+      okText: "ตกลง",
+      okType: "danger",
+      cancelText: "ยกเลิก",
+      async onOk() {
+          const res = await fetch("/api/getBlogs", {
+              headers: { 'Content-Type': 'application/json', },
+              method: "DELETE",
+              body: JSON.stringify({ id: val.id })
+          })
+          if (res.status === 200) {
+              notification.success({
+                  message: 'ลบข้อมูลสำเร็จ',
+              })
+              router.push({pathname:`/blogs`})
+          } else {
+              notification.error({
+                  message: 'ไม่สามารถลบข้อมูลได้',
+                  description: 'ไม่สามารถติดต่อ server ',
+              })
+          }
+      },
+      onCancel() { },
+  });
 }

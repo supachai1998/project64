@@ -36,8 +36,8 @@ export default function ContentHeader({ headerData, url_yt }) {
                         : "pl-1 sm:mx-5 sm:h-full sm:text-sm whitespace-pre-line text-md"} >
                         {content}
                     </div> :
-                        content.map(({ url }, ind) => <div key={url} className="sm:pl-5 pl-1">
-                            <a target="_blank" href={url.trim().split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a>
+                        content.map(({ url }, ind) => <div key={url} className="sm:pl-5 pl-1 w-full overflow-hidden">
+                            <a target="_blank" href={url.trim().split(",").at(-1)} className='text-md w-full whitespace-pre-line ' rel="noreferrer">{url}</a>
                         </div>)
                     }
                     <hr className="sm:my-5 sm:visible invisible" />

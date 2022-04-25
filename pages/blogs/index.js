@@ -28,12 +28,12 @@ export default function Index() {
     }, [router])
     if (!_data) return <div className='min-h-screen h-full'></div>
     return (
-        <div className="min-h-screen mb-10" style={{ height: "fit-content" }}>
+        <div className="min-h-screen mb-10 " style={{ height: "fit-content" }}>
             <div className="justify-center mx-auto md:px-5 h-full">
                 <div className="my-5 ">
                     <CusInput only="blogs" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
                 </div>
-                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-3 h-full'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4  gap-3 h-full'>
                     {_data.map(({
                         id,
                         name_th,
