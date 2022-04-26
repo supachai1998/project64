@@ -74,7 +74,7 @@ const CusModal = ({ handleClose, contentModal }) => {
 const Suggess_true = ({ data, showModal }) => {
     const router = useRouter()
     const count_suggess = data.map(item => item.suggess).filter(item => item).length
-    if(count_suggess===0) return null
+    if (count_suggess === 0) return null
     return <div>
         <p className='w-full text-2xl text-center  text-green-600'>โรคที่แนะนำให้รับประทานได้</p>
         <Owl_Carousel margin={0}>
@@ -109,9 +109,11 @@ const Suggess_true = ({ data, showModal }) => {
                                         </div>
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
                                         <hr className='mb-2 ' />
-                                        <div className="flex justify-center mb-4">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
-                                        <div className="flex justify-center ">
-                                            <a onClick={() => {  router.push(`/ncds/${ncds?.id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                        <div className="flex flex-wrap gap-2 justify-center items-center">
+                                            {video && <a className="max-w-sm md:mx-auto flex justify-center items-center gap-3 w-20 text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
+                                            <div className="flex justify-center items-center ">
+                                                <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="w-20  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </>
@@ -127,7 +129,7 @@ const Suggess_true = ({ data, showModal }) => {
 const Suggess_false = ({ data, showModal }) => {
     const router = useRouter()
     const count_notsuggess = data.map(item => item.suggess).filter(item => !item).length
-    if(count_notsuggess===0) return null
+    if (count_notsuggess === 0) return null
     return <div>
         <p className='w-full text-2xl text-center  text-red-600'>โรคที่ไม่แนะนำให้รับประทาน</p>
         <Owl_Carousel margin={0}>
@@ -162,9 +164,11 @@ const Suggess_false = ({ data, showModal }) => {
                                         </div>
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
                                         <hr className='mb-2 ' />
-                                        <div className="flex justify-center mb-4 h-11/12">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
-                                        <div className="flex justify-center ">
-                                            <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                        <div className="flex flex-wrap gap-2 justify-center items-center">
+                                            {video && <a className="max-w-sm md:mx-auto flex justify-center items-center gap-3 w-20 text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
+                                            <div className="flex justify-center items-center ">
+                                                <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="w-20  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </>
