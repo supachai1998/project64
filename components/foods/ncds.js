@@ -108,9 +108,8 @@ const Suggess_true = ({ data, showModal }) => {
                                             แนะนำ
                                         </div>
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
-                                        {video && <hr className='mb-2 border-t' />}
-                                        <div className="flex justify-center mb-4">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
                                         <hr className='mb-2 ' />
+                                        <div className="flex justify-center mb-4">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
                                         <div className="flex justify-center ">
                                             <a onClick={() => {  router.push(`/ncds/${ncds?.id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
                                         </div>
@@ -162,9 +161,8 @@ const Suggess_false = ({ data, showModal }) => {
                                             ไม่แนะนำ
                                         </div>
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
-                                        {video && <hr className='mb-2 border-t' />}
-                                        <div className="flex justify-center mb-4 h-11/12">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
                                         <hr className='mb-2 ' />
+                                        <div className="flex justify-center mb-4 h-11/12">{video && <a className="max-w-sm md:mx-auto w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> ดูวิดีโอ </a>}</div>
                                         <div className="flex justify-center ">
                                             <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
                                         </div>
