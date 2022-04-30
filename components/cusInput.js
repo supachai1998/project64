@@ -1,19 +1,19 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Input, message, Button, Tooltip, Modal, notification, Spin } from 'antd'
+import { Input, message, Button, Tooltip, Modal, notification, Spin, AutoComplete } from 'antd'
 import { CameraOutlined, LoadingOutlined, SwapOutlined } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
 import Resizer from "react-image-file-resizer";
 import { LinearProgressBar } from '../ulity/progress';
 import { useRouter } from 'next/router';
-
+const { Option } = AutoComplete;
 // <CameraOutlined />
 const { Search } = Input
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-export default function CusInput({ setData, loading, setLoading, store = [], only = "" }) {
+export default function CusInput({ setData, loading, setLoading, store = [], only = "", _api }) {
   const router = useRouter()
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
@@ -24,10 +24,11 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
     if (asPath[1]) api += `&type=${asPath[1]}`
     if (asPath[2]) api += `&categories=${asPath[2]}`
     if (asPath[3]) api += `&self=${asPath[3]}`
-    const val = refSearchInput.current?.state?.value || input
+    const val = input  || refSearchInput.current?.state?.value  
     if (!!val && val.length > 2) {
       setLoading(true)
       api += `&txt=${val}`
+      if (_api) api = _api += `&name=${val}`
       const data = await fetch(api).then(res => res.ok && res.json())
       if (!data) notification.error({ message: "ไม่พบข้อมูล" })
       else setData(data)
@@ -44,7 +45,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
 
   }
   useEffect(() => {
-    const val = refSearchInput.current?.state?.value || input
+    const val = input  || refSearchInput.current?.state?.value  
     !!val && val.length > 2 && handleSearch()
     return () => {
       if (store?.length > 0) setData(store)
@@ -61,15 +62,15 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
   }
   return (
     <div className="grid w-full rounded-xl ">
-      {only !== "blogs" && statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
+      {only !== "blogs" && only !== "food_no_camera" && statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
         : <div className="grid grid-cols-1 gap-3 mx-10 row-span-full">
           <div className="grid ">
             <label className='sm:text-2xl text-xl'>ค้นหา {input}</label>
           </div>
-          <div className={only !== "blogs" ? "grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row" :
+          <div className={only !== "blogs" && only !== "food_no_camera" ? "grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row" :
             "flex justify-end"}>
 
-            {only !== "blogs" && <Tooltip title="ถ่ายภาพ">
+            {only !== "blogs" && only !== "food_no_camera" && <Tooltip title="ถ่ายภาพ">
               <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
                 <CameraOutlined />
                 {loading
@@ -80,12 +81,13 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
               </label>
             </Tooltip>}
 
-            {only !== "blogs" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} />}
-            <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} maxLength={30} onPressEnter={handleSearch} loading={loading} enterButton inputMode="search"
-              placeholder={only === "food" ? "ชื่ออาหาร" :
-                only === "ncds" ? "ชื่อโรค" :
-                  only === "blogs" ? "ชื่อบทความ"
-                    : "ชื่ออาหาร ,  ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
+            {only !== "blogs" && only !== "food_no_camera" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} />}
+
+              <Search className="z-0 w-full input search loading with enterButton" disabled={loading}  onChange={onChange} onSearch={handleSearch} onPressEnter={handleSearch}  maxLength={30} loading={loading} enterButton inputMode="search"
+                placeholder={only === "food" || only === "food_no_camera" ? "ชื่ออาหาร" :
+                  only === "ncds" ? "ชื่อโรค" :
+                    only === "blogs" ? "ชื่อบทความ"
+                      : "ชื่ออาหาร ,  ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
           </div>
         </div>
       }

@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, useRef, } from 'react';
 import { Button, Table, Divider, Typography, Select, Modal, List, Steps, Form, Input, notification, Switch, InputNumber, Tooltip, Popconfirm } from 'antd'
-import { UploadOutlined, DeleteOutlined, MinusCircleOutlined, PlusOutlined,SearchOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import Board from '/components/admin/DisplayBoard';
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -29,11 +29,22 @@ export default function ResultForm() {
     const reqForm = async () => await fetch(`/api/getResultForm?id=${modalResultForm.ncdsId}`)
         .then(res => {
             if (res.status === 200) return res.json()
-            else if (res.status === 404) notification.error({ message: `ไม่พบข้อผลการประเมิน${modalResultForm.name_th}` })
-            else notification.error({ message: `ไม่สามผลการประเมิน${modalResultForm.name_th}` })
+            else if (res.status === 404) {
+                notification.error({ message: `ไม่พบข้อผลการประเมิน${modalResultForm.name_th}` })
+                setResultForm();
+                setStore()
+                return []
+            }
+            return []
         })
-        .then(data => { setResultForm(data); setStore(data) })
-        .catch(err => notification.error({ message: "Error", description: err.message }))
+        .then(data => {
+            if (data.length > 0) {
+                const _ = data.map(({ id, ...rest }) => ({ id: id, key: id, ...rest }))
+                setResultForm(_);
+                setStore(_)
+            }
+        })
+    // .catch(err => notification.error({ message: "Error", description: err.message }))
 
     const reload = (async () => {
         setLoading(true)
@@ -149,7 +160,7 @@ const TableResultForm = () => {
                             <p>{rows.title}</p>
                             <p>ช่วงคะแนน : {rows.start} - {rows.end}</p>
                         </div>,
-                        okType:"danger",
+                        okType: "danger",
                         okText: "ตกลง",
                         cancelText: "ยกเลิก",
                         async onOk() { res(rows.id) },
@@ -159,7 +170,7 @@ const TableResultForm = () => {
                 id.push(a)
             }
             console.log("delete", id)
-            const res = await fetch("/api/getresultForm", {
+            const res = await fetch("/api/getResultForm", {
                 headers: { 'Content-Type': 'application/json', },
                 method: "DELETE",
                 body: JSON.stringify({ id: id })
@@ -202,6 +213,7 @@ const TableResultForm = () => {
     }
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
+            console.log(selectedRows)
             setSelectRows(selectedRows)
         },
     };

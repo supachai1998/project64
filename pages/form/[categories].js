@@ -123,9 +123,12 @@ export default function Index() {
                             {/* {console.log(sub.choice.length)} */}
                             <div className={sub.choice.length === 2 ? 'grid grid-flow-row gap-2' : 'grid grid-flow-col gap-2'}>
                                 <Radio.Group onChange={e => onRadioChange(e, ind)} value={radioSelect?.id}>
-                                    {sub.choice.map(({ id, name, detail, score }, i) => <div key={i} className="my-5">
-                                        <Tooltip title={detail}><Radio style={{ fontSize: "1rem" }} value={id}>{name}</Radio></Tooltip>
-                                        <p className="w-full max-h-96   text-black">{detail}</p>
+                                    {sub.choice.map(({ id, name, detail, select }, i) => <div key={i} className="my-1">
+                                        <Radio className={`hover:bg-gray-50 ease-anima p-3 rounded-md w-full ${select && "bg-gray-100"}`} value={id}><div>
+                                            <span className='text-md'>{name}</span>
+                                            <span className="text-sm ml-3 text-gray-800 whitespace-pre-wrap">{detail}</span>
+                                        </div>
+                                        </Radio>
                                     </div>)}
                                 </Radio.Group>
                             </div>
@@ -134,12 +137,12 @@ export default function Index() {
                 })}
                 <div className='w-full flex items-end justify-end gap-3'>
                     {curIndPart > 0 && (
-                        <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+                        <Button onClick={prev}>
                             ตอนก่อนหน้า
                         </Button>
                     )}
                     {curIndPart < datas.length - 1 && (
-                        <Button type="ghost" onClick={() => next()}>
+                        <Button type="ghost" className="border-blue-700 text-blue-800" onClick={next}>
                             ตอนถัดไป
                         </Button>
                     )}
@@ -150,13 +153,13 @@ export default function Index() {
                     )}
                 </div>
             </div>
-            <Result result={result} setResult={setResult} ncdsId={datas[0].ncds.id} />
+            <Result result={result} setResult={setResult} ncdsName={datas[0].ncds.name_th} ncdsId={datas[0].ncds.id} />
         </div>
     </>
 
 }
 
-const Result = ({ result, setResult, ncdsId }) => {
+const Result = ({ result, setResult, ncdsId ,ncdsName}) => {
     const router = useRouter()
     const handleCancel = () => {
         setResult();
@@ -167,7 +170,7 @@ const Result = ({ result, setResult, ncdsId }) => {
     console.log(result)
     return <Modal
 
-        title={<span className='text-3xl'>ผลการประเมิน</span>}
+        title={<span className='text-3xl'>{ncdsName}</span>}
         visible={result}
         onCancel={handleCancel}
         footer={null}>

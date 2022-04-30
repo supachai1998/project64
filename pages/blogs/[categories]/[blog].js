@@ -132,8 +132,8 @@ export default function Index(props) {
       </div>
 
       <div>
-        <BestFood />
-        <BestBlog />
+        <BestFood title="อาหารแนะนำ"/>
+        <BestBlog title="บทความแนะนำ"/>
       </div>
     </div>
   </>

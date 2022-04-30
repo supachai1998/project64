@@ -51,7 +51,7 @@ export default function Index() {
             dataIndex: 'type',
             key: 'type',
             render: val => <div >
-                {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "ทั้งหมด"}
+                {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "อาหารและโรค"}
             </div>
         },
         {
@@ -68,18 +68,18 @@ export default function Index() {
             width: "20%",
             render: val => <div >{val}</div>
         },
-        
+
         {
             title: 'ชื่อหัวข้อย่อย',
             dataIndex: 'subBlog',
             key: 'subBlog',
-            render: val => <>{val.map((v,ind)=><div key={ind} className="text-left" >{ind+1}. {v.name}</div>)}</>
+            render: val => <>{val.map((v, ind) => <div key={ind} className="text-left" >{ind + 1}. {v.name}</div>)}</>
         },
         {
             title: 'ความสัมพันธ์',
             dataIndex: 'related',
             key: 'related',
-            render: val => <>{val?.map((v,ind)=><div key={ind}>{ind+1}. {v?.ncds?.name_th || v?.Foods?.name_th}</div>)}</>
+            render: val => <>{val?.map((v, ind) => <div key={ind}>{ind + 1}. {v?.ncds?.name_th || v?.Foods?.name_th}</div>)}</>
         },
         {
             title: 'ผลโหวต',
@@ -155,7 +155,7 @@ export default function Index() {
                             data={blogs.map(({ name, imply, type, video, approve, avg_vote, total_vote, views }) => ({ name, imply, type, video, approve, avg_vote, total_vote, views }))}
                             onClick={() => notification.success({ message: "ดาวน์โหลดไฟล์" })}
                         >
-                        <span className="text-green-500">CSV</span>
+                            <span className="text-green-500">CSV</span>
                         </CSVLink>
                     </Button>
                     <Button onClick={() => setModalAdd(true)}>เพิ่มบทความ</Button>
@@ -169,7 +169,7 @@ export default function Index() {
                 loading,
                 ncds, food,
                 ncdsLoading, foodLoading,
-                blogs, setBlogs, store ,
+                blogs, setBlogs, store,
                 inputRef
             }}>
                 <ModalAdd />
@@ -178,7 +178,7 @@ export default function Index() {
                 <TableForm />
             </Context.Provider>
             <div className='hidden' ref={componentRef}>
-                <Table size='small' title={() => <span className="text-lg">บทความ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={blogs} columns={columns} footer={()=><div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+                <Table size='small' title={() => <span className="text-lg">บทความ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={blogs} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
             </div>
         </div>
     )
@@ -189,8 +189,8 @@ export default function Index() {
 const TableForm = () => {
     const { blogs, setBlogs, store, reload, loading,
         setModalEdit,
-        setModalView ,inputRef } = useContext(Context)
-        
+        setModalView, inputRef } = useContext(Context)
+
     const [selectRows, setSelectRows] = useState([])
 
     const columns = [
@@ -198,11 +198,11 @@ const TableForm = () => {
             title: 'ประเภทบทความ',
             dataIndex: 'type',
             key: 'type',
-            filters: [{ text: 'โรคไม่ติดต่อ', value: "NCDS", }, { text: 'อาหาร', value: "FOOD", }, { text: 'ทั้งหมด', value: "ALL", }],
+            filters: [{ text: 'โรคไม่ติดต่อ', value: "NCDS", }, { text: 'อาหาร', value: "FOOD", }, { text: 'อาหารและโรค', value: "ALL", }],
             onFilter: (value, record) => record.type === value,
             sorter: (a, b) => a.type.localeCompare(b.type),
             render: val => <Paragraph className='mt-3' >
-                {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "ทั้งหมด"}
+                {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "อาหารและโรค"}
             </Paragraph>
         },
         {
@@ -418,7 +418,7 @@ const TableForm = () => {
         },
     };
 
-    
+
     return <div >
         <Table size='small' tableLayout='auto'
             dataSource={blogs} columns={columns}
@@ -513,6 +513,8 @@ const ModalAdd = () => {
             reload()
             setModalAdd(false)
             fetch(`/api/uploads`)
+            setFileListSubBlogs([])
+            setFileList([])
             form.resetFields();
         } else notification.error({
             message: 'ไม่สามารถเพิ่มข้อมูลได้',
@@ -524,7 +526,8 @@ const ModalAdd = () => {
 
     }
     const onReset = () => {
-        setFileList(null)
+        setFileListSubBlogs([])
+        setFileList([])
     }
     const onChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
@@ -554,6 +557,7 @@ const ModalAdd = () => {
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
+                labelAlign="left"
                 rules={[{ required: true, message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
@@ -565,7 +569,10 @@ const ModalAdd = () => {
                     {Type.map(({ name_th, name_en }, ind) => <Option key={`${name_en}_${ind}`} value={name_en}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
+
             {(type === "NCDS" || type === "ALL") && <Form.Item
+                labelCol={{ span: 3, offset: 3 }}
+                labelAlign="left"
                 name="ncdsId"
                 label="เลือกโรค"
                 rules={[{ required: true }]}>
@@ -576,6 +583,8 @@ const ModalAdd = () => {
                 </Select>
             </Form.Item>}
             {(type === "FOOD" || type === "ALL") && <Form.Item
+                labelCol={{ span: 3, offset: 3 }}
+                labelAlign="left"
                 name="foodId"
                 label="เลือกรายการอาหาร"
                 rules={[{ required: true }]}>
@@ -588,18 +597,21 @@ const ModalAdd = () => {
             <Form.Item
                 name="name"
                 label="ชื่อบทความ"
+                labelAlign="left"
                 rules={[{ required: true },]}>
                 <Input placeholder="ชื่อบทความ" />
             </Form.Item>
             <Form.Item
                 name="imply"
                 label="คำอธิบาย"
+                labelAlign="left"
                 rules={[{ required: true },]}>
                 <TextArea rows={4} placeholder="คำอธิบาย" />
             </Form.Item>
             <Form.Item
                 name="video"
                 label="วิดีโอ"
+                labelAlign="left"
                 rules={[{ required: false }, {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน ที่อยู่(url) ให้ถูกต้อง',
@@ -609,6 +621,7 @@ const ModalAdd = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
+                labelAlign="left"
                 rules={[{ required: true, message: 'กรุณาเลือกรูปภาพ' }]}>
 
 
@@ -651,6 +664,8 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label="ชื่อหัวข้อ"
+                                    labelAlign="left"
+                                    labelCol={{ span: 2, offset: 3 }}
                                     name={[field.name, 'name']}
                                     fieldKey={[field.fieldKey, 'name']}
                                     rules={[{ required: true }]}
@@ -660,6 +675,8 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label="เนื้อความ"
+                                    labelAlign="left"
+                                    labelCol={{ span: 2, offset: 3 }}
                                     name={[field.name, 'detail']}
                                     fieldKey={[field.fieldKey, 'detail']}
                                     rules={[{ required: true }]}
@@ -669,8 +686,10 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     name={[field.name, 'image']}
+                                    labelCol={{ span: 2, offset: 3 }}
                                     fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
+                                    labelAlign="left"
                                 // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
                                 >
 
@@ -855,7 +874,8 @@ const ModalEdit = () => {
 
     }
     const onReset = () => {
-        setFileList(null)
+        setFileListSubBlogs([])
+        setFileList([])
     }
     const onTypeChange = (val) => {
         val !== 1 && setType(val)
@@ -880,6 +900,7 @@ const ModalEdit = () => {
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
+                labelAlign="left"
                 rules={[{ required: true, message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
@@ -893,6 +914,8 @@ const ModalEdit = () => {
             </Form.Item>
             {/* {console.log()} */}
             {(form.getFieldValue("type") === "NCDS" || form.getFieldValue("type") === "ALL") && <Form.Item
+                labelCol={{ span: 3, offset: 3 }}
+                labelAlign="left"
                 name="ncdsId"
                 label="เลือกโรค"
                 initialValue={modalEdit.related.filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
@@ -904,6 +927,8 @@ const ModalEdit = () => {
                 </Select>
             </Form.Item>}
             {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
+                labelCol={{ span: 3, offset: 3 }}
+                labelAlign="left"
                 name="foodId"
                 label="เลือกรายการอาหาร"
                 initialValue={modalEdit.related.filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
@@ -917,18 +942,21 @@ const ModalEdit = () => {
             <Form.Item
                 name="name"
                 label="ชื่อบทความ"
+                labelAlign="left"
                 rules={[{ required: true },]}>
                 <Input placeholder="ชื่อบทความ" />
             </Form.Item>
             <Form.Item
                 name="imply"
                 label="คำอธิบาย"
+                labelAlign="left"
                 rules={[{ required: true },]}>
                 <TextArea rows={4} placeholder="คำอธิบาย" />
             </Form.Item>
             <Form.Item
                 name="video"
                 label="วิดีโอ"
+                labelAlign="left"
                 rules={[{ required: false }, {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน ที่อยู่(url) ให้ถูกต้อง',
@@ -938,6 +966,7 @@ const ModalEdit = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
+                labelAlign="left"
                 rules={[{ required: true, message: 'กรุณาเลือกรูปภาพ' }]}
             >
 
@@ -979,6 +1008,8 @@ const ModalEdit = () => {
                                 <Form.Item
                                     {...field}
                                     label="ชื่อหัวข้อ"
+                                    labelAlign="left"
+                                    labelCol={{ span: 2, offset: 3 }}
                                     key={`image ${ind}`}
                                     name={[field.name, 'name']}
                                     fieldKey={[field.fieldKey, 'name']}
@@ -990,6 +1021,8 @@ const ModalEdit = () => {
                                 <Form.Item
                                     {...field}
                                     label="เนื้อความ"
+                                    labelAlign="left"
+                                    labelCol={{ span: 2, offset: 3 }}
                                     key={`detail ${ind}`}
                                     name={[field.name, 'detail']}
                                     fieldKey={[field.fieldKey, 'detail']}
@@ -1002,8 +1035,10 @@ const ModalEdit = () => {
                                     {...field}
                                     key={`image ${ind}`}
                                     name={[field.name, 'image']}
+                                    labelCol={{ span: 2, offset: 3 }}
                                     fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
+                                    labelAlign="left"
                                 // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
                                 >
                                     <Upload
@@ -1057,7 +1092,7 @@ const ModalEdit = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Button_Delete className="text-gray-800" fx={() => { remove(field.name); }} />ลบหัวข้อที่ {ind + 1}
+                                        <Button_Delete className="text-gray-800" fx={() => { remove(field.name); }} />ลบอ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -1107,7 +1142,7 @@ const ModalView = () => {
         footer={<></>}>
         <Form labelCol={{ span: 4 }} labelAlign="left">
             <Form.Item label={`รูปภาพ`}>{modalView?.image?.map(({ name }) => <>{name ? <CusImage className="rounded-md shadow-lg" key={name} width="250px" height="150px" src={name} /> : "ไม่พบรูปภาพ"}</>)}</Form.Item>
-            <Form.Item label="ประเภท"><span className='text-lg whitespace-pre-line'>{modalView.type === "ALL" ? "ทั้งหมด" : modalView.type === "NCDS" ? "โรคไม่ติดต่อ" : modalView.type === "FOOD" ? "อาหาร" : ""}</span></Form.Item>
+            <Form.Item label="ประเภท"><span className='text-lg whitespace-pre-line'>{modalView.type === "ALL" ? "อาหารและโรค" : modalView.type === "NCDS" ? "โรคไม่ติดต่อ" : modalView.type === "FOOD" ? "อาหาร" : ""}</span></Form.Item>
             <Form.Item label={`ความเกี่ยวข้อง ${modalView?.related?.length}`}>
                 <div className="flex gap-2"> {!!modalView?.related && modalView?.related?.length > 0 ? modalView?.related?.map(({ id, Foods, ncds }, index) => <>
                     <span key={`${id}_${index}`} className='text-md whitespace-pre-line'>{Foods?.name_th || ncds?.name_th}</span>
@@ -1116,8 +1151,10 @@ const ModalView = () => {
             </Form.Item>
 
             <Form.Item label="การอนุมัติ"><span className='text-md whitespace-pre-line'>{modalView.approve === 1 ? "อนุมัติ" : modalView.approve === 2 ? "ไม่อนุมัติ" : "รอการอนุมัติ"}</span></Form.Item>
-            <Form.Item label="ชื่อบทความ"><span className='text-lg whitespace-pre-line'>{modalView.name}</span></Form.Item>
-            <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView.imply}</span></Form.Item>
+            <Form.Item label="ชื่อบทความ"
+                labelAlign="left"><span className='text-lg whitespace-pre-line'>{modalView.name}</span></Form.Item>
+            <Form.Item label="คำอธิบาย"
+                labelAlign="left"><span className='text-md whitespace-pre-line'>{modalView.imply}</span></Form.Item>
             <Form.Item label="หัวข้อย่อย">
                 {modalView.subBlog.map(({ name, image, detail }, index) => <div key={`${name}_${index}`}>
                     <Form labelCol={{ span: 4 }} labelAlign="left">
@@ -1128,7 +1165,8 @@ const ModalView = () => {
                     </Form>
                 </div>)}
             </Form.Item>
-            <Form.Item label="วิดีโอ">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
+            <Form.Item label="วิดีโอ"
+                labelAlign="left">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
             <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><a key={url} rel="noopener noreferrer" target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line'>{url}</a><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
 
         </Form>
@@ -1138,14 +1176,14 @@ const ModalView = () => {
 const Type = [
     { name_en: "NCDS", name_th: "โรคไม่ติดต่อ" },
     { name_en: "FOOD", name_th: "อาหาร" },
-    { name_en: "ALL", name_th: "ทั้งหมด" },
+    { name_en: "ALL", name_th: "อาหารและโรค" },
 ]
 
 const Chart = ({ food, ncds, blogs }) => {
 
     // console.log(blogs)
     const type_blog = {
-        labels: ["โรคไม่ติดต่อ", "อาหาร", "ทั้งหมด"],
+        labels: ["โรคไม่ติดต่อ", "อาหาร", "อาหารและโรค"],
         datasets: [{
             data: blogs.reduce((acc, { type }) => {
                 switch (type) {

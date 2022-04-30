@@ -58,8 +58,8 @@ const fetchData = async (categories) => {
         if (res.ok) {
             const _ = await res.json()
             try {
-                const __ = _.map(data => { return { id: data.id, title: data.name_th, detail: data.calories, imgUrl: data.image[0].name || null } })
-                return __
+                // const __ = _.map(data => { return { id: data.id, title: data.name_th, detail: data.calories, imgUrl: data.image[0].name || null } })
+                return _
             } catch (err) { console.error(err);notification.error({ message: `ไม่สามารถแมพข้อมูลอาหาร${categories}` }) }
         } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร${categories}` })
     })

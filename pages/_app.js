@@ -63,7 +63,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
   useEffect(() => {
     // call api machine learning 
-    !ncds && fetch(`http://192.168.43.65:8000`, { method: "GET", headers: { 'Content-Type': 'application/json', } })
+    !ncds && fetch(`/api/predict`)
   }, [])
 
   const handleMenuClick = (val) => {

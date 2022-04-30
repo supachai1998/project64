@@ -51,8 +51,8 @@ export default async function handler(req, res,) {
                 return res.status(200).json({ title: _data?.title, index: result, of: dataQuery.length, recommend: _data?.recommend })
 
               }
-            }else{
-              return res.status(404).json({ statusText: "ไม่พบข้อมูล" , error:"ไม่พบข้อมูลผลการประเมิน" })
+            } else {
+              return res.status(404).json({ statusText: "ไม่พบข้อมูล", error: "ไม่พบข้อมูลผลการประเมิน" })
             }
           }
           // create many record
@@ -68,11 +68,20 @@ export default async function handler(req, res,) {
           return res.status(500).json({ status: false, error: e.message })
         }
       case "DELETE":
-        await prisma.resultForm.delete({
-          where: {
-            id: parseInt(id),
-          }
-        })
+        if (Array.isArray(id)) {
+          id.map(async _ => await prisma.resultForm.delete({
+            where: {
+              id: parseInt(_),
+            }
+          }))
+        }
+        else {
+          await prisma.resultForm.delete({
+            where: {
+              id: parseInt(id),
+            }
+          })
+        }
         return res.status(200).json({ status: true })
       case "PATCH":
         try {

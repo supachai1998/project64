@@ -75,13 +75,15 @@ export default function Index(props) {
 
                 <div className='card mv-10 w-11/12 mx-auto mt-5 sm:w-8/12'>
                     <div className="flex flex-col w-full px-4 h-full    text-center">
-                    <span className='text-lg sm:text-xl    text-black my-auto p-0'>{data.name_en}</span>
-                        <p className="sm:text-4xl text-3xl font-bold text-green-800 mt-3">{data.calories} กิโลแคลอรี่</p>
+                    <span className='text-lg sm:text-xl    text-black my-auto p-0 capitalize  '>{data.name_en}</span>
+                        <p className="sm:text-4xl text-3xl font-bold text-green-800 my-5">{data.calories} กิโลแคลอรี่</p>
                         <div className="w-full ">
                         
                             <p className='food-content-body'>{data.detail}</p>
+                            <hr className="my-6"/>
                             <p className="food-content-header">วิธีการทำ</p>
                             <p className='food-content-body'>{data.proceduce}</p>
+                            <hr className="my-6"/>
                             <p className="food-content-header">ส่วนผสม</p>
                             <p className='food-content-body'>{data.ingredient}</p>
 
@@ -100,8 +102,8 @@ export default function Index(props) {
 
 
                 <NCDS ncds={data.FoodNcds} />
-                <BestFood />
-                <BestBlog />
+                <BestFood title="อาหารแนะนำ"/>
+                <BestBlog title="บทความแนะนำ"/>
             </div>
 
             {content && <CusModal handleCancel={handleCancel} content={content} />}

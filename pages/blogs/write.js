@@ -211,6 +211,7 @@ export default function Index() {
         val !== 1 && setType(val)
     }
     return <div className='min-h-screen sm:-m-2 py-10 px-1 bg-white'>
+        {console.log(form.getFieldValue())}
         <Form
             form={form}
             // initialValues={{}}
@@ -221,6 +222,7 @@ export default function Index() {
             onReset={onReset}>
             <Form.Item
                 name="type"
+                labelAlign="left"
                 label="ประเภทความสัมพันธ์"
                 rules={[{ required: true, message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
@@ -233,10 +235,13 @@ export default function Index() {
                     {Type.map(({ name_th, name_en }, ind) => <Option key={`${name_en}_${ind}`} value={name_en}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
+            
             {id ? <>
                 {(form.getFieldValue("type") === "NCDS" || form.getFieldValue("type") === "ALL") && <Form.Item
                     name="ncdsId"
                     label="เลือกโรค"
+                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelAlign="left"
                     initialValue={edit?.related?.filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
                     rules={[{ required: true }]}>
                     <Select mode="multiple"
@@ -248,6 +253,8 @@ export default function Index() {
                 {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
                     name="foodId"
                     label="เลือกรายการอาหาร"
+                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelAlign="left"
                     initialValue={edit?.related?.filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
                     rules={[{ required: true }]}>
                     <Select mode="multiple"
@@ -259,6 +266,8 @@ export default function Index() {
                 {(type === "NCDS" || type === "ALL") && <Form.Item
                     name="ncdsId"
                     label="เลือกโรค"
+                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelAlign="left"
                     rules={[{ required: true }]}>
                     <Select mode="multiple"
                         loading={ncdsLoading}
@@ -268,6 +277,8 @@ export default function Index() {
                 </Form.Item>}
                 {(type === "FOOD" || type === "ALL") && <Form.Item
                     name="foodId"
+                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelAlign="left"
                     label="เลือกรายการอาหาร"
                     rules={[{ required: true }]}>
                     <Select mode="multiple"
@@ -280,18 +291,21 @@ export default function Index() {
             <Form.Item
                 name="name"
                 label="ชื่อบทความ"
+                labelAlign="left"
                 rules={[{ required: true },]}>
                 <Input placeholder="ชื่อบทความ" />
             </Form.Item>
             <Form.Item
                 name="imply"
                 label="คำอธิบาย"
+                labelAlign="left"
                 rules={[{ required: true },]}>
                 <TextArea rows={4} placeholder="คำอธิบาย" />
             </Form.Item>
             <Form.Item
                 name="video"
                 label="วิดีโอ"
+                labelAlign="left"
                 rules={[{ required: false }, {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน ที่อยู่(url) ให้ถูกต้อง',
@@ -302,6 +316,7 @@ export default function Index() {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
+                labelAlign="left"
                 rules={[{ required: true, message: 'กรุณาเลือกรูปภาพ' }]}>
 
 
@@ -350,6 +365,8 @@ export default function Index() {
                                 <Form.Item
                                     {...field}
                                     label="ชื่อหัวข้อ"
+                                    labelCol={{ sm:{span: 6 ,offset: 3} , md:{span: 4, offset: 3} , lg:{span: 3, offset: 3},xl:{span: 2, offset: 3} }}
+                                    labelAlign="left"
                                     name={[field.name, 'name']}
                                     fieldKey={[field.fieldKey, 'name']}
                                     rules={[{ required: true }]}
@@ -359,6 +376,8 @@ export default function Index() {
                                 <Form.Item
                                     {...field}
                                     label="เนื้อความ"
+                                    labelCol={{ sm:{span: 6 ,offset: 3} , md:{span: 4, offset: 3} , lg:{span: 3, offset: 3},xl:{span: 2, offset: 3} }}
+                                    labelAlign="left"
                                     name={[field.name, 'detail']}
                                     fieldKey={[field.fieldKey, 'detail']}
                                     rules={[{ required: true }]}
@@ -367,6 +386,8 @@ export default function Index() {
                                 </Form.Item>
                                 <Form.Item
                                     {...field}
+                                    labelCol={{ sm:{span: 6 ,offset: 3} , md:{span: 4, offset: 3} , lg:{span: 3, offset: 3},xl:{span: 2, offset: 3} }}
+                                    labelAlign="left"
                                     name={[field.name, 'image']}
                                     fieldKey={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
@@ -424,7 +445,7 @@ export default function Index() {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip> แหล่งอ้างอิงที่ {ind + 1}
+                                        <Tooltip title={"ลบอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip> อ้างอิงที่ {ind + 1}
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -453,7 +474,7 @@ export default function Index() {
 
 
             <div className="flex justify-end gap-2">
-                <button type="button" onClick={onReset}>ล้างค่า</button>
+                {!id && <button type="button" onClick={onReset}>ล้างค่า</button>}
                 {id && <button type="button" onClick={onFill}>ย้อนค่าเดิม</button>}
                 <button className={`${id ? "bg-yellow-200 hover:bg-yellow-300" : "bg-blue-200 hover:bg-blue-300"} px-2`} type="submit">{id ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}</button>
             </div>

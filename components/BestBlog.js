@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 
 
-export default function DisplayBlogReadMore() {
+export default function DisplayBlogReadMore({title }) {
   const [_data, setData] = useState()
 
   const router = useRouter()
@@ -42,10 +42,10 @@ export default function DisplayBlogReadMore() {
   if (!_data && !Array.isArray(_data)) return null
   return (
     <Owl_Carousel
-      title="บทความยอดนิยม"
+      title={title}
       link="/blogs"
       info_top={`พบ ${_data.length} รายการ`}
-      info_down={`อ่านทั้งหมด`}
+      info_down={`ดูบทความทั้งหมด`}
     >
       <>
         {_data.map(({
@@ -64,7 +64,7 @@ export default function DisplayBlogReadMore() {
             className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
             <div className="relative w-full" >
               {image && <CustImage src={image[0].name} alt={id} className="" width="100%" height="200px" preview={false} />}
-              {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>}
+              {/* {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  capitalize ">{name_en}</p></Tooltip>} */}
               {calories && <Tooltip title="ปริมาณแคลอรี่"><p className="absolute bottom-0 left-0 p-2 text-xs text-left bg-opacity-60 bg-gray-50 sm:text-sm rounded-xl">{calories} KgCal</p></Tooltip>}
             </div>
             <div className={name ? "w-full h-full flex flex-col  p-3 " : " sm:w-1.5/2 h-full flex flex-col overflow-auto"}>

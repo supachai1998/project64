@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 const CusImage = dynamic(() => import('./cusImage.js'));
 const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 
-export default function BestFood() {
+export default function BestFood({title}) {
     const router = useRouter()
 
     const [_data, setData] = useState()
@@ -44,10 +44,10 @@ export default function BestFood() {
     return (
 
         <Owl_Carousel
-            title={"อาหารยอดนิยม"}
+            title={title}
             link={ `/foods`}
             info_top={`พบ ${_data.length} รายการ`}
-            info_down={`อ่านทั้งหมด`}
+            info_down={`ดูอาหารทั้งหมด`}
         >
             <>
                 {_data && _data.map(({ id, name_th, foodTypeId, calories, image, name_en }, index) => (
@@ -59,7 +59,7 @@ export default function BestFood() {
                             <div className=" flex-col text-center mb-0">
                                 <p className="card-header"> {name_th}</p>
                                 <hr className='my-3 mx-20 border-b border-blue-900' />
-                                <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500"> {name_en}</p>
+                                <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500 capitalize "> {name_en}</p>
                             </div>
                             <div className='text-center leading-none text-2xl '>
                                 <p className='mb-0 font-bold'>{calories}</p>

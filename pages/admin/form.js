@@ -54,7 +54,7 @@ export default function Index() {
             render: (text, val, index) => <Tooltip title={`${val.name_th} (${val.name_en})`} ><div >{val.name_th}</div></Tooltip>
         },
         {
-            title: <div className="text-center" >หัวข้อ</div>,
+            title: <div className="text-center" >ตอน</div>,
             dataIndex: 'data',
             key: 'data',
             render: val => <div className="text-left" >{val.map((v,ind)=><p key={v.title}>{ind +1}. {v.title}</p>)}</div>
@@ -170,7 +170,7 @@ const TableForm = () => {
             render: (text, val, index) => <Tooltip title={`${val.name_th} (${val.name_en})`} ><Paragraph ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
         },
         {
-            title: <div className="text-center" >จำนวนหัวข้อ</div>,
+            title: <div className="text-center" >จำนวนตอน</div>,
             dataIndex: 'data',
             key: 'data',
             sorter: (a, b) => a.data.length - b.data.length,
@@ -278,9 +278,10 @@ const ModalView = () => {
                 dataSource={modalView.subForm[current].choice}
                 renderItem={({ name, detail, score }, ind) => (
                     <List.Item>
-                        <List.Item.Meta
+                        <List.Item.Meta 
+                            
                             title={`${ind + 1}. ${name}`}
-                            description={`คะแนน ${score} ${detail ? `คำอธิบาย ${detail}` : ""}`}
+                            description={`${detail ? `คำอธิบาย ${detail}\n` : ""}คะแนน ${score} `}
                         />
                     </List.Item>
                 )}
@@ -299,17 +300,23 @@ const TableFormSub = () => {
         setModalEdit,
         loading, store } = useContext(ContextForm)
     const inputRef = useRef()
+    const [saveId , setSaveId] = useState(null)
+    useEffect(()=>{
+        // console.log(_formGroupBy,modalViewSubForm,_formGroupBy[modalViewSubForm]?.id)
+        setSaveId(_formGroupBy[modalViewSubForm].id)
+        
+    },[_formGroupBy, modalViewSubForm])
     // const _ =  _formGroupBy[modalViewSubForm].data.map(({id,...rest})=>({id:id,key:id,...rest}))
     // const [data, setData] = useState(_)
     // console.log(data)
-    useEffect(() => { }, [_formGroupBy, setFormGroupBy, store])
+    useEffect(() => {}, [_formGroupBy, setFormGroupBy, store])
     const [selectRows, setSelectRows] = useState([])
     const columns = [
         {
-            title: <div className="text-left" >ชื่อหัวข้อ</div>,
+            title: <div className="text-left" >ชื่อตอน</div>,
             dataIndex: 'title',
             key: 'title',
-            render: val => <Tooltip title={`${val}`} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
+            render: val => <Tooltip title={`${val}`} ><div >{val}</div></Tooltip>
         },
         {
             title: <div className="text-center" >จำนวนคำถาม</div>,
@@ -364,6 +371,11 @@ const TableFormSub = () => {
     }
     // console.log(_formGroupBy[modalViewSubForm])
     if (!!!_formGroupBy[modalViewSubForm]) return null
+    if(saveId !== _formGroupBy[modalViewSubForm].id && saveId !== null) {
+        // console.log(saveId,_formGroupBy[modalViewSubForm].id)
+        notification.error({message:"ไม่พบข้อมูลการประเมิน"})
+        setModalViewSubForm(-1)
+    }
     const showConfirmDelRows = async () => {
         console.log("delete", selectRows)
         if (selectRows.length <= 0) {
@@ -375,7 +387,7 @@ const TableFormSub = () => {
             for (const rows of selectRows) {
                 const a = await new Promise((res, rej) => {
                     confirm({
-                        title: `คุณต้องการจะลบบทความ`,
+                        title: `คุณต้องการจะลบแบบประเมิน`,
                         content: <div>
                             <p>{rows.title}</p>
                             {/* <p>คำอธิบาย : {rows.imply}</p> */}
@@ -422,7 +434,7 @@ const TableFormSub = () => {
     };
     return <div className=''>
         <div className='flex gap-2 justify-end items-end flex-row '>
-            <button className="  hover:bg-gray-200 " onClick={() => setModalAddSubForm(_formGroupBy[modalViewSubForm])}>เพิ่มหัวข้อ</button>
+            <button className="  hover:bg-gray-200 " onClick={() => setModalAddSubForm(_formGroupBy[modalViewSubForm])}>เพิ่มตอน</button>
             {/* <button className="  bg-red-400 hover:bg-red-500 " onClick={() => deleteAll(_formGroupBy[modalViewSubForm].data, reload, setModalViewSubForm)}>ลบทั้งหมด</button> */}
         </div>
         <Table size='small' tableLayout='auto' dataSource={_formGroupBy[modalViewSubForm].data} columns={columns}
@@ -441,8 +453,8 @@ const TableFormSub = () => {
                     {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
                         <Button_Delete className='text-gray-200' fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
                     </div>}
-                    <Tooltip title={"ค้นหาชื่อหัวข้อ"}>
-                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อหัวข้อ" className='text-black rounded-md' /></Tooltip>
+                    <Tooltip title={"ค้นหาชื่อตอน"}>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setFormGroupBy(store)} placeholder="ชื่อตอน" className='text-black rounded-md' /></Tooltip>
                     <Tooltip title={"ค้นหา"}>
                         <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
                 </div>
@@ -570,7 +582,7 @@ const ModalAdd = () => {
                     {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
-            <Form.List name="form" rules={[{ required: true, message: "คุณลืมเพิ่มหัวข้อการประเมินผล" }]}>
+            <Form.List name="form" rules={[{ required: true, message: "คุณลืมเพิ่มตอนการประเมินผล" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         {!!fields && fields.map((field, ind) => (
@@ -588,11 +600,11 @@ const ModalAdd = () => {
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <div className="text-lg text-blue-500">หัวข้อการประเมินผลที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>
+                                        <div className="text-lg text-blue-500">ตอนการประเมินผลที่ {ind + 1}</div> <Tooltip title={"ลบตอนที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>
                                     </div>
                                 </Form.Item>
                                 <Form.Item
-                                    label={`ชื่อหัวข้อที่ ${ind + 1}`}
+                                    label={`ชื่อตอนที่ ${ind + 1}`}
                                     name={[field.name, 'title']}
                                     fieldKey={[field.fieldKey, 'title']}
                                     rules={[{ required: true }]}
@@ -713,7 +725,7 @@ const ModalAdd = () => {
                                 onClick={() => add()}
                                 type="button">
                                 <PlusOutlined />
-                                <span className="text-blue-900">เพิ่มหัวข้อการประเมินผล</span>
+                                <span className="text-blue-900">เพิ่มตอนการประเมินผล</span>
                             </button>
                         </div>
 
@@ -746,7 +758,7 @@ const ModalEdit = () => {
     }, [modalEdit])
     const onOk = async (val) => {
         if (!val.subForm) {
-            notification.error({ message: "กรุณาเพิ่มหัวข้อการประเมินผล" })
+            notification.error({ message: "กรุณาเพิ่มตอนการประเมินผล" })
             return
         } else if (!val.subForm.map(({ choice }) => choice).every(arr => Array.isArray(arr) && arr.length > 0)) {
             notification.error({ message: "กรุณาเพิ่มคำถาม" })
@@ -812,7 +824,7 @@ const ModalEdit = () => {
             </Form.Item>
             <Form.Item
                 name="title"
-                label="ชื่อหัวข้อ"
+                label="ชื่อตอน"
                 rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
@@ -954,7 +966,10 @@ const ModalAddSubForm = () => {
             body: JSON.stringify(val)
         })
             .then(async res => {
-                if (res.ok) {
+                if(res.status === 404){
+                    notification.error({ title: `ไม่สามารถเพิ่มข้อมูลได้`,message:"ชื่อตอนต้องไม่ซ้ำ" })
+                }
+                else if (res.ok) {
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     onReset()
                     setModalAddSubForm(false)
@@ -969,7 +984,7 @@ const ModalAddSubForm = () => {
         setModalAddSubForm(false)
     }
 
-    return <Modal title={"เพิ่มหัวข้อการประเมินผล"}
+    return <Modal title={"เพิ่มตอนการประเมินผล"}
         visible={modalAddSubForm}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -1006,7 +1021,7 @@ const ModalAddSubForm = () => {
             </Form.Item>
             <Form.Item
                 name="title"
-                label="ชื่อหัวข้อ"
+                label="ชื่อตอน"
                 rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
@@ -1134,7 +1149,7 @@ const showConfirmDel = async (val, reload) => {
     confirm({
         title: <>คุณต้องการจะลบการประเมินผล</>,
         content: <ul>
-            <li> ชื่อหัวข้อ : {val.title} </li><br />
+            <li> ชื่อตอน : {val.title} </li><br />
             {val.subForm.map(({ name, choice }, ind) =>
                 <li key={name}>{ind + 1}. {name} <br />
                     {choice.map(({ name, score }, ind2) => <li key={name} className="ml-3">{ind + 1}.{ind2 + 1} {name}</li>)}
@@ -1237,15 +1252,16 @@ const Chart = ({ NCDS,
     _form,
     _formGroupBy }) => {
     const [color, setColor] = useState()
-    // useEffect(() => {
-    //     if (type && !color) setColor(type.map(v => randomRGB()))
-    // }, [type])
-    if (!!!_form || !!!_formGroupBy) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+    useEffect(() => {
+        if (!!_formGroupBy ) {
+            setColor([_formGroupBy.map(v=>v.data.map(()=>randomRGB())) , _formGroupBy.map(() => randomRGB())])
+        }
+    }, [_formGroupBy])
+    if (!!!_form || !!!_formGroupBy || !color) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
     </div>
-    // console.log(_formGroupBy)
-
+    // console.log(color)
 
 
 
@@ -1256,7 +1272,7 @@ const Chart = ({ NCDS,
             labels: v.data.map(({ title }) => title),
             datasets: [{
                 data: v.data.map(({subForm}) =>subForm.length),
-                backgroundColor: v.data.map(() => randomRGB()),
+                backgroundColor: color[0][ind],
                 borderWidth: 0,
             }],
         }} />
@@ -1266,7 +1282,7 @@ const Chart = ({ NCDS,
             datasets: [{
                 //  data =>_formGroupBy => subForm => choice => score
                 data: _formGroupBy.reduce((acc, val) => [...acc,val.data.reduce((acc2, val2) => acc2 + val2.subForm.reduce((acc3, val3) => acc3 + val3.choice.reduce((acc4, val4) => acc4 + val4.score, 0), 0), 0)], []),
-                backgroundColor: _formGroupBy.map(() => randomRGB()),
+                backgroundColor: color[1],
                 borderWidth: 0,
             }],
         }} />

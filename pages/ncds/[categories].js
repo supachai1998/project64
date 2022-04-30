@@ -60,7 +60,7 @@ export default function Index(props) {
             <div className="text-center w-full">
                 {/* Custom image */}
                 <div className='flex flex-col justify-center items-center gap-4'>
-                    <div className="sm:w-8/12 sm:h-96 h-1/2"><CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="100%" height="100%" /></div>
+                    <div className="h-60 w-full sm:w-full md:w-8/12 lg:w-7/12  md:h-96 lg:h-very-super"><CustImage className="rounded-lg " src={NCDS?.image[casImg]?.name} alt={NCDS.name_th} width="100%" height="100%" /></div>
                     <div className="flex gap-2">
                         {NCDS?.image.map(({ name }, i) => <Tooltip key={i + name} title={`รูป ${i + 1}`}><button onClick={() => setCasImg(i)} className={`w-2 h-2 rounded-full  hover:bg-gray-900 ease-anima ${casImg === i ? "bg-gray-900 animate-pulse" : "bg-gray-400"}`} /></Tooltip>)}
                     </div>
@@ -72,8 +72,8 @@ export default function Index(props) {
             <ContentHeader headerData={headerData} url_yt={NCDS.video} />
             <span className="flex justify-end w-full">ยอดเข้าชม {NCDS?.views} ครั้ง</span>
             <div className=''>
-                <BestFood />
-                <BestBlog />
+                <BestFood title="อาหารแนะนำ"/>
+                <BestBlog title="บทความแนะนำ"/>
             </div>
         </div>
     )

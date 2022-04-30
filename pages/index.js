@@ -28,8 +28,8 @@ export default function Index() {
         {/* {loading && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>} */}
       </div>
       <div className=' mx-0'>
-        <BestFood />
-        <BestBlog />
+        <BestFood title="อาหารยอดนิยม"/>
+        <BestBlog title="บทความยอดนิยม"/>
       </div>
 
     </div>

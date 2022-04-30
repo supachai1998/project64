@@ -287,7 +287,6 @@ export default async function handler(req, res) {
         }
         else {
           data = await prisma.blogs.findMany({
-
             where: { approve: 1 },
             include: {
               subBlog: true,
@@ -301,7 +300,6 @@ export default async function handler(req, res) {
               },
             },
           })
-
         }
     }
     if (!Array.isArray(data)) {

@@ -15,6 +15,7 @@ export default async function handler(req, res,) {
     switch (method) {
       case "POST":
         const { addSubForm, addForm } = query
+        try{
         if (addSubForm) {
           let subForm = body.subForm.map(v1 => { return { ...v1, choice: v1.choice.map(v => { return { ...v, score: Number(v.score) } }) } })
           subForm = subForm.map((v1) => { return { ...v1, choice: { create: [...v1.choice] } } })
@@ -43,6 +44,11 @@ export default async function handler(req, res,) {
             data: JSON.parse(body),
           })
         }
+      }catch(e){
+        if(e.message.includes("constraint")){
+          return res.status(404).send({ statusText: "มีค่าซ้ำ" })
+        }
+      }
         return res.status(200).json({ status: true })
       case "DELETE":
         const { allForm } = query

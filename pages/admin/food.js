@@ -366,6 +366,7 @@ const ModalAdd = () => {
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     setModalAdd(false)
                     fetch(`/api/uploads?name=food`)
+                    setFileList()
                     reload()
                 } else {
                     notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
@@ -1109,7 +1110,7 @@ const ModalView = () => {
         setModalView(false)
     }
     if (!modalView) return null
-    return <Modal title={modalView.name_th}
+    return <Modal title={modalView?.name_th}
         visible={modalView}
         okText={null}
         cancelText={<>ยกเลิก</>}
@@ -1118,24 +1119,24 @@ const ModalView = () => {
         width="100%"
         footer={<></>}>
         <Form labelCol={{ span: 4 }} labelAlign="left">
-            <Form.Item label="หมวด"><span className='text-lg whitespace-pre-line'>{modalView.FoodType.name_th}({modalView.FoodType.name_en})</span></Form.Item>
-            <Form.Item label={`รูปภาพ ${modalView.image.length} รูป`}>{modalView.image.map(({ name }) => <CusImage className="rounded-md shadow-lg" key={name} width="250px" height="150px" src={name} />)}</Form.Item>
-            <Form.Item label="ชื่ออาหารภาษาไทย"><span className='text-lg whitespace-pre-line'>{modalView.name_th}</span></Form.Item>
-            <Form.Item label="ชื่ออาหารภาษาอังกฤษ"><span className='text-lg whitespace-pre-line'>{modalView.name_en}</span></Form.Item>
-            <Form.Item label="พลังงาน"><span className='text-lg whitespace-pre-line'>{modalView.calories} แคลอรี่</span></Form.Item>
-            <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView.detail}</span></Form.Item>
-            <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView.proceduce}</span></Form.Item>
-            <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView.ingredient}</span></Form.Item>
-            <Form.Item label="วิดีโอ"><ReactPlayer url={modalView.video} /></Form.Item>
-            <Form.Item label={`โรคที่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
-                {suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
+            <Form.Item label="หมวด"><span className='text-lg whitespace-pre-line'>{modalView?.FoodType.name_th}({modalView?.FoodType.name_en})</span></Form.Item>
+            <Form.Item label={`รูปภาพ ${modalView?.image.length} รูป`}>{modalView?.image.map(({ name }) => <CusImage className="rounded-md shadow-lg" key={name} width="250px" height="150px" src={name} />)}</Form.Item>
+            <Form.Item label="ชื่ออาหารภาษาไทย"><span className='text-lg whitespace-pre-line'>{modalView?.name_th}</span></Form.Item>
+            <Form.Item label="ชื่ออาหารภาษาอังกฤษ"><span className='text-lg whitespace-pre-line'>{modalView?.name_en}</span></Form.Item>
+            <Form.Item label="พลังงาน"><span className='text-lg whitespace-pre-line'>{modalView?.calories} แคลอรี่</span></Form.Item>
+            <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView?.detail}</span></Form.Item>
+            <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView?.proceduce}</span></Form.Item>
+            <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView?.ingredient}</span></Form.Item>
+            <Form.Item label="วิดีโอ"><ReactPlayer url={modalView?.video} /></Form.Item>
+            <Form.Item label={`โรคที่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds,detail }, ind) => <>
+                {suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /><span className='text-md '>{detail}</span><br /></>}
             </>)}
             </Form.Item>
-            <Form.Item label={`โรคที่ไม่แนะนำ`}>{modalView.FoodNcds.map(({ suggess, ncds }, ind) => <>
-                {!suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}({ncds.name_en})</span><br /></>}
+            <Form.Item label={`โรคที่ไม่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds,detail }, ind) => <>
+                {!suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}({ncds.name_en})</span><br /><span className='text-md '>{detail}</span><br /></>}
             </>)}
             </Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView?.ref.length}`}>{modalView?.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
 

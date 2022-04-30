@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router'
 import { Card, notification, Tooltip, Rate } from 'antd';
 import dynamic from 'next/dynamic'
-import { useEffect, useState,useContext } from 'react';
-import {_AppContext} from '/pages/_app'
+import { useEffect, useState, useContext } from 'react';
+import { _AppContext } from '/pages/_app'
 
 
 
@@ -13,7 +13,7 @@ const CusInput = dynamic(() => import('/components/cusInput.js'));
 
 
 export default function Index() {
-    const {setTitle , setDefaultSelectedKeys} = useContext(_AppContext)
+    const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
 
     const [_data, setData] = useState()
     const [store, setStore] = useState()
@@ -33,9 +33,9 @@ export default function Index() {
         <div className="mt-3 min-h-screen">
             <div className="justify-center  mx-auto md:px-5">
                 <div className="my-5">
-                    <CusInput only="food" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading}/>
+                    <CusInput only="food" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
                 </div>
-                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-3'>
+                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-6'>
                     {_data.map(({
                         id,
                         name_th,
@@ -55,18 +55,17 @@ export default function Index() {
                                 key={id + index + Math.random()}
                                 className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                                 <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={200} preview={false} />
-                                <div className='mx-5 mb-2 lg:mb-10'>
-                                    <div className=" flex-col text-center mb-0">
-                                        <p className="card-header"> {name_th}</p>
-                                        <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500"> {name_en}</p>
+                                <div className='mx-5 mt-3'>
+                                    <div className=" flex-col text-center my-2">
+                                        <p className="card-header pt-3"> {name_th}</p>
+                                        <p className="text-xs mb-2 mt-1 truncate text-gray-500 capitalize "> {name_en}</p>
                                     </div>
                                     <div className='text-center leading-none text-2xl '>
-
                                         <p className='mb-0 font-bold'>{calories}</p>
                                         <p className='text-sm sm:text-xl text-gray-500'>กิโลแคลอรี่</p>
                                     </div>
-                                    <hr className='mb-3' />
-                                    <div className='flex justify-center justify-items-center pb-3'>
+                                    <hr className='my-6' />
+                                    <div className='flex justify-center justify-items-center mb-6'>
                                         <a onClick={() => router.push(`/foods/${foodTypeId}/${id}`)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
                                     </div>
 

@@ -48,7 +48,7 @@
   @apply w-full h-full pl-4 sm:text-lg  whitespace-pre-line truncate break-words  text-left
 }
 .food-content-header{
-  @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left  lg:text-3xl
+  @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left  lg:text-3xl my-5 tracking-tighter
 }
 @media only screen and (max-width: 1256px){
   .ant-steps{
@@ -369,6 +369,7 @@ a {
 .card-header-top{
   @apply mt-4 text-xl md:text-4xl mb-0 font-bold  transition transform w-full text-center;
 }
+
 .card-header{
   @extend  .ease-anima;
   @extend  .title-article;
@@ -402,6 +403,10 @@ a {
 
 .ant-input-wrapper input {
   border-radius: 10px !important;
+}
+
+.ant-list-item-meta-description {
+  @apply whitespace-pre-wrap
 }
 
 /* table ant */
