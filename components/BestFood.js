@@ -7,14 +7,17 @@ import { useState, useRef, useEffect } from 'react';
 const CusImage = dynamic(() => import('./cusImage.js'));
 const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 
-export default function BestFood({title}) {
+export default function BestFood({ title }) {
     const router = useRouter()
 
     const [_data, setData] = useState()
     const { blog, food, categories } = router.query
     const fetchData = async (api) => {
         const data = await fetch(api).then(async res => {
-            if (res.ok && res.status === 200) {
+            if (res.status === 404) {
+                notification.info({ message: `ไม่พบข้อมูลอาหาร` })
+            }
+            else if (res.ok ) {
                 const _ = await res.json()
                 return _
             } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร` })
@@ -34,7 +37,7 @@ export default function BestFood({title}) {
             !!data && setData([...data])
 
         })()
-
+        
     }, [blog, categories, food, router.query])
 
     if (!_data && !Array.isArray(_data)) return null
@@ -45,7 +48,7 @@ export default function BestFood({title}) {
 
         <Owl_Carousel
             title={title}
-            link={ `/foods`}
+            link={`/foods`}
             info_top={`พบ ${_data.length} รายการ`}
             info_down={`ดูอาหารทั้งหมด`}
         >

@@ -115,7 +115,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             className="sm:p-2 site-layout-background"
           >
             <ConfigProvider locale={thTh}>
-              <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, title, setCollapsed }}>
+              <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, title, setCollapsed , ncds , form}}>
                 <Component onClick={() => setCollapsed(true)} {...pageProps} />
               </_AppContext.Provider>
             </ConfigProvider>

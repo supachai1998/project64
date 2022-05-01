@@ -43,7 +43,7 @@ export default function Index(props) {
     if (blog && categories) {
       fetechData()
     }
-    return () =>{
+    return () => {
       setUserVote()
     }
   }, [blog, categories])
@@ -70,7 +70,7 @@ export default function Index(props) {
           // console.log(result)
           if (result) {
             // console.log("fetechData")
-            setCookies(`getBlogs${blog}`, true, {  maxAge: 60 * 60 * 24 * 30 })
+            setCookies(`getBlogs${blog}`, true, { maxAge: 60 * 60 * 24 * 30 })
             await fetechDataRate()
             setUserVote(true)
             notification.success({ message: 'ให้คะแนนบทความสำเร็จ', })
@@ -86,9 +86,9 @@ export default function Index(props) {
   if (data.approve === 2) return <div className="flex flex-col min-h-screen text-center text-4xl text-red-600">ไม่สามารถเข้าถึงบทความ</div>
   return (<>
     {data.approve === 0 && <div className="flex flex-col  justify-end items-center bg-white rounded-lg py-10 my-10 gap-3">
-        <span className="text-red-500 text-3xl mx-auto  px-10 w-full whitespace-pre-line ">บทความยังไม่ได้รับการอนุมัติ จะไม่ถูกแสดงผลบนเว็บไซต์จนกว่าจะได้รับการอนุมัติ</span>
-        <button className="bg-yellow-200 w-24 hover:bg-yellow-300 text-sm  text-gray-800" onClick={()=>router.push({pathname:`/blogs/write`,query:{id:data.id} })}>แก้ไข</button>
-        <button className="bg-red-200 w-24 hover:bg-red-300 text-sm  text-gray-800" onClick={()=>{showConfirmDel(data,router);}}>ลบ</button>
+      <span className="text-red-500 text-3xl mx-auto  px-10 w-full whitespace-pre-line ">บทความยังไม่ได้รับการอนุมัติ จะไม่ถูกแสดงผลบนเว็บไซต์จนกว่าจะได้รับการอนุมัติ</span>
+      <button className="bg-yellow-200 w-24 hover:bg-yellow-300 text-sm  text-gray-800" onClick={() => router.push({ pathname: `/blogs/write`, query: { id: data.id } })}>แก้ไข</button>
+      <button className="bg-red-200 w-24 hover:bg-red-300 text-sm  text-gray-800" onClick={() => { showConfirmDel(data, router); }}>ลบ</button>
     </div>}
     <div className="flex flex-col min-h-screen ">
       <div className="text-center w-full ">
@@ -125,15 +125,20 @@ export default function Index(props) {
             {/* {image && ind % 2 === 1 && <div className="sm:w-3/5  my-auto h-full  ease "><CustImage className="rounded-md h-full" src={image} alt={name} width="100%" height="100%" /></div>} */}
             <hr className="my-3" />
           </div>)}
-            <hr className="my-3" />
-          <div className="mb-6 flex flex-col">{data.ref.map(({ url }, i) => <a href={url.split(",").at(-1)} target="_blank" rel="noopener noreferrer" key={i} className="text-gray-600 text-sm">อ้างอิง {url}</a>)}</div>
+          <hr className="my-3" />
+          <div className="flex flex-col m-3 justify-start flex-warp w-full overflow-hidden">
+            <h3 className="text-left">อ้างอิง</h3>
+            {data.ref && data.ref.length > 0 && data.ref.map(({ url }, index) =>
+              <><a href={url.split(",").at(-1)} target="_blank" key={index} className='text-left no-underline text-black whitespace-pre-wrap ' rel="noreferrer">{url}</a><br /> </>
+            )}
+          </div>
         </div>
         <p className='text-right'>ยอดเข้าชม {data.views} ยอด</p>
       </div>
 
       <div>
-        <BestFood title="อาหารแนะนำ"/>
-        <BestBlog title="บทความแนะนำ"/>
+        <BestFood title="อาหารแนะนำ" />
+        <BestBlog title="บทความแนะนำ" />
       </div>
     </div>
   </>
@@ -163,35 +168,35 @@ export async function getServerSideProps({ req, res, query }) {
   }
 }
 
-const showConfirmDel = async (val,router) => {
+const showConfirmDel = async (val, router) => {
   console.log("delete", val)
   confirm({
-      title: `คุณต้องการจะลบบทความ`,
-      content: <div>
-          <p>{val.name}</p>
-          <p>ประเภท : {val.type}</p>
-      </div>,
-      okText: "ตกลง",
-      okType: "danger",
-      cancelText: "ยกเลิก",
-      async onOk() {
-          const res = await fetch("/api/getBlogs", {
-              headers: { 'Content-Type': 'application/json', },
-              method: "DELETE",
-              body: JSON.stringify({ id: val.id })
-          })
-          if (res.status === 200) {
-              notification.success({
-                  message: 'ลบข้อมูลสำเร็จ',
-              })
-              router.push({pathname:`/blogs`})
-          } else {
-              notification.error({
-                  message: 'ไม่สามารถลบข้อมูลได้',
-                  description: 'ไม่สามารถติดต่อ server ',
-              })
-          }
-      },
-      onCancel() { },
+    title: `คุณต้องการจะลบบทความ`,
+    content: <div>
+      <p>{val.name}</p>
+      <p>ประเภท : {val.type}</p>
+    </div>,
+    okText: "ตกลง",
+    okType: "danger",
+    cancelText: "ยกเลิก",
+    async onOk() {
+      const res = await fetch("/api/getBlogs", {
+        headers: { 'Content-Type': 'application/json', },
+        method: "DELETE",
+        body: JSON.stringify({ id: val.id })
+      })
+      if (res.status === 200) {
+        notification.success({
+          message: 'ลบข้อมูลสำเร็จ',
+        })
+        router.push({ pathname: `/blogs` })
+      } else {
+        notification.error({
+          message: 'ไม่สามารถลบข้อมูลได้',
+          description: 'ไม่สามารถติดต่อ server ',
+        })
+      }
+    },
+    onCancel() { },
   });
 }

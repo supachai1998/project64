@@ -376,8 +376,27 @@ a {
   @apply text-xl  md:text-2xl lg:text-3xl pb-0 truncate mb-2 hover:text-gray-800 ;
 }
 
+.ant-select-dropdown{
+  z-index: 1000001 !important;
+}
+
+.input-disabled{
+  color: #000 !important;
+}
 /* card */
 
+.owl-prev{
+  @apply absolute top-1/2 left-2 
+}
+.owl-next{
+  @apply absolute top-1/2 right-2 
+}
+.owl-prev.disabled{
+  @apply invisible
+}
+.owl-next.disabled{
+  @apply invisible
+}
 
 /* search ที่เป็นปุ่มๆ */
 .search-div-top-1{
@@ -418,7 +437,7 @@ a {
 }
 
 .ease {
-  @apply transition-all ease-in-out duration-500 transform !important
+  @apply transition-all ease-in duration-500 transform !important
 }
 
 .button {

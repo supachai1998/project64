@@ -785,6 +785,11 @@ const ModalEdit = () => {
             setFileListSubBlogs(modalEdit?.subBlog?.map(({ image }) => image) || [])
         }
         form.setFieldsValue(modalEdit);
+        return () => {
+            form.resetFields()
+            setFileList([])
+            setFileListSubBlogs([])
+        }
     }, [form, modalEdit]);
 
 
@@ -821,7 +826,7 @@ const ModalEdit = () => {
         // console.log(val['foodId'], val['ncdsId'])
         if (val['foodId']?.length > 0) {
             if (modalEdit?.related?.length > 0) {
-                for (const [kk, vv] of Object.entries(modalEdit.related)) {
+                for (const [kk, vv] of Object.entries(form.getFieldValue("related"))) {
                     val['foodId'].map((v) => {
                         if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
                         else related.push({ foodId: v })
@@ -834,7 +839,7 @@ const ModalEdit = () => {
         }
         if (val['ncdsId']?.length > 0) {
             if (modalEdit?.related?.length > 0) {
-                for (const [kk, vv] of Object.entries(modalEdit.related)) {
+                for (const [kk, vv] of Object.entries(form.getFieldValue("related"))) {
                     val['ncdsId'].map((v) => {
                         if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
                         else related.push({ ncdsId: v })
@@ -918,7 +923,7 @@ const ModalEdit = () => {
                 labelAlign="left"
                 name="ncdsId"
                 label="เลือกโรค"
-                initialValue={modalEdit.related.filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
+                initialValue={form.getFieldValue("related").filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
                 rules={[{ required: true }]}>
                 <Select mode="multiple"
                     loading={ncdsLoading}
@@ -926,12 +931,13 @@ const ModalEdit = () => {
                     {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>}
+            {console.log(form.getFieldValue("related"))}
             {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
                 labelCol={{ span: 3, offset: 3 }}
                 labelAlign="left"
                 name="foodId"
                 label="เลือกรายการอาหาร"
-                initialValue={modalEdit.related.filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
+                initialValue={form.getFieldValue("related").filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
                 rules={[{ required: true }]}>
                 <Select mode="multiple"
                     loading={foodLoading}
@@ -1030,7 +1036,7 @@ const ModalEdit = () => {
                                 >
                                     <TextArea rows={4} placeholder="เนื้อความ" />
                                 </Form.Item>
-                                {console.log(form?.getFieldValue("subBlog"))}
+                                {/* {console.log(form?.getFieldValue("subBlog"))} */}
                                 <Form.Item
                                     {...field}
                                     key={`image ${ind}`}
@@ -1167,7 +1173,7 @@ const ModalView = () => {
             </Form.Item>
             <Form.Item label="วิดีโอ"
                 labelAlign="left">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
-            <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><a key={url} rel="noopener noreferrer" target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line'>{url}</a><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
+            <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><a key={url} rel="noopener noreferrer" target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line hover:bg-gray-100 hover:p-3 hover:rounded-md'>{url}</a><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
 
         </Form>
     </Modal>

@@ -1,21 +1,24 @@
 /* eslint-disable react/jsx-key */
-import { Tooltip,Rate } from 'antd';
+import { Tooltip, Rate } from 'antd';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router';
-
+import {CloseCircleOutlined} from '@ant-design/icons'
 const CusImage = dynamic(() => import('./cusImage.js'));
 const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 
-export default function MultiCard({loading, data, title }) {
+export default function MultiCard({ loading, data,setData, title }) {
     const router = useRouter()
 
-    if(loading) return null
-    if (!!!data || !Array.isArray(data) || data?.length <= 0 ) return null
+    if (loading) return null
+    if (!!!data || !Array.isArray(data) || data?.length <= 0) return null
     console.log(data)
+    const handleCancle = () =>{
+        setData()
+    }
     return (
         <Owl_Carousel
             title={title}
-            info_top={`พบ ${data.length} รายการ`}
+            info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {data.length} รายการ <Tooltip title="ยกเลิก"><CloseCircleOutlined className="text-red-500" onClick={handleCancle}/></Tooltip></div>}
             info_down={`อ่านทั้งหมด`}
         >
             <>
@@ -38,20 +41,20 @@ export default function MultiCard({loading, data, title }) {
                             key={id + index + Math.random()}
                             className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                             <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={200} preview={false} />
-                            <div className='mx-5 mb-2 lg:mb-10'>
+                            <div className='mx-5 mb-2 lg:mb-10 my-5'>
                                 <div className=" flex-col text-center mb-0">
-                                    <p className="card-header"> {name_th}</p>
+                                    <p className="card-header pt-3"> {name_th}</p>
                                     <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500"> {name_en}</p>
                                 </div>
-                                <div className='text-center leading-none text-2xl '>
+                                <div className='text-center leading-none text-2xl  my-10'>
 
                                     <p className='mb-0 font-bold'>{calories}</p>
                                     <p className='text-sm sm:text-xl text-gray-500'>กิโลแคลอรี่</p>
                                 </div>
                                 <hr className='mb-3' />
-                                <div className='flex justify-center justify-items-center pb-3'>
-                                <a onClick={() => router.push(`/foods/${foodTypeId}/${id}`)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
-                            </div>
+                                <div className='flex justify-center justify-items-center pb-3 '>
+                                    <a onClick={() => router.push(`/foods/${foodTypeId}/${id}`)} className='w-32 my-5 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
+                                </div>
 
                             </div>
                         </div>}
@@ -68,7 +71,7 @@ export default function MultiCard({loading, data, title }) {
 
                                 <div className="flex flex-col p-2">
                                     <div className=" flex-col text-center mb-0 pr-5 pl-5">
-                                        <p className="card-header">{name}</p>
+                                        <p className="card-header pt-3 ">{name}</p>
                                         <div className='border-green-800 border-b-2 border-solid w-1/2 mx-auto' ></div>
                                     </div>
                                     <div className="flex justify-between mb-4 m-4 ml-0  pr-5 pl-5">

@@ -21,7 +21,10 @@ export default function DisplayBlogReadMore({title }) {
     if(asPath[3])api+=`&self=${asPath[3]}`
 
     const data = await fetch(api).then(async res => {
-      if (res.ok) {
+      if(res.status === 404){
+        notification.info({ message: `ไม่พบข้อมูลบทความ` })
+      }
+      else if (res.ok) {
         const _ = await res.json()
         return _
       } else notification.error({ message: `ไม่สามารถดึงข้อมูลบทความ` })
@@ -37,7 +40,7 @@ export default function DisplayBlogReadMore({title }) {
         !!data && setData([...data])
       }
     })()
-  }, [_data])
+  }, [_data , router.query])
 
   if (!_data && !Array.isArray(_data)) return null
   return (

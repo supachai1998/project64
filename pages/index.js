@@ -6,6 +6,7 @@ const BestBlog = dynamic(() => import('../components/BestBlog'))
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 const CusInput = dynamic(() => import("/components/cusInput"))
 const MultiCard = dynamic(() => import("/components/MultiCard"))
+const IndexNCDS = dynamic(() => import("/components/IndexNCDS"))
 
 
 export default function Index() {
@@ -22,8 +23,10 @@ export default function Index() {
       animate="visible">
       <div className="relative">
         <div className="flex flex-col gap-3 p-3 ">
+          <IndexNCDS/>
+          <hr className="my-5 sm:my-10"/>
           <CusInput data={data} setData={setData} loading={loading} setLoading={setLoading} />
-          <MultiCard loading={loading} data={data} title={"ผลการค้นหา"} />
+          <MultiCard loading={loading} data={data} setData={setData} title={"ผลการค้นหา"} />
         </div>
         {/* {loading && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>} */}
       </div>

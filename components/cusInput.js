@@ -29,11 +29,11 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
       setLoading(true)
       api += `&txt=${val}`
       if (_api) api = _api += `&name=${val}`
-      const data = await fetch(api).then(res => res.ok && res.json())
-      if (!data) notification.error({ message: "ไม่พบข้อมูล" })
-      else setData(data)
+      const query_data = await fetch(api).then(res => res.ok && res.json())
+      if (!query_data) notification.error({ message: "ไม่พบข้อมูล" })
+      else setData(query_data)
       setLoading(false)
-      // refSearchInput.current.state.value = null
+      refSearchInput.current.state.value = null
     } else {
       const time = setTimeout(async () => {
         if (store?.length > 0) setData(store)
@@ -41,7 +41,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
       }, 1000);
       return () => clearTimeout(time)
     }
-
+    
 
   }
   useEffect(() => {
@@ -50,6 +50,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
     return () => {
       if (store?.length > 0) setData(store)
       else setData([])
+      setInput()
     }
   }, [input, setInput])
 
@@ -87,7 +88,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
                 placeholder={only === "food" || only === "food_no_camera" ? "ชื่ออาหาร" :
                   only === "ncds" ? "ชื่อโรค" :
                     only === "blogs" ? "ชื่อบทความ"
-                      : "ชื่ออาหาร ,  ชื่อโรค , ชื่อบทความ"} ref={refSearchInput} />
+                      : "ชื่ออาหาร ,   ชื่อบทความ"} ref={refSearchInput} />
           </div>
         </div>
       }
@@ -358,8 +359,8 @@ const CustomUpload = ({ setInput, loading, setLoading }) => {
         }
       >
         {machinePredict &&
-          <div className="flex flex-col justify-center">
-            <Image src={machinePredict.url} alt={machinePredict} width={300} height={200} />
+          <div className="flex flex-col justify-center ">
+            <Image src={machinePredict.url} alt={machinePredict} width={400} height={300} />
           </div>}
       </Modal>
     </>

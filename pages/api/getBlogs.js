@@ -191,7 +191,22 @@ export default async function handler(req, res) {
                   image: true,
                   ref: true,
                 },
-                take: 5,
+              })
+            } break
+            case "foods": {
+              data = await prisma.blogs.findMany({
+                where: {
+                  approve: 1,
+                  // ...(type && { type: type.toUpperCase() }),
+                  ...(categories && { related: { some: { foodId: parseInt(self) } } })
+                },
+                orderBy: [
+                  { views: 'desc', },
+                ],
+                include: {
+                  image: true,
+                  ref: true,
+                },
               })
             } break
             default: {

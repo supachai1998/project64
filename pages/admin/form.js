@@ -57,7 +57,7 @@ export default function Index() {
             title: <div className="text-center" >ตอน</div>,
             dataIndex: 'data',
             key: 'data',
-            render: val => <div className="text-left" >{val.map((v,ind)=><p key={v.title}>{ind +1}. {v.title}</p>)}</div>
+            render: val => <div className="text-left" >{val.map((v, ind) => <p key={v.title}>{ind + 1}. {v.title}</p>)}</div>
         },
         {
             title: <div className="text-center" >จำนวนคำถาม</div>,
@@ -69,7 +69,7 @@ export default function Index() {
             title: <div className="text-center" >คะแนน</div>,
             dataIndex: 'data',
             key: 'data',
-            render: val => <div className="text-center" >{val.map(({ subForm }) => <li key={subForm.id}>{subForm.reduce((sum,{choice})=> sum+=choice.reduce((sum2,{score})=> sum2+=score,0),0)}</li>)}</div>
+            render: val => <div className="text-center" >{val.map(({ subForm }) => <li key={subForm.id}>{subForm.reduce((sum, { choice }) => sum += choice.reduce((sum2, { score }) => sum2 += score, 0), 0)}</li>)}</div>
         },
 
     ];
@@ -278,8 +278,8 @@ const ModalView = () => {
                 dataSource={modalView.subForm[current].choice}
                 renderItem={({ name, detail, score }, ind) => (
                     <List.Item>
-                        <List.Item.Meta 
-                            
+                        <List.Item.Meta
+
                             title={`${ind + 1}. ${name}`}
                             description={`${detail ? `คำอธิบาย ${detail}\n` : ""}คะแนน ${score} `}
                         />
@@ -300,16 +300,16 @@ const TableFormSub = () => {
         setModalEdit,
         loading, store } = useContext(ContextForm)
     const inputRef = useRef()
-    const [saveId , setSaveId] = useState(null)
-    useEffect(()=>{
+    const [saveId, setSaveId] = useState(null)
+    useEffect(() => {
         // console.log(_formGroupBy,modalViewSubForm,_formGroupBy[modalViewSubForm]?.id)
         setSaveId(_formGroupBy[modalViewSubForm].id)
-        
-    },[_formGroupBy, modalViewSubForm])
+
+    }, [_formGroupBy, modalViewSubForm])
     // const _ =  _formGroupBy[modalViewSubForm].data.map(({id,...rest})=>({id:id,key:id,...rest}))
     // const [data, setData] = useState(_)
     // console.log(data)
-    useEffect(() => {}, [_formGroupBy, setFormGroupBy, store])
+    useEffect(() => { }, [_formGroupBy, setFormGroupBy, store])
     const [selectRows, setSelectRows] = useState([])
     const columns = [
         {
@@ -371,9 +371,9 @@ const TableFormSub = () => {
     }
     // console.log(_formGroupBy[modalViewSubForm])
     if (!!!_formGroupBy[modalViewSubForm]) return null
-    if(saveId !== _formGroupBy[modalViewSubForm].id && saveId !== null) {
+    if (saveId !== _formGroupBy[modalViewSubForm].id && saveId !== null) {
         // console.log(saveId,_formGroupBy[modalViewSubForm].id)
-        notification.error({message:"ไม่พบข้อมูลการประเมิน"})
+        notification.error({ message: "ไม่พบข้อมูลการประเมิน" })
         setModalViewSubForm(-1)
     }
     const showConfirmDelRows = async () => {
@@ -615,24 +615,49 @@ const ModalAdd = () => {
                                     {(subForm, { add, remove }, { errors }) =>
                                     (
                                         <>
-                                            {!!subForm && subForm.map((fieldsubForm, ind) => (
+                                            {!!subForm && subForm.map((fieldsubForm, ind2) => (
                                                 <Form.Item
                                                     {...subForm}
                                                     noStyle
                                                     shouldUpdate
                                                     key={fieldsubForm.key}
                                                     required
-                                                >
+                                                >   
+                                                    {/* {console.log(form.getFieldValue("form")[ind]?.subForm)} */}
                                                     <Collapse defaultActiveKey={{}} ghost collapsible="header" >
                                                         <Panel showArrow={false} header={<Form.Item
-                                                            label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1} </>}
+                                                            label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind2 + 1} </>}
                                                             name={[fieldsubForm.name, 'name']}
                                                             fieldKey={[fieldsubForm.fieldKey, 'name']}
                                                             rules={[{ required: true }]}
                                                         >
                                                             <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
-                                                        </Form.Item>} key={ind}>
+                                                        </Form.Item>} key={ind2}>
+                                                            {form.getFieldValue("form")[ind]?.subForm?.length > 1 && <Form.Item
+                                                                label={<>รูปแบบช้อย</>}
+                                                                labelCol={{ span: 3, offset: 1 }}
+                                                            // name={[fieldsubForm.name, 'pattern']}
+                                                            // fieldKey={[fieldsubForm.fieldKey, 'pattern']}
 
+                                                            >
+                                                                <Select
+                                                                    showSearch
+                                                                    placeholder="เลือกรูปแบบช้อย"
+                                                                    defaultValue={false}
+                                                                    onChange={v => {
+                                                                        if (v !== false) {
+                                                                            let data = form.getFieldValue("form")
+                                                                            const selectData = data[ind]?.subForm[v].choice
+                                                                            data[ind].subForm[ind2] = { ...data[ind].subForm[ind2], choice: selectData }
+                                                                            console.log(data[ind].subForm[ind2])
+                                                                            form.setFieldsValue(data)
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {form.getFieldValue("form")[ind]?.subForm.map((subForm, ind) => !!subForm && <Option key={`${ind}.${subForm?.name}`} value={ind}>คัดลอกข้อที่ {ind + 1}. {subForm?.name}</Option>)}
+                                                                    <Option value={false}>กรอกเอง</Option>
+                                                                </Select>
+                                                            </Form.Item>}
                                                             <Form.List name={[fieldsubForm.name, 'choice']} rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]} >
                                                                 {(choice, { add, remove }, { errors }) => (
                                                                     <>
@@ -850,6 +875,31 @@ const ModalEdit = () => {
                                     >
                                         <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
                                     </Form.Item>} key="1">
+                                        {form.getFieldValue("subForm").length > 1 && <Form.Item
+                                            label={<>รูปแบบช้อย</>}
+                                            labelCol={{ span: 3, offset: 1 }}
+                                        // name={[fieldsubForm.name, 'pattern']}
+                                        // fieldKey={[fieldsubForm.fieldKey, 'pattern']}
+
+                                        >
+                                            <Select
+                                                showSearch
+                                                placeholder="เลือกรูปแบบช้อย"
+                                                defaultValue={false}
+                                                onChange={v => {
+                                                    if (v !== false) {
+                                                        let data = form.getFieldValue("subForm")
+                                                        const selectData = data[v].choice
+                                                        data[ind] = { ...data[ind], choice: selectData }
+                                                        console.log(selectData)
+                                                        form.setFieldsValue({ "subForm": data })
+                                                    }
+                                                }}
+                                            >
+                                                {form.getFieldValue("subForm").map((subForm, ind) => !!subForm && <Option key={`${ind}.${subForm?.name}`} value={ind}>คัดลอกข้อที่ {ind + 1}. {subForm?.name}</Option>)}
+                                                <Option value={false}>กรอกเอง</Option>
+                                            </Select>
+                                        </Form.Item>}
                                         <Form.List name={[fieldsubForm.name, 'choice']} rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]} >
                                             {(choice, { add, remove }, { errors }) => (
                                                 <>
@@ -966,8 +1016,8 @@ const ModalAddSubForm = () => {
             body: JSON.stringify(val)
         })
             .then(async res => {
-                if(res.status === 404){
-                    notification.error({ title: `ไม่สามารถเพิ่มข้อมูลได้`,message:"ชื่อตอนต้องไม่ซ้ำ" })
+                if (res.status === 404) {
+                    notification.error({ title: `ไม่สามารถเพิ่มข้อมูลได้`, message: "ชื่อตอนต้องไม่ซ้ำ" })
                 }
                 else if (res.ok) {
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
@@ -1046,7 +1096,33 @@ const ModalAddSubForm = () => {
                                         <Input placeholder="เช่น พฤติกรรมการรับประทานอาหาร" />
                                     </Form.Item>} key="1">
 
-                                        {/* <Form.Item label={`แหล่งอ้างอิงที่ ${ind + 1}`}><Divider /></Form.Item> */}
+                                        {form.getFieldValue("subForm").length > 1 && <Form.Item
+                                            label={<>รูปแบบช้อย</>}
+                                            labelCol={{ span: 3, offset: 1 }}
+                                        // name={[fieldsubForm.name, 'pattern']}
+                                        // fieldKey={[fieldsubForm.fieldKey, 'pattern']}
+
+                                        >
+                                            <Select
+                                                showSearch
+                                                placeholder="เลือกรูปแบบช้อย"
+                                                defaultValue={false}
+                                                onChange={v => {
+                                                    if (v !== false) {
+                                                        let data = form.getFieldValue("subForm")
+                                                        const selectData = data[v].choice
+                                                        data[ind] = { ...data[ind], choice: selectData }
+                                                        console.log(selectData)
+                                                        form.setFieldsValue({ "subForm": data })
+                                                    }
+                                                }}
+                                            >
+                                                {form.getFieldValue("subForm").map((subForm, ind) => !!subForm && <Option key={`${ind}.${subForm?.name}`} value={ind}>คัดลอกข้อที่ {ind + 1}. {subForm?.name}</Option>)}
+                                                <Option value={false}>กรอกเอง</Option>
+                                            </Select>
+                                        </Form.Item>}
+
+
                                         <Form.List name={[fieldsubForm.name, 'choice']} rules={[{ required: true, message: "คุณลืมเพิ่มตัวเลือก" }]} >
                                             {(choice, { add, remove }, { errors }) => (
                                                 <>
@@ -1253,8 +1329,8 @@ const Chart = ({ NCDS,
     _formGroupBy }) => {
     const [color, setColor] = useState()
     useEffect(() => {
-        if (!!_formGroupBy ) {
-            setColor([_formGroupBy.map(v=>v.data.map(()=>randomRGB())) , _formGroupBy.map(() => randomRGB())])
+        if (!!_formGroupBy) {
+            setColor([_formGroupBy.map(v => v.data.map(() => randomRGB())), _formGroupBy.map(() => randomRGB())])
         }
     }, [_formGroupBy])
     if (!!!_form || !!!_formGroupBy || !color) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
@@ -1267,27 +1343,27 @@ const Chart = ({ NCDS,
 
     // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
     return (
-    <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
-        {_formGroupBy?.map((v, ind) => <div key={ind} className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">จำนวนคำถาม{v.name_th}</p><Doughnut data={{
-            labels: v.data.map(({ title }) => title),
-            datasets: [{
-                data: v.data.map(({subForm}) =>subForm.length),
-                backgroundColor: color[0][ind],
-                borderWidth: 0,
-            }],
-        }} />
-        </div>)}
-        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คะแนนทั้งหมด</p><Doughnut data={{
-            labels: _formGroupBy.map(({ name_th }) => name_th),
-            datasets: [{
-                //  data =>_formGroupBy => subForm => choice => score
-                data: _formGroupBy.reduce((acc, val) => [...acc,val.data.reduce((acc2, val2) => acc2 + val2.subForm.reduce((acc3, val3) => acc3 + val3.choice.reduce((acc4, val4) => acc4 + val4.score, 0), 0), 0)], []),
-                backgroundColor: color[1],
-                borderWidth: 0,
-            }],
-        }} />
-        </div>
-    </div>)
+        <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
+            {_formGroupBy?.map((v, ind) => <div key={ind} className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">จำนวนคำถาม{v.name_th}</p><Doughnut data={{
+                labels: v.data.map(({ title }) => title),
+                datasets: [{
+                    data: v.data.map(({ subForm }) => subForm.length),
+                    backgroundColor: color[0][ind],
+                    borderWidth: 0,
+                }],
+            }} />
+            </div>)}
+            <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คะแนนทั้งหมด</p><Doughnut data={{
+                labels: _formGroupBy.map(({ name_th }) => name_th),
+                datasets: [{
+                    //  data =>_formGroupBy => subForm => choice => score
+                    data: _formGroupBy.reduce((acc, val) => [...acc, val.data.reduce((acc2, val2) => acc2 + val2.subForm.reduce((acc3, val3) => acc3 + val3.choice.reduce((acc4, val4) => acc4 + val4.score, 0), 0), 0)], []),
+                    backgroundColor: color[1],
+                    borderWidth: 0,
+                }],
+            }} />
+            </div>
+        </div>)
 }
 const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
 

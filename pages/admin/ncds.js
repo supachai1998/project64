@@ -44,14 +44,14 @@ export default function Index() {
             dataIndex: 'name_th',
             key: 'name_th',
             width: "5%",
-            render: (text, val, index) =>  <div className="h-76 overflow-hidden">{val.name_th}</div>
+            render: (text, val, index) => <div className="h-76 overflow-hidden">{val.name_th}</div>
         },
         {
             title: < >ชื่อโรคภาษาอังกฤษ</>,
             dataIndex: 'name_en',
             key: 'name_en',
             width: "5%",
-            render: (text, val, index) =>  <div className="h-76 overflow-hidden">{val.name_en}</div>
+            render: (text, val, index) => <div className="h-76 overflow-hidden">{val.name_en}</div>
         },
         {
             title: < >ความหมาย</>,
@@ -88,7 +88,7 @@ export default function Index() {
             title: < >แหล่งอ้างอิง</>,
             dataIndex: 'ref',
             key: 'ref',
-            render: val => <ul >{val.map(v=><li key={v.url} >{(v.url).match(/(?:[\w-]+\.)+[\w-]+/)}</li>)}</ul>
+            render: val => <ul >{val.map(v => <li key={v.url} >{(v.url).match(/(?:[\w-]+\.)+[\w-]+/)}</li>)}</ul>
         },
         {
             title: < >จำนวนภาพ</>,
@@ -125,7 +125,7 @@ export default function Index() {
                 <Button className='green-ghost-green' icon={<DownloadOutlined />}>
                     <CSVLink
                         filename={`ตารางอาหาร ${inputRef.current?.value}-${moment().format("LLLL")}.csv`}
-                        data={!!ncds ? ncds.map(({ name_th,name_en,imply,video,cause,reduce,signs,sugess,views,ref }) => ({name_th,name_en,imply,video,cause,reduce,signs,sugess,views,ref:ref.map(v=>v.url) })) : []}
+                        data={!!ncds ? ncds.map(({ name_th, name_en, imply, video, cause, reduce, signs, sugess, views, ref }) => ({ name_th, name_en, imply, video, cause, reduce, signs, sugess, views, ref: ref.map(v => v.url) })) : []}
                         onClick={() => notification.success({ message: "ดาวน์โหลดไฟล์" })}
                     >
                         <span className="text-green-500">CSV</span>
@@ -221,6 +221,8 @@ const ModalAdd = () => {
                     setModalAdd(false)
                     fetch(`/api/uploads?name=ncds`)
                     reload()
+                    form.resetFields()
+                    setFileList([])
                 } else {
                     notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
                 }

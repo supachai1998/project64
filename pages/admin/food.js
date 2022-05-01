@@ -63,25 +63,25 @@ function Index() {
             width: '30%',
             render: val => <Tooltip title={val} ><div >{val}</div></Tooltip>
         },
-        
+
         {
             title: <div className="text-center" >แนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v,ind)=>v.suggess).map((v,ind)=><div key={v}>{ind+1}. {v.ncds.name_th}<br/><span className="text-xs">{v.detail}</span></div>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <div key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-xs">{v.detail}</span></div>)}</>
         },
         {
             title: <div className="text-center" >ไม่แนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v,ind)=>!v.suggess).map((v,ind)=><div key={v}>{ind+1}. {v.ncds.name_th}<br/><span className="text-xs">{v.detail}</span></div>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <div key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-xs">{v.detail}</span></div>)}</>
         },
         {
             title: <div className="text-center" >จำนวนอ้างอิง</div>,
             dataIndex: 'ref',
             key: 'ref',
-            width:"5%",
-            render: val => <>{val.map((v,ind)=><div key={v} className="text-left text-xs" >{ind+1}. {v.url}</div>)}</>
+            width: "5%",
+            render: val => <>{val.map((v, ind) => <div key={v} className="text-left text-xs" >{ind + 1}. {v.url}</div>)}</>
         },
     ];
 
@@ -162,11 +162,11 @@ const countOccurrences = (arr, val) => arr.reduce((a, v) => (v.FoodType.name_th 
 // const countOccurrences = (arr, val) => arr.reduce((a, v) => (val.includes(v.name_th) ? a + 1 : a), 0);
 
 const TableForm = () => {
-    
+
     const { food, setFood, reload,
         setModalEdit,
         setModalView,
-        loading, store ,inputRef } = useContext(Context)
+        loading, store, inputRef } = useContext(Context)
     const [foodtype, setFoodtype] = useState([])
     const [selectRows, setSelectRows] = useState([])
     useEffect(() => {
@@ -233,7 +233,7 @@ const TableForm = () => {
     const search = () => {
         const userInput = inputRef.current.value
         const findMatchNCDS = food.filter(val => {
-            return val.name_th.toLowerCase().includes(userInput.toLowerCase()) || val.name_en.toLowerCase().includes(userInput.toLowerCase()) 
+            return val.name_th.toLowerCase().includes(userInput.toLowerCase()) || val.name_en.toLowerCase().includes(userInput.toLowerCase())
         })
         console.log(userInput, findMatchNCDS)
         if (!userInput) {
@@ -366,7 +366,8 @@ const ModalAdd = () => {
                     notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
                     setModalAdd(false)
                     fetch(`/api/uploads?name=food`)
-                    setFileList()
+                    form.resetFields()
+                    setFileList([])
                     reload()
                 } else {
                     notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
@@ -857,10 +858,10 @@ const ModalEdit = () => {
                                     fieldKey={[field.fieldKey, 'suggess']}
                                     rules={[{ required: true }]}
                                 >
-                                    <Select>
-                                        <Option key={true} value={true}>แนะนำให้รับประทาน</Option>
-                                        <Option key={false} value={false}>ไม่แนะนำให้รับประทาน</Option>
-                                    </Select>
+                                    <Radio.Group >
+                                        <Radio key={true} value={true}>แนะนำให้รับประทาน</Radio>
+                                        <Radio key={false} value={false}>ไม่แนะนำให้รับประทาน</Radio>
+                                    </Radio.Group>
                                 </Form.Item>
                                 <Form.Item
                                     label="คำอธิบาย"
@@ -1128,11 +1129,11 @@ const ModalView = () => {
             <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView?.proceduce}</span></Form.Item>
             <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView?.ingredient}</span></Form.Item>
             <Form.Item label="วิดีโอ"><ReactPlayer url={modalView?.video} /></Form.Item>
-            <Form.Item label={`โรคที่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds,detail }, ind) => <>
+            <Form.Item label={`โรคที่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds, detail }, ind) => <>
                 {suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /><span className='text-md '>{detail}</span><br /></>}
             </>)}
             </Form.Item>
-            <Form.Item label={`โรคที่ไม่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds,detail }, ind) => <>
+            <Form.Item label={`โรคที่ไม่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds, detail }, ind) => <>
                 {!suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-red-700'>{ncds.name_th}({ncds.name_en})</span><br /><span className='text-md '>{detail}</span><br /></>}
             </>)}
             </Form.Item>

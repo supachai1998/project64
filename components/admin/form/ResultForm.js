@@ -86,6 +86,7 @@ export default function ResultForm() {
                     modalAddSubForm, setModalAddSubForm,
                     loading, store, setStore,
                 }}>
+                    <ModalView />
                     <ModalEdit />
                     <ModalAdd />
                     <TableResultForm />
@@ -95,9 +96,53 @@ export default function ResultForm() {
     )
 }
 
+const requireMin = (form, ind, old = null, editMode = false) => {
+    let min = 0
+    try {
+        if (editMode) {
+            const index = old.findIndex(({ id }) => id === form.getFieldValue("resultForm")[ind].id)
+            min = old[index-1]?.end+1 || 0
+            // console.log("min",index , min)
+        } else {
+            if (!!old) {
+                min = old[old.length - 1].end + 1
+            }
+            if (form.getFieldValue("resultForm")?.length > 1 && ind > 0) {
+                if (form.getFieldValue("resultForm")[ind - 1]?.end) {
+                    min = form.getFieldValue("resultForm")[ind - 1]?.end + 1
+                }
+            }
+        }
+    } catch (e) {
+        console.error(e)
+    }
+    // console.log("min", ind, min)
+    return min
+}
+const requireMax = (form, ind, old = null, editMode = false) => {
+    let max = 0
+    try {
+        if (editMode) {
+            max = form.getFieldValue("resultForm")[ind]?.end
+            // console.log("edit", form.getFieldValue("resultForm")[ind])
+        } else {
+            if (form.getFieldValue("resultForm")?.length > 0) {
+                if (form.getFieldValue("resultForm")[ind]?.start) {
+                    max = form.getFieldValue("resultForm")[ind]?.start + 1
+                }
+            }
+        }
+    } catch (e) {
+        console.error(e)
+    }
+    // console.log("max", ind, max)
+    return max
+}
+
+
 const TableResultForm = () => {
     const { reload, setModalEdit,
-        loading, resultForm, setResultForm, store, setStore } = useContext(ResultFormContext)
+        loading, resultForm, setResultForm, store, setModalView } = useContext(ResultFormContext)
     const inputRef = useRef()
     const [selectRows, setSelectRows] = useState([])
     useEffect(() => { }, [resultForm])
@@ -138,7 +183,7 @@ const TableResultForm = () => {
             dataIndex: '',
             key: '',
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                {/* <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(resultForm[index])}>ดู</button> */}
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalView(val)}>ดู</button>
                 <button className=" bg-yellow-200 hover:bg-yellow-300" onClick={() => setModalEdit(val)}>แก้ไข</button>
                 <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val, reload)}>ลบ</button>
             </div>,
@@ -246,9 +291,8 @@ const TableResultForm = () => {
 }
 
 
-
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload } = useContext(ResultFormContext)
+    const { modalAdd, setModalAdd, reload, resultForm } = useContext(ResultFormContext)
     const { modalResultForm } = useContext(ContextForm)
     const [form] = Form.useForm();
     useEffect(() => {
@@ -269,6 +313,7 @@ const ModalAdd = () => {
         const res = await fetch("/api/getResultForm", { method: "POST", body: JSON.stringify(v) })
             .then(async res => {
                 if (res.ok) {
+                    notification.success({ message: "บันทึกข้อมูลสำเร็จ" })
                     await reload()
                     setModalAdd(false)
                 } else notification.error({ message: `ไม่สามารถเพิ่มข้อมูลผลประเมิน${modalResultForm.name_th}` })
@@ -304,7 +349,6 @@ const ModalAdd = () => {
                     const RiskChange = (v, field, ind) => {
                         // const val = form.getFieldValue(field.fieldKey)
                         let resultForm = form.getFieldValue("resultForm")
-                        console.log(resultForm)
                         resultForm[ind] = { ...resultForm[ind], toggleRisk: v }
                         form.setFieldsValue({ resultForm: resultForm })
                     }
@@ -336,6 +380,7 @@ const ModalAdd = () => {
                                             {riskArr.map((v, i) => <Option key={v} value={v}>{v}</Option>)}
                                         </Select>}
                                 </Form.Item>
+                                {/* {console.log(form.getFieldValue("resultForm"), form.getFieldValue("resultForm").length)} */}
                                 <div className='grid grid-cols-2 gap-2'>
                                     <Form.Item
                                         labelCol={{ span: 8 }}
@@ -344,8 +389,9 @@ const ModalAdd = () => {
                                         name={[field.name, 'start']}
                                         fieldKey={[field.fieldKey, 'start']}
                                         rules={[{ required: true }]}
+                                        initialValue={requireMin(form, ind, resultForm)}
                                     >
-                                        <InputNumber min={0} max={100} step={1} stringMode={false} placeholder="คะแนน 0 - 100" />
+                                        <InputNumber min={requireMin(form, ind, resultForm)} max={100} step={1} stringMode={false} placeholder={`คะแนน ${requireMin(form, ind, resultForm)} - 100`} />
                                     </Form.Item>
                                     <Form.Item
                                         labelCol={{ span: 8 }}
@@ -355,7 +401,7 @@ const ModalAdd = () => {
                                         fieldKey={[field.fieldKey, 'end']}
                                         rules={[{ required: true }]}
                                     >
-                                        <InputNumber min={0} max={100} step={1} stringMode={false} placeholder="คะแนน 0 - 100" />
+                                        <InputNumber min={requireMax(form, ind, resultForm)} max={100} step={1} stringMode={false} placeholder={`คะแนน ${requireMax(form, ind, resultForm)} - 100`} />
                                     </Form.Item>
                                 </div>
                                 <Form.Item
@@ -391,7 +437,7 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload } = useContext(ResultFormContext)
+    const { modalEdit, setModalEdit, reload, resultForm } = useContext(ResultFormContext)
     const { modalResultForm } = useContext(ContextForm)
     const [form] = Form.useForm();
 
@@ -421,7 +467,7 @@ const ModalEdit = () => {
     const onReset = () => {
         form.setFieldsValue();
     }
-    return <Modal title={`แก้ไขกผลการประเมิน${modalResultForm.name_th}`}
+    return <Modal title={`แก้ไขผลการประเมิน${modalResultForm.name_th}`}
         visible={modalEdit}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -479,8 +525,9 @@ const ModalEdit = () => {
                                         name={[field.name, 'start']}
                                         fieldKey={[field.fieldKey, 'start']}
                                         rules={[{ required: true }]}
+                                    // initialValue={requireMin(form, ind, resultForm)}
                                     >
-                                        <InputNumber min={0} max={100} step={1} stringMode={false} placeholder="คะแนน 0 - 100" />
+                                        <InputNumber min={requireMin(form, ind, resultForm, true)} max={requireMax(form, ind, resultForm, true)} step={1} stringMode={false} placeholder={`คะแนน ${requireMin(form, ind, resultForm, true)} - ${requireMax(form, ind, resultForm, true)}`} />
                                     </Form.Item>
                                     <Form.Item
                                         labelCol={{ span: 8 }}
@@ -490,7 +537,7 @@ const ModalEdit = () => {
                                         fieldKey={[field.fieldKey, 'end']}
                                         rules={[{ required: true }]}
                                     >
-                                        <InputNumber min={0} max={100} step={1} stringMode={false} placeholder="คะแนน 0 - 100" />
+                                        <InputNumber min={requireMin(form, ind, resultForm, true)} max={requireMax(form, ind, resultForm, true)} step={1} stringMode={false} placeholder={`คะแนน ${requireMin(form, ind, resultForm, true)} - ${requireMax(form, ind, resultForm, true)}`} />
                                     </Form.Item>
                                 </div>
                                 <Form.Item
@@ -513,6 +560,105 @@ const ModalEdit = () => {
                 <Button htmlType="reset">ล้างค่า</Button>
                 <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
             </div>
+        </Form>
+
+    </Modal>
+}
+const ModalView = () => {
+    const { modalView, setModalView, reload } = useContext(ResultFormContext)
+    const { modalResultForm } = useContext(ContextForm)
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (!!modalView) {
+            form.setFieldsValue({ resultForm: [{ ...modalView }] });
+        }
+    }, [form, modalView]);
+
+    return <Modal title={`ผลการประเมิน${modalResultForm.name_th}`}
+        visible={modalView}
+        okText={<>ตกลง</>}
+        cancelText={<>ยกเลิก</>}
+        footer={<></>}
+        zIndex={10000}
+        // onOk={onOk}
+        onCancel={() => setModalView(null)}
+        forceRender
+        width="50vw"
+    >
+        <Form
+            form={form}
+            labelCol={{ span: 3 }}
+            // onValuesChange={v=>console.log(v)}
+            labelWrap={true}
+            labelAlign="left"
+        // onFinishFailed={onCancel}
+        >
+            <Form.List name="resultForm" rules={[{ required: true, message: "คุณลืมเพิ่มผลแบบประเมิน" }]}>
+                {(fields, { add, remove }, { errors }) => {
+                    const RiskChange = (v, field, ind) => {
+                        // const val = form.getFieldValue(field.fieldKey)
+                        let resultForm = form.getFieldValue("resultForm")
+                        resultForm[ind] = { ...resultForm[ind], toggleRisk: v }
+                        form.setFieldsValue({ resultForm: resultForm })
+                    }
+                    return <>
+                        {!!fields && fields.map((field, ind) => (
+                            <Form.Item
+                                {...field}
+                                noStyle
+                                shouldUpdate
+                                key={field.key}
+                                required
+                            >
+
+                                <Form.Item
+                                    labelCol={{ span: 5 }}
+                                    label={<>ระดับความเสี่ยง </>}
+                                    name={[field.name, 'title']}
+                                    fieldKey={[field.fieldKey, 'title']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input className='input-disabled' bordered={false} disabled placeholder="เช่น เสี่ยงต่ำมาก เสี่ยงสูงมาก" />
+                                </Form.Item>
+                                <div className='grid grid-cols-2 gap-2'>
+                                    <Form.Item
+                                        labelCol={{ span: 8 }}
+                                        // wrapperCol={14}
+                                        label={`คะแนนเริ่มต้น`}
+                                        name={[field.name, 'start']}
+                                        fieldKey={[field.fieldKey, 'start']}
+                                        rules={[{ required: true }]}
+                                    >
+                                        <Input className='input-disabled' bordered={false} placeholder="คะแนน 0 - 100" />
+                                    </Form.Item>
+                                    <Form.Item
+                                        labelCol={{ span: 8 }}
+                                        // wrapperCol={14}
+                                        label={`คะแนนสิ้นสุด`}
+                                        name={[field.name, 'end']}
+                                        fieldKey={[field.fieldKey, 'end']}
+                                        rules={[{ required: true }]}
+                                    >
+                                        <Input className='input-disabled' bordered={false} placeholder="คะแนน 0 - 100" />
+                                    </Form.Item>
+                                </div>
+                                <Form.Item
+                                    label={`คำแนะนำ`}
+                                    name={[field.name, 'recommend']}
+                                    fieldKey={[field.fieldKey, 'recommend']}
+                                    rules={[{ required: true }]}
+                                >
+                                    <TextArea className='input-disabled' bordered={false} disabled rows={7} placeholder="คำแนะนำ" />
+                                </Form.Item>
+                                <hr className='mt-2 mb-4' />
+                            </Form.Item>))}
+
+                        <Form.ErrorList errors={errors} />
+                    </>
+
+                }}
+            </Form.List>
         </Form>
 
     </Modal>
