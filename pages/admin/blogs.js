@@ -145,9 +145,8 @@ export default function Index() {
         <div className="ease-div flex flex-col gap-4 w-full">
             <Chart ncds={ncds} food={food} blogs={blogs} />
             <hr />
-            <div className="flex justify-between mt-4">
-                <div className="text-xl"></div>
-                <div className='flex justify-center items-center gap-3'>
+            <div className="flex justify-end mt-4">
+                <div className="flex gap-3">
                     <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
                     <Button className='green-ghost-green' icon={<DownloadOutlined />}>
                         <CSVLink
@@ -213,6 +212,7 @@ const TableForm = () => {
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: 'คำอธิบาย',
             dataIndex: 'imply',
             key: 'imply',
@@ -220,6 +220,7 @@ const TableForm = () => {
             render: val => <Tooltip title={val}><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: 'ผลโหวต',
             dataIndex: 'avg_vote',
             key: 'avg_vote',
@@ -227,6 +228,7 @@ const TableForm = () => {
             render: (val) => <Tooltip title={`${val >= 0 ? val : 0}/5`}><Paragraph align="center" ellipsis={ellipsis}>{val >= 0 ? val : 0}</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: 'จำนวนหัวข้อย่อย',
             dataIndex: 'subBlog',
             key: 'subBlog',
@@ -234,6 +236,7 @@ const TableForm = () => {
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
+            responsive: ["md"],
             title: 'จำนวนโรคที่เกี่ยวข้อง',
             dataIndex: 'related',
             key: 'related',
@@ -1172,7 +1175,7 @@ const ModalView = () => {
                 </div>)}
             </Form.Item>
             <Form.Item label="วิดีโอ"
-                labelAlign="left">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
+                labelAlign="left">{modalView?.video ? <div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer width="100%" url={modalView.video} /> </div>: "ไม่พบวิดีโอ"}</Form.Item>
             <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><a key={url} rel="noopener noreferrer" target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line hover:bg-gray-100 hover:p-3 hover:rounded-md'>{url}</a><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
 
         </Form>

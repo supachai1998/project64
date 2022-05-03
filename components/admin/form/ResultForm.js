@@ -171,6 +171,7 @@ const TableResultForm = () => {
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val}</Paragraph>
         },
         {
+            responsive: ["md"],
             title: <div className="text-center" >คำแนะนำ</div>,
             dataIndex: 'recommend',
             key: 'recommend',
@@ -280,8 +281,8 @@ const TableResultForm = () => {
                     {selectRows?.length > 0 && <div className='flex gap-2 text-md'>
                         <Button_Delete fx={() => showConfirmDelRows()} title={"ลบข้อมูลที่เลือก"} ></Button_Delete>
                     </div>}
-                    <Tooltip title={"ค้นหาหาระดับความเสี่ยง"}>
-                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setResultForm(store)} placeholder="ระดับความเสี่ยง" className='text-black rounded-md' /></Tooltip>
+                    <Tooltip title={"ค้นหาระดับความเสี่ยง"}>
+                        <input ref={inputRef} onKeyDown={(e) => e.key === 'Enter' ? search() : setResultForm(store)} placeholder="ระดับความเสี่ยง" className='text-black rounded-md w-20 focus:w-full hover:w-full' /></Tooltip>
                     <Tooltip title={"ค้นหา"}>
                         <button type="button" onClick={() => search()} ><SearchOutlined /></button></Tooltip>
                 </div>

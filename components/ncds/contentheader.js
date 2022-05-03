@@ -60,7 +60,7 @@ const CusModal = ({ handleCancel, content }) => {
     const { name_th, video } = content
     return (
         <Modal title={<div className='flex w-full justify-between text-2xl '>{name_th} <CloseOutlined className="button-cus hover:bg-red-200" onClick={() => handleCancel()} /></div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={false}>
-            <div className="h-96 sm:h-screen w-full p-0 m-0 "><ReactPlayer url={video} width="100%" height="100%" /></div>
+            <div className="h-96 sm:h-screen w-full p-0 m-0 "><ReactPlayer width="100%" url={video} height="100%" /></div>
         </Modal>
     );
 };

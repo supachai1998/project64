@@ -172,7 +172,7 @@ const ModalView = () => {
         width="100%"
         footer={<></>}>
         <Form labelCol={{ span: 4 }}>
-            <Form.Item label={`รูปภาพ ${modalView.image.length} รูป`}>{modalView.image.map(({ name }) => <CusImage className="rounded-md shadow-lg" key={name} width="250px" height="150px" src={name} />)}</Form.Item>
+            <Form.Item label={`รูปภาพ ${modalView.image.length} รูป`}>{modalView.image.map(({ name }) => <CusImage className="rounded-md shadow-lg sm:mx-3 " key={name} width="250px" height="150px" src={name} />)}</Form.Item>
             <Form.Item label="ชื่อโรคภาษาไทย"><span className='text-lg whitespace-pre-line'>{modalView.name_th}</span></Form.Item>
             <Form.Item label="ชื่อโรคภาษาอังกฤษ"><span className='text-lg whitespace-pre-line'>{modalView.name_en}</span></Form.Item>
             <Form.Item label="ความหมาย"><span className='text-md whitespace-pre-line'>{modalView.imply}</span></Form.Item>
@@ -180,7 +180,7 @@ const ModalView = () => {
             <Form.Item label="ลดความเสี่ยงการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.reduce}</span></Form.Item>
             <Form.Item label="สัญญาณการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.signs}</span></Form.Item>
             <Form.Item label="คำแนะนำในการปฏิบัติตัว"><span className='text-md whitespace-pre-line'>{modalView.sugess}</span></Form.Item>
-            <Form.Item label="วิดีโอ">{modalView?.video ? <ReactPlayer url={modalView.video} /> : "ไม่พบวิดีโอ"}</Form.Item>
+            <Form.Item label="วิดีโอ">{modalView?.video ? <div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer url={modalView.video} width="100%" height="100%" /> </div>: "ไม่พบวิดีโอ"}</Form.Item>
             <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
@@ -645,10 +645,11 @@ const TableForm = () => {
             title: <Paragraph className='mt-3' align="center" >ชื่อโรค</Paragraph>,
             dataIndex: 'name_th',
             key: 'name_th',
-            width: "20%",
+            width: [{sm:"40%"},{md:"30%"},{lg:"20%"}],
             render: (text, val, index) => <Tooltip title={val.name_th} ><Paragraph className='mt-3' ellipsis={ellipsis}>{val.name_th}({val.name_en})</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: <Paragraph className='mt-3' align="center" >ความหมาย</Paragraph>,
             dataIndex: 'imply',
             key: 'imply',
@@ -656,6 +657,7 @@ const TableForm = () => {
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: <Paragraph className='mt-3' align="center" >จำนวนอ้างอิง</Paragraph>,
             dataIndex: 'ref',
             key: 'ref',
@@ -663,6 +665,7 @@ const TableForm = () => {
             render: val => <Paragraph className='my-auto' align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
+            responsive: ["md"],
             title: <Paragraph className='mt-3' align="center" >จำนวนภาพ</Paragraph>,
             dataIndex: 'image',
             key: 'image',

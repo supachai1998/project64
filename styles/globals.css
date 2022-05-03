@@ -460,3 +460,7 @@ a {
 .no_overflow{
   @apply overflow-ellipsis truncate 
 }
+
+.ytp-cued-thumbnail-overlay{
+  @apply rounded-lg  w-full !important;
+}

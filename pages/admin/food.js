@@ -45,12 +45,14 @@ function Index() {
     });
     const columns = [
         {
+            responsive: ["md"],
             title: <div classNamme="text-center" >ประเภท</div>,
             dataIndex: 'FoodType',
             key: 'FoodType',
             render: val => <Tooltip title={val.name_th} ><div >{val.name_th}</div></Tooltip>
         },
         {
+            responsive: ["md"],
             title: <div classNamme="text-center" >ชื่ออาหาร</div>,
             dataIndex: 'name_th',
             key: 'name_th',
@@ -112,9 +114,9 @@ function Index() {
         <div
             className="ease-div flex flex-col gap-4">
             <Chart type={type} food={food} />
-            <div className="flex justify-between mt-4">
-                <div className="text-xl"></div>
-                <div className="flex gap-3">
+            <div className="flex justify-center sm:justify-between mt-4">
+                <div className="text-xl sm:block hidden"></div>
+                <div className="grid md:grid-cols-4 grid-cols-2 sm:justify-end justify-center gap-3">
                     <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
                     <Button className='green-ghost-green' icon={<DownloadOutlined />}>
                         <CSVLink
@@ -178,6 +180,7 @@ const TableForm = () => {
     if (!foodtype || !food) return null
     const columns = [
         {
+            
             title: <div classNamme="text-center" >ประเภท</div>,
             dataIndex: 'FoodType',
             key: 'FoodType',
@@ -193,6 +196,7 @@ const TableForm = () => {
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: <div className="text-center" >คำอธิบาย</div>,
             dataIndex: 'detail',
             key: 'detail',
@@ -200,6 +204,7 @@ const TableForm = () => {
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
+            responsive: ["md"],
             title: <div className="text-center" >จำนวนอ้างอิง</div>,
             dataIndex: 'ref',
             key: 'ref',
@@ -207,6 +212,7 @@ const TableForm = () => {
             render: val => <Paragraph align="center" ellipsis={ellipsis}>{val.length}</Paragraph>
         },
         {
+            responsive: ["md"],
             title: <div className="text-center" >จำนวนคำแนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
@@ -1040,16 +1046,19 @@ const ModalManageType = () => {
     }
     const columns = [
         {
+            responsive: ["md"],
             title: 'ภาษาไทย',
             dataIndex: 'name_th',
             key: 'name_th',
         },
         {
+            responsive: ["md"],
             title: 'ภาษาอังกฤษ',
             dataIndex: 'name_en',
             key: 'name_en',
         },
         {
+            responsive: ["md"],
             title: 'การจัดการ',
             dataIndex: '',
             key: '',
@@ -1136,7 +1145,7 @@ const ModalView = () => {
             <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView?.detail}</span></Form.Item>
             <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView?.proceduce}</span></Form.Item>
             <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView?.ingredient}</span></Form.Item>
-            <Form.Item label="วิดีโอ"><ReactPlayer url={modalView?.video} /></Form.Item>
+            <Form.Item label="วิดีโอ"><div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer width="100%" url={modalView?.video} /></div></Form.Item>
             <Form.Item label={`โรคที่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds, detail }, ind) => <>
                 {suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /><span className='text-md '>{detail}</span><br /></>}
             </>)}
