@@ -1020,10 +1020,18 @@ const ModalManageType = () => {
                         message: 'ลบข้อมูลสำเร็จ',
                     })
                     await reload()
+                }else if (res.status === 400){
+                    const {error} = await res.json()
+                    if(error.includes("violate the required relation ")){
+                        notification.error({
+                            message:"ไม่สามารถลบข้อมูลได้",
+                            description: 'มีข้อมูลอาหารที่เกี่ยวข้องกับประเภทอาหารนี้',
+                         })
+                    }
                 } else {
                     notification.error({
                         message: 'ไม่สามารถลบข้อมูลได้',
-                        description: 'ไม่สามารถติดต่อ server ',
+                        description: 'ไม่ทราบข้อผิดพลาด',
                     })
                 }
             },
@@ -1191,53 +1199,71 @@ const FetchNCDS = async () => {
 
 const Chart = ({ food, type }) => {
     const [color, setColor] = useState()
+    const [TYPE, setTYPE] = useState([])
+    const [TYPE_SUGGESS, setTYPE_SUGGESS] = useState([])
+    const [TYPE_NOT_SUGGESS, setTYPE_NOT_SUGGESS] = useState([])
     useEffect(() => {
         if (type && !color) setColor(type.map(v => randomRGB()))
-    }, [type])
+        const getNameType = type?.map(({ name_th }) => name_th)
+        const count_type = type?.reduce((acc, val) => {
+            const count_food = food?.reduce((acc, val_food) => val.name_th === val_food.FoodType.name_th ? acc + 1 : acc, 0)
+            acc.push(count_food)
+            return acc
+        }, [])
+        const _TYPE = {
+            labels: getNameType,
+            datasets: [{
+                data: count_type,
+                backgroundColor: color,
+                borderWidth: 0,
+            }],
+        }
+        setTYPE(_TYPE)
+       
+        const countTypeFoodSuggess = type?.reduce((acc, val) => {
+            const count_food = food?.reduce((acc, val_food) => val.name_th === val_food.FoodType.name_th && val_food.FoodNcds.some(({ suggess }) => suggess) ? acc + 1 : acc, 0)
+            acc.push(count_food)
+            return acc
+        }, [])
+        const countTypeFoodNotSuggess = type?.reduce((acc, val) => {
+            const count_food = food?.reduce((acc, val_food) => val.name_th === val_food.FoodType.name_th && val_food.FoodNcds.some(({ suggess }) => !suggess) ? acc + 1 : acc, 0)
+            acc.push(count_food)
+            return acc
+        }, [])
+        
+        // console.log(countTypeFoodSuggess,countTypeFoodNotSuggess)
+
+        const _suggess = {
+            labels: getNameType,
+            datasets: [{
+                data: countTypeFoodSuggess,
+                backgroundColor: color,
+                borderWidth: 0,
+            }],
+        }
+        const _not_suggess = {
+            labels: getNameType,
+            datasets: [{
+                data: countTypeFoodNotSuggess,
+                backgroundColor: color,
+                borderWidth: 0,
+            }],
+        }
+        setTYPE_SUGGESS(_suggess)
+        setTYPE_NOT_SUGGESS(_not_suggess)
+        console.log(type,food)
+    }, [type, food])
     if (!food || !type) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
     </div>
     // console.log(food,type)
-    const count_type = type?.reduce((acc, val) => {
-        const count_food = food?.reduce((acc, val_food) => val.name_th === val_food.FoodType.name_th ? acc + 1 : acc, 0)
-        acc.push(count_food)
-        return acc
-    }, [])
-    const TYPE = {
-        labels: type?.map(({ name_th }) => name_th),
-        datasets: [{
-            data: count_type,
-            backgroundColor: color,
-            borderWidth: 0,
-        }],
-    }
-    const count_suggess = food?.reduce((acc, val_food) => {
-        const count_food_suggess = val_food.FoodNcds.reduce((acc, val) => val.suggess ? acc + 1 : acc, 0)
-        const count_food_notsuggess = val_food.FoodNcds.reduce((acc, val) => !val.suggess ? acc + 1 : acc, 0)
-        acc[0] += count_food_suggess
-        acc[1] += count_food_notsuggess
-        return acc
-    }, [0, 0])
-    const suggess = {
-        labels: ["แนะนำ", "ไม่แนะนำ"],
-        datasets: [{
-            data: count_suggess,
-            backgroundColor: [
-                '#caefe3',
-                'rgba(255, 99, 132, 0.2)'
-            ],
-            borderColor: [
-                '#10b981',
-                'rgba(255, 99, 132, 1)',
-            ],
-            borderWidth: 1,
-        }],
-    }
+    
     // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
     return (<div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">ประเภท</p><Doughnut data={TYPE} /></div>
-        <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คำแนะนำ</p><Doughnut data={suggess} /></div>
+        <div className="w-72 h-72 bg-green-100 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">แนะนำ</p><Doughnut data={TYPE_SUGGESS} /></div>
+        <div className="w-72 h-72 bg-red-100 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">ไม่แนะนำ</p><Doughnut data={TYPE_NOT_SUGGESS} /></div>
     </div>)
 }
 const randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);

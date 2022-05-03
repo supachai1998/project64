@@ -526,7 +526,7 @@ const ModalAdd = () => {
             f["ncdsId"] = val.ncdsId
             return f
         })
-        // console.log(val)
+        console.log(val)
         // return
         const res = await fetch(`/api/getForm?addForm=true`, {
             method: "POST",

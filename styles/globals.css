@@ -435,7 +435,9 @@ a {
 .ant-modal-confirm-btns {
   @apply w-full h-full flex justify-end !important
 }
-
+.whitespace-pre-line , .whitespace-pre-wrap {
+  line-height: 1.6rem!important;
+}
 .ease {
   @apply transition-all ease-in duration-500 transform !important
 }

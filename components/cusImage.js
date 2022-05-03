@@ -53,8 +53,8 @@ export default function CusImage({ width, height, src, name, className, preview 
             // className={className+ " hover:scale-110 transform duration-300"}
             className={className}
             alt={name}
-            width={width}
-            height={height}
+            width={width || "100%"}
+            height={height || "100%"}
             loading="lazy"
             src={onSrc}
             preview={preview}

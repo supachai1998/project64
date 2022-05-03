@@ -15,64 +15,95 @@ export default async function handler(req, res,) {
     switch (method) {
       case "POST":
         const { addSubForm, addForm } = query
-        try{
-        if (addSubForm) {
-          let subForm = body.subForm.map(v1 => { return { ...v1, choice: v1.choice.map(v => { return { ...v, score: Number(v.score) } }) } })
-          subForm = subForm.map((v1) => { return { ...v1, choice: { create: [...v1.choice] } } })
-          await prisma.form.create({
-            data: {
-              ...body,
-              subForm: { create: [...subForm] }
-            },
-          })
-        } else if (addForm) {
-          for (const row of JSON.parse(body)) {
-            try {
-              const dup = await prisma.form.findFirst({
-                where: {
-                  title: row.title
-                }
-              })
-              // row[ncdsId] = parseInt(row[ncdsId])
-              console.log(row)
-              if (dup === null) await prisma.form.create({ data: { ...row }, })
-              else return res.status(400).send({ statusText: `duplicate title : ${row.title}` })
-            } catch (e) { console.error(e.message); return res.status(400).send({ statusText: e.message }) }
+        try {
+          if (addSubForm) {
+            let subForm = body.subForm.map(v1 => { return { ...v1, choice: v1.choice.map(v => { return { ...v, score: Number(v.score) } }) } })
+            subForm = subForm.map((v1) => { return { ...v1, choice: { create: [...v1.choice] } } })
+            await prisma.form.create({
+              data: {
+                ...body,
+                subForm: { create: [...subForm] }
+              },
+            })
+          } else if (addForm) {
+            for (const row of JSON.parse(body)) {
+              try {
+                const dup = await prisma.form.findFirst({
+                  where: {
+                    title: row.title
+                  }
+                })
+                // row[ncdsId] = parseInt(row[ncdsId])
+                console.log(row)
+                if (dup === null) await prisma.form.create({ data: { ...row }, })
+                else return res.status(400).send({ statusText: `duplicate title : ${row.title}` })
+              } catch (e) { console.error(e.message); return res.status(400).send({ statusText: e.message }) }
+            }
+          } else {
+            await prisma.form.create({
+              data: JSON.parse(body),
+            })
           }
-        } else {
-          await prisma.form.create({
-            data: JSON.parse(body),
-          })
+        } catch (e) {
+          if (e.message.includes("constraint")) {
+            return res.status(404).send({ statusText: "มีค่าซ้ำ" })
+          }
         }
-      }catch(e){
-        if(e.message.includes("constraint")){
-          return res.status(404).send({ statusText: "มีค่าซ้ำ" })
-        }
-      }
         return res.status(200).json({ status: true })
       case "DELETE":
         const { allForm } = query
-
+        let ncdsId = null
         if (Array.isArray(id)) {
-          id.map(async _ => await prisma.form.delete({
-            where: {
-              id: _,
-            }
+          const result = await Promise.all(id.map(async _ => {
+            const f = await prisma.form.delete({
+              where: {
+                id: _,
+              }
+            })
+            return f
           }))
+          // console.log(result)
+          if (ncdsId === null) ncdsId = result[0].ncdsId
+
         } else if (allForm) {
-          for (const { id } of body) {
-            await prisma.form.delete({
+          const result = await Promise.all(await body.map(async ({ id }) => {
+            const f = await prisma.form.delete({
               where: {
                 id: parseInt(id),
               }
             })
-          }
+            return f
+          }))
+          // console.log(result)
+          if (ncdsId === null) ncdsId = result[0].ncdsId
         } else {
-          await prisma.form.delete({
+          const formId = parseInt(id)
+          const f = await prisma.form.delete({
             where: {
-              id: parseInt(id),
+              id: formId,
             }
           })
+          // console.log(f)
+          if (ncdsId === null) ncdsId = f.ncdsId
+        }
+        // console.log(ncdsId)
+        if (ncdsId) {
+          console.log(count)
+          const count = await prisma.form.count({
+            where: {
+              ncdsId,
+            }
+          })
+          if (count === 0) {
+            const result = await prisma.resultForm.findMany({
+              where: { ncdsId }
+            })
+            result.map(async v => await prisma.resultForm.delete({
+              where: {
+                id: v.id
+              }
+            }))
+          }
         }
         return res.status(200).json({ status: true })
       case "PATCH":

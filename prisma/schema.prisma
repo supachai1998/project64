@@ -98,7 +98,7 @@ model Ref {
 model Food {
   id           Int            @id @default(autoincrement())
   foodTypeId   Int
-  FoodType     FoodType       @relation(fields: [foodTypeId], references: [id], onDelete: Cascade)
+  FoodType     FoodType       @relation(fields: [foodTypeId], references: [id], onDelete: Restrict)
   name_th      String         @unique
   name_en      String         @unique
   proceduce    String         @db.LongText
@@ -134,7 +134,7 @@ model FoodNcds {
   ncdsId    Int?
   // imageFoodId Int?
   foodId    Int
-  // image       ImageFood? @relation(fields: [imageFoodId], references: [id], onDelete: Cascade)
+  // image       ImageFood? @relation(fields: [imageFoodId], references: [id], onDelete: Restrict)
   ncds      Ncds?    @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   food      Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
 }
@@ -204,7 +204,7 @@ model subBlog {
 model form {
   id      Int       @id @default(autoincrement())
   title   String    @unique
-  ncds    Ncds      @relation(fields: [ncdsId], references: [id])
+  ncds    Ncds      @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   ncdsId  Int
   subForm subForm[]
 }
@@ -212,8 +212,8 @@ model form {
 model subForm {
   id     Int      @id @default(autoincrement())
   name   String
-  form   form?    @relation(fields: [formId], references: [id])
-  formId Int?
+  form   form    @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId Int
   choice choice[]
 }
 
@@ -222,8 +222,8 @@ model choice {
   name      String
   detail    String?  @db.LongText
   score     Int
-  subForm   subForm? @relation(fields: [subFormId], references: [id])
-  subFormId Int?
+  subForm   subForm @relation(fields: [subFormId], references: [id], onDelete: Cascade)
+  subFormId Int
 }
 
 model resultForm {

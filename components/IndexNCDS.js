@@ -31,7 +31,9 @@ export default function IndexNCDS() {
 
 const getData = async (router, ncds, form) => {
     if (!ncds || !form) return null
-    const menu = "hover:underline p-1 px-2 md:px-4 rounded-md ease  text-left invisible group-hover:visible"
+    const menu = `hover:underline sm:p-1 px-2 md:px-4 rounded-md 
+        duration-300 ease-in transition transform 
+        text-left hidden group-hover:block`
     return [
         {
             title: "โรคไม่ติดต่อเรื้อรัง  NCDs (Non-Communicable diseases)",
@@ -51,13 +53,14 @@ const getData = async (router, ncds, form) => {
         },
         {
             title: "โรค NCDs ",
-            content: <div >{!!ncds && ncds.length > 0 && ncds?.map(({ name_th, name_en, id }, ind) => <div key={`${ind}.${name_th}`} className="flex md:flex-row flex-col flex-warp gap-2 text-left group hover:bg-blue-100">
-                <span className="p-1 rounded-md md:px-4">{ind + 1}. {name_th} {name_en}</span>
-                <div className="flex md:flex-row flex-col gap-2 text-left">
-                    <span className={menu} onClick={() => router.push(`/ncds/${id}`)}  >เข้าชม</span>
-                    {!!form && form.length > 0 && form?.filter(v => v?.name_th === name_th)?.map((v, i) => <span key={`${i}.${v.name_en}`} className={menu} onClick={() => router.push(`/form/${id}`)}  >ประเมินตนเอง</span>)}
-                </div>
-            </div>)}
+            content: <div >{!!ncds && ncds.length > 0 && ncds?.map(({ name_th, name_en, id }, ind) => <div key={`${ind}.${name_th}`} 
+                    className="flex md:flex-row flex-col flex-warp gap-2 p-1 text-left rounded-md group hover:bg-blue-100 hover:my-2 duration-300 ease-in-out transition transform ">
+                    <span className="p-1 rounded-md  md:px-4">{ind + 1}. {name_th} {name_en}</span>
+                    <div className="flex md:flex-row flex-col gap-2 text-left">
+                        <span className={menu} onClick={() => router.push(`/ncds/${id}`)}  >เข้าชม</span>
+                        {!!form && form.length > 0 && form?.filter(v => v?.name_th === name_th)?.map((v, i) => <span key={`${i}.${v.name_en}`} className={menu} onClick={() => router.push(`/form/${id}`)}  >ประเมินตนเอง</span>)}
+                    </div>
+                </div>)}
             </div>,
         },
     ]
