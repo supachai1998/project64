@@ -622,7 +622,7 @@ const ModalAdd = () => {
                                                     shouldUpdate
                                                     key={fieldsubForm.key}
                                                     required
-                                                >   
+                                                >
                                                     {/* {console.log(form.getFieldValue("form")[ind]?.subForm)} */}
                                                     <Collapse defaultActiveKey={{}} ghost collapsible="header" >
                                                         <Panel showArrow={false} header={<Form.Item
@@ -1232,42 +1232,31 @@ const showConfirmDel = async (val, reload) => {
                 </li>)}
         </ul>,
         okType: 'danger',
-        okText: <Popconfirm
-            okType='danger'
-            onConfirm={async () => {
-                const res = await fetch("/api/getForm", {
-                    headers: { 'Content-Type': 'application/json', },
-                    method: "DELETE",
-                    body: JSON.stringify({ id: val.id })
-                })
-                if (res.status === 200) {
-                    notification.success({
-                        message: 'ลบข้อมูลสำเร็จ',
-                    })
-                    await reload()
-
-                } else {
-                    notification.error({
-                        message: 'ไม่สามารถลบข้อมูลได้',
-                        description: 'ไม่สามารถติดต่อ server ',
-                    })
-                }
-                del = false
-            }}
-            onCancel={() => { del = false }}
-            okText="ลบทั้งหมด"
-            cancelText="ยกเลิก">ลบทั้งหมด</Popconfirm>,
+        okText: "ลบทั้งหมด",
         cancelText: "ยกเลิก",
         async onOk() {
-            while (del) {
-                await new Promise(resolve => setTimeout(resolve, 500))
+            const res = await fetch("/api/getForm", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify({ id: val.id })
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                await reload()
+
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
             }
         },
         onCancel() { },
     });
 }
 const deleteAll = async (vals, reload, setModalViewSubForm) => {
-    let del = true
     confirm({
         title: <>คุณต้องการจะลบการประเมินผล</>,
         content: <ul>
@@ -1280,35 +1269,24 @@ const deleteAll = async (vals, reload, setModalViewSubForm) => {
             })}
         </ul>,
         okType: 'danger',
-        okText: <Popconfirm
-            okType='danger'
-            onConfirm={async () => {
-                const res = await fetch("/api/getForm?allForm=true", {
-                    headers: { 'Content-Type': 'application/json', },
-                    method: "DELETE",
-                    body: JSON.stringify(vals)
-                })
-                if (res.status === 200) {
-                    notification.success({
-                        message: 'ลบข้อมูลสำเร็จ',
-                    })
-                    del = false
-                    setModalViewSubForm(null)
-                } else {
-                    notification.error({
-                        message: 'ไม่สามารถลบข้อมูลได้',
-                        description: 'ไม่สามารถติดต่อ server ',
-                    })
-                }
-                del = false
-            }}
-            onCancel={() => { del = false }}
-            okText="ลบทั้งหมด"
-            cancelText="ยกเลิก">ลบทั้งหมด</Popconfirm>,
+        okText: "ลบทั้งหมด",
         cancelText: "ยกเลิก",
         async onOk() {
-            while (del) {
-                await new Promise(resolve => setTimeout(resolve, 500))
+            const res = await fetch("/api/getForm?allForm=true", {
+                headers: { 'Content-Type': 'application/json', },
+                method: "DELETE",
+                body: JSON.stringify(vals)
+            })
+            if (res.status === 200) {
+                notification.success({
+                    message: 'ลบข้อมูลสำเร็จ',
+                })
+                setModalViewSubForm(null)
+            } else {
+                notification.error({
+                    message: 'ไม่สามารถลบข้อมูลได้',
+                    description: 'ไม่สามารถติดต่อ server ',
+                })
             }
             await reload()
         },

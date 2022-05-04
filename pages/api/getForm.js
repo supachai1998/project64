@@ -88,12 +88,13 @@ export default async function handler(req, res,) {
         }
         // console.log(ncdsId)
         if (ncdsId) {
-          console.log(count)
+          
           const count = await prisma.form.count({
             where: {
               ncdsId,
             }
           })
+          // console.log(count)
           if (count === 0) {
             const result = await prisma.resultForm.findMany({
               where: { ncdsId }
