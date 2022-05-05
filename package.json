@@ -11,7 +11,7 @@
     "ssl": "local-ssl-proxy --source 3001 --target 3000",
     "db": "yarn prisma studio --port 5566",
     "mock": "C:/pscale/pscale.exe connect senior main --port 3366",
-    "gitpush": "git add .&&git commit -m 'update'&&git push",
+    "gitpush": "set /p comment='comment : ' &&git add .&&git commit -m %comment%&&git push&&git push heroku main ",
     "analysis": "cross-env ANALYZE=true next build"
   },
   "dependencies": {

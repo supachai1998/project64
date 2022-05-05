@@ -67,7 +67,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
       else setData([])
       setInput()
     }
-  }, [input, setData, store])
+  }, [input,])
 
   const onChange = () => {
     setIsSearch(false)
