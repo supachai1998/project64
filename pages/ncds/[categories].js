@@ -66,7 +66,7 @@ export default function Index(props) {
                     </div>
                 </div>
                 {/* Custom image */}
-                <p className='w-2/3 text-left ml-auto mr-auto mt-3'>{NCDS.imply}</p>
+                <p className='w-2/3 text-left ml-auto mr-auto mt-3 pb-3'>{NCDS.imply}</p>
                 <div className='border-green-800 border-b-2 border-solid w-8/12 mx-auto' ></div>
             </div>
             <ContentHeader headerData={headerData} url_yt={NCDS.video} />

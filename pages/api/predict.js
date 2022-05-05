@@ -11,7 +11,9 @@ export const config = {
 export default async function handler(req, res) {
     res.setHeader('Content-Type', 'application/json');
     if (req.method === "GET")  {
-        await fetch(`${process.env.NEXT_PUBLIC_PREDICT}`,{method:"GET"})
+        const result = await fetch(`${process.env.NEXT_PUBLIC_PREDICT}`,{method:"GET"})
+        if(result.ok) return res.status(200).json({statusMachine : true})
+        else return res.status(500).json({statusMachine:false})
     }
     else if (req.method !== "POST") res.status(400).json({ error: "method not allowed" })
     else{

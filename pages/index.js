@@ -33,7 +33,7 @@ export default function Index() {
       {/* content */}
       <div className="relative">
         <div className="flex flex-col gap-3 p-3 ">
-          {pageSelect === 0 && <div className="w-full lg:w-2/3 mx-auto h-60 sm:h-very-super"><CusImage src="/NCDs-1536x864.jpg" /></div>}
+          {pageSelect === 0 && <div className="w-full lg:w-2/3 mx-auto h-60 sm:h-very-super"><CusImage src="NCDs-1536x864.jpg" /></div>}
           {pageSelect === 0 && <IndexNCDS />}
           {pageSelect === 1 && <>
             <hr />

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { Image as Img , Spin  } from 'antd';
+import { Image as Img, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 // import { CircularProgress } from '@mui/material';
 import getConfig from 'next/config'
-const {  publicRuntimeConfig } = getConfig()
-const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+const { publicRuntimeConfig } = getConfig()
+const antIcon = <LoadingOutlined className='text-lg' spin />;
 export default function CusImage({ width, height, src, name, className, preview }) {
-    const [onSrc, setOnSrc] = React.useState("/placeholder.png")
+    const [onSrc, setOnSrc] = React.useState()
     async function checkIfImageExists(url, callback) {
 
         const img = new Image();
@@ -26,23 +26,35 @@ export default function CusImage({ width, height, src, name, className, preview 
 
     }
     useEffect(() => {
-        checkIfImageExists(`/static/${src}`, (exists) => {
+        if (!onSrc) checkIfImageExists(`/static/${src}`, (exists) => {
             if (exists) {
                 setOnSrc(`/static/${src}`)
+                return
             } else {
-                checkIfImageExists(`${publicRuntimeConfig.staticFolder}/static/${src}` , (exists) => {
+                checkIfImageExists(src, (exists) => {
                     if (exists) {
-                        setOnSrc(`${publicRuntimeConfig.staticFolder}/static/${src}` )
+                        setOnSrc(src)
+                        return
                     } else {
-                        checkIfImageExists(src, (exists) => {
+                        checkIfImageExists(`${publicRuntimeConfig.staticFolder}/static/${src}`, (exists) => {
                             if (exists) {
-                                setOnSrc(src)
+                                setOnSrc(`${publicRuntimeConfig.staticFolder}/static/${src}`)
+                                return
                             } else {
-                                setOnSrc("/notFound.jpg")
+                                checkIfImageExists(`${publicRuntimeConfig.staticFolder}/${src}`, (exists) => {
+                                    if (exists) {
+                                        setOnSrc(`${publicRuntimeConfig.staticFolder}/${src}`)
+                                        return
+                                    } else {
+                                        setOnSrc("/notFound.jpg")
+                                        return
+                                    }
+                                });
                             }
                         });
                     }
                 });
+
             }
         });
     }, [onSrc, src])
@@ -63,4 +75,4 @@ export default function CusImage({ width, height, src, name, className, preview 
         />
     );
 }
-const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center"}><Spin indicator={antIcon} /></div>
+const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center items-center"}><Spin indicator={antIcon} /></div>

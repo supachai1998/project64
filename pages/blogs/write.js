@@ -90,37 +90,42 @@ export default function Index() {
             val['subBlog'] = _tempsubBlog
             val['id'] = edit.id
             val['approve'] = 0
-            let related = []
+            let relatedFood = []
+            let relatedNcds = []
             // console.log(val['foodId'], val['ncdsId'])
+            // console.log(form.getFieldValue("related"))
             if (val['foodId']?.length > 0) {
+                // console.log("loop food")
                 if (edit?.related?.length > 0) {
-                    for (const [kk, vv] of Object.entries(edit.related)) {
+                    for (const [kk, vv] of Object.entries(form.getFieldValue("related"))) {
                         val['foodId'].map((v) => {
-                            if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
-                            else related.push({ foodId: v })
+                            if (vv.foodId === v) relatedFood.push({ id: vv.id, foodId: vv.foodId })
+                            relatedFood.push({ foodId: v })
                         })
                     }
-                    related = related.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
+                    // console.log("food",relatedFood)
+                    relatedFood = relatedFood.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
                 } else {
-                    val['foodId'].map(v => related.push({ foodId: v }))
+                    val['foodId'].map(v => relatedFood.push({ foodId: v }))
                 }
             }
             if (val['ncdsId']?.length > 0) {
+                // console.log("loop ncds")
                 if (edit?.related?.length > 0) {
-                    for (const [kk, vv] of Object.entries(edit.related)) {
+                    for (const [kk, vv] of Object.entries(form.getFieldValue("related"))) {
                         val['ncdsId'].map((v) => {
-                            if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
-                            else related.push({ ncdsId: v })
+                            if (vv.ncdsId === v) relatedNcds.push({ id: vv.id, ncdsId: vv.ncdsId })
+                            relatedNcds.push({ ncdsId: v })
                         })
                     }
-                    related = related.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
+                    // console.log("ncds",relatedNcds)
+                    relatedNcds = relatedNcds.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
                 } else {
-                    val['ncdsId'].map(v => related.push({ ncdsId: v }))
+                    val['ncdsId'].map(v => relatedNcds.push({ ncdsId: v }))
                 }
             }
             val["ref"] = [...val["ref"]]
-            val["related"] = [...related]
-
+            val["related"] = [...relatedNcds,...relatedFood]
             delete val['foodId']
             delete val['ncdsId']
             console.log(val)

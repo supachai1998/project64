@@ -5,7 +5,12 @@ import dynamic from 'next/dynamic'
 import { getCookie, setCookies } from 'cookies-next';
 import { serverip } from '/config/serverip'
 import { _AppContext } from '/pages/_app'
+import { VideoCameraOutlined } from '@ant-design/icons';
 
+
+const ReactPlayer = dynamic(() => import('react-player'), {
+  ssr: false,
+});
 
 const BestFood = dynamic(() => import('../../../components/BestFood'))
 const BestBlog = dynamic(() => import('../../../components/BestBlog'))
@@ -22,6 +27,7 @@ export default function Index(props) {
   const [loading, setloading] = useState(false)
   const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
   const [userVote, setUserVote] = useState()
+  const [content, setContent] = useState()
   const fetechData = async () => {
     setloading(true)
     const data = await fetch(`/api/getBlogs?id=${blog}`).then(res => res.ok && res.json())
@@ -83,6 +89,9 @@ export default function Index(props) {
       });
     }
   }
+  const handleCancel = () => {
+    setContent()
+}
   if (data.approve === 2) return <div className="flex flex-col min-h-screen text-center text-4xl text-red-600">ไม่สามารถเข้าถึงบทความ</div>
   return (<>
     {data.approve === 0 && <div className="flex flex-col  justify-end items-center bg-white rounded-lg py-10 my-10 gap-3">
@@ -108,7 +117,7 @@ export default function Index(props) {
 
         </div>
         {/* Custom image */}
-        <p className='sm:w-2/3 w-10/12 text-left ml-auto mr-auto mt-3'>{data.imply}</p>
+        <p className='sm:w-2/3 w-10/12 text-left ml-auto mr-auto mt-3 pb-3'>{data.imply}</p>
         {/* <div className="float-right button flex flex-col  group text-black bg-gray-100 hover:text-white hover:bg-gray-900">
           <span>ให้คะแนน</span>
           <div className='hidden group-hover:block ease '><Rate tooltips={["1 ดาว", "2 ดาว", "3 ดาว", "4 ดาว", "5 ดาว",]} onChange={rateChange} /></div>
@@ -126,13 +135,17 @@ export default function Index(props) {
             <hr className="my-3" />
           </div>)}
           <hr className="my-3" />
-          <div className="flex flex-col m-3 justify-start flex-warp w-full overflow-hidden">
+          <div className="flex flex-col m-3 justify-start flex-warp w-full overflow-hidden p-1">
             <h3 className="text-left">อ้างอิง</h3>
             {data.ref && data.ref.length > 0 && data.ref.map(({ url }, index) =>
               <><a href={url.split(",").at(-1)} target="_blank" key={index} className='text-left no-underline text-black whitespace-pre-wrap ' rel="noreferrer">{url}</a><br /> </>
             )}
           </div>
+          {data?.video && <div className="flex justify-end w-full "> 
+                                     <button href="#" className="w-32 mb-3 mr-3 text-lg border rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button> </div>}
+
         </div>
+
         <p className='text-right'>ยอดเข้าชม {data.views} ยอด</p>
       </div>
 
@@ -140,6 +153,7 @@ export default function Index(props) {
         <BestFood title="อาหารแนะนำ" />
         <BestBlog title="บทความแนะนำ" />
       </div>
+      {content && <CusModal handleCancel={handleCancel} content={content} />}
     </div>
   </>
   )
@@ -200,3 +214,13 @@ const showConfirmDel = async (val, router) => {
     onCancel() { },
   });
 }
+
+const CusModal = ({ handleCancel, content }) => {
+  if (!content) return null
+  const { name_th, video } = content
+  return (
+      <Modal title={<div className='flex w-full justify-between text-2xl '>{name_th} </div>} visible={true} width="100%" height="100%" centered onCancel={handleCancel} footer={null} closable={true}>
+          <div className="h-96 sm:h-screen w-full p-0 m-0 "><ReactPlayer url={video} width="100%" height="100%" /></div>
+      </Modal>
+  );
+};

@@ -1,13 +1,14 @@
 
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef,useCallback } from 'react';
 import { Input, message, Button, Tooltip, Modal, notification, Spin, AutoComplete } from 'antd'
-import { CameraOutlined, LoadingOutlined, SwapOutlined } from '@ant-design/icons';
+import { CameraOutlined, LoadingOutlined, SwapOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
 import Resizer from "react-image-file-resizer";
 import { LinearProgressBar } from '../ulity/progress';
 import { useRouter } from 'next/router';
+import { fetchWithTimeout } from '/ulity/fetchWithTimeout'
 const { Option } = AutoComplete;
 // <CameraOutlined />
 const { Search } = Input
@@ -18,13 +19,25 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
   const [input, setInput] = useState(null)
+  const [isSearch, setIsSearch] = useState(false)
+  const [machineLearningStatus, setMachineLearningStatus] = useState(false)
+
+  useEffect(() => {
+    (async () => {
+      await fetchWithTimeout(`/api/predict`, {
+        timeout: 1000
+      }).then(res => res.ok ? setMachineLearningStatus(true) : setMachineLearningStatus(false))
+    })()
+  }, [])
+
   const handleSearch = async () => {
+    setIsSearch(true)
     const asPath = router.asPath.split("/")
     let api = `/api/superSearch?${only ? `&only=${only}` : "&only=ALL"}`
     if (asPath[1]) api += `&type=${asPath[1]}`
     if (asPath[2]) api += `&categories=${asPath[2]}`
     if (asPath[3]) api += `&self=${asPath[3]}`
-    const val = input  || refSearchInput.current?.state?.value  
+    const val = input || refSearchInput.current?.state?.value
     if (!!val && val.length > 2) {
       setLoading(true)
       api += `&txt=${val}`
@@ -33,34 +46,42 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
       if (!query_data) notification.error({ message: "ไม่พบข้อมูล" })
       else setData(query_data)
       setLoading(false)
-      refSearchInput.current.state.value = null
+      if (refSearchInput.current?.state?.value) refSearchInput.current.state.value = null
     } else {
-      const time = setTimeout(async () => {
+      const typeTime = setTimeout(() => {
         if (store?.length > 0) setData(store)
         else setData([])
       }, 1000);
-      return () => clearTimeout(time)
+      clearTimeout(typeTime)
+
     }
-    
+
 
   }
   useEffect(() => {
-    const val = input  || refSearchInput.current?.state?.value  
+    const val = input || refSearchInput.current?.state?.value
     !!val && val.length > 2 && handleSearch()
+    console.log(val)
     return () => {
       if (store?.length > 0) setData(store)
       else setData([])
       setInput()
     }
-  }, [input, setInput])
+  }, [input, setData, store])
 
   const onChange = () => {
+    setIsSearch(false)
     const val = refSearchInput.current.state.value
     if (!!val && val.length <= 1) {
       if (store?.length > 0) setData(store)
       else setData([])
     }
   }
+  const handleClear = (() => {
+    if (store?.length > 0) setData(store)
+    else setData([])
+    setIsSearch(false)
+  })
   return (
     <div className="grid w-full rounded-xl ">
       {only !== "blogs" && only !== "food_no_camera" && statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
@@ -71,24 +92,27 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
           <div className={only !== "blogs" && only !== "food_no_camera" ? "grid xl:grid-cols-3 sm:grid-cols-2  w-full h-full gap-3 sm:justify-center sm:flex-row" :
             "flex justify-end"}>
 
-            {only !== "blogs" && only !== "food_no_camera" && <Tooltip title="ถ่ายภาพ">
-              <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
+            {only !== "blogs" && only !== "food_no_camera" && <Tooltip title={!machineLearningStatus ? "ไม่สามารถใช้งานได้" : "ถ่ายภาพ"}>
+              <label className={`flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase border ${!machineLearningStatus ? "border-gray-600 bg-gray-400 " : "border-gray-300 bg-white hover:border-blue-600 hover:text-blue-600"} shadow-sm cursor-pointer rounded-lg `}>
                 <CameraOutlined />
                 {loading
                   ? <LinearProgressBar className="w-20" />
                   : <>
-                    <button onClick={() => setStatusWebCam(true)} >ถ่ายภาพอาหาร</button>
+                    <button onClick={() => setStatusWebCam(true)} disabled={!machineLearningStatus} >ถ่ายภาพอาหาร</button>
                   </>}
               </label>
             </Tooltip>}
 
-            {only !== "blogs" && only !== "food_no_camera" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} />}
+            {only !== "blogs" && only !== "food_no_camera" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} disabled={!machineLearningStatus} />}
 
-              <Search className="z-0 w-full input search loading with enterButton" disabled={loading}  onChange={onChange} onSearch={handleSearch} onPressEnter={handleSearch}  maxLength={30} loading={loading} enterButton inputMode="search"
+            <div className="flex items-center gap-2 w-full">
+              <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} onPressEnter={handleSearch} maxLength={30} loading={loading} enterButton inputMode="search"
                 placeholder={only === "food" || only === "food_no_camera" ? "ชื่ออาหาร" :
                   only === "ncds" ? "ชื่อโรค" :
                     only === "blogs" ? "ชื่อบทความ"
                       : "ชื่ออาหาร ,   ชื่อบทความ"} ref={refSearchInput} />
+              {isSearch && <CloseCircleOutlined className='text-lg text-red-500' onClick={handleClear} />}
+            </div>
           </div>
         </div>
       }
@@ -279,7 +303,7 @@ const ImageShow = ({ imageSrc, setImageSrc, handleCloseCamera, setInput, machine
   )
 }
 
-const CustomUpload = ({ setInput, loading, setLoading }) => {
+const CustomUpload = ({ setInput, loading, setLoading, disabled }) => {
   const [machinePredict, setMachinePredict] = useState(null)
   const onChange = (e) => {
     (async () => {
@@ -329,15 +353,15 @@ const CustomUpload = ({ setInput, loading, setLoading }) => {
   };
   return (
     <>
-      <Tooltip title="เลือกภาพถ่ายอาหารที่ต้องการ">
-        <label className="flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase bg-white border border-gray-300 shadow-sm cursor-pointer rounded-lg hover:border-blue-600 hover:text-blue-600">
+      <Tooltip title={disabled ? "ไม่สามารถใช้งานได้" : "เลือกภาพถ่ายอาหารที่ต้องการ"}>
+        <label className={`flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase border ${disabled ? "border-gray-600 bg-gray-400" : "hover:border-blue-600 hover:text-blue-600 bg-white border border-gray-300"}  shadow-sm cursor-pointer rounded-lg `}>
           <svg className="w-4 h-4" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
           </svg>
           {loading
             ? <LinearProgressBar className="w-20" />
             : <><span className="text-sm leading-normal my-1">เลือกภาพอาหาร</span>
-              <input type="file" className="hidden" accept="image/*" onChange={onChange} /></>}
+              <input type="file" className="hidden" accept="image/*" disabled={disabled} onChange={onChange} /></>}
         </label>
       </Tooltip>
       <Modal

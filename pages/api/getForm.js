@@ -35,8 +35,10 @@ export default async function handler(req, res,) {
                 })
                 // row[ncdsId] = parseInt(row[ncdsId])
                 console.log(row)
-                if (dup === null) await prisma.form.create({ data: { ...row }, })
-                else return res.status(400).send({ statusText: `duplicate title : ${row.title}` })
+                await prisma.form.create({ data: { ...row }, })
+                // หัวข้อห้ามซ้ำ (ไม่รู้ทำไปเพื่ออาราย 555)
+                // if (dup === null) await prisma.form.create({ data: { ...row }, })
+                // else return res.status(400).send({ statusText: `duplicate title : ${row.title}` })
               } catch (e) { console.error(e.message); return res.status(400).send({ statusText: e.message }) }
             }
           } else {

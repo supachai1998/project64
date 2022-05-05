@@ -690,12 +690,12 @@ const ModalEdit = () => {
         })
             .then(res => {
                 if (res.ok) {
-                    notification.success({ message: "เพิ่มข้อมูลเรียบร้อย" })
+                    notification.success({ message: "แก้ไขข้อมูลเรียบร้อย" })
                     setModalEdit(false)
                     reload()
                     fetch(`/api/uploads`)
                 } else {
-                    notification.error({ message: `ไม่สามารถเพิ่มข้อมูลได้ ${res.json().code}` })
+                    notification.error({ message: `ไม่สามารถแก้ไขข้อมูลได้ ${res.json().code}` })
                 }
             })
     }
@@ -948,7 +948,7 @@ const ModalEdit = () => {
             </Form.List>
             <div className="flex justify-end gap-2 sm:mt-0 mt-3">
                 <Button htmlType="reset">ล้างค่า</Button>
-                <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
+                <Button className="edit_button" type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
             </div>
         </Form>
     </Modal>
@@ -1025,6 +1025,8 @@ const ModalManageType = () => {
                     notification.success({
                         message: 'ลบข้อมูลสำเร็จ',
                     })
+                    setFoodTypeEdit(null)
+                    form.resetFields()
                     await reload()
                 }else if (res.status === 400){
                     const {error} = await res.json()
@@ -1064,8 +1066,8 @@ const ModalManageType = () => {
             key: '',
             render: val => <div className="flex flex-wrap gap-2">
                 {/* <Button type="text" className="bg-yellow-300" onClick={() => console.log(val)}>ดู</Button> */}
-                <button className=" bg-yellow-200 hover:bg-yellow-300" disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
-                <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(val)}>ลบ</button>
+                <button className={foodTypeEdit ? (foodTypeEdit?.id === val?.id) && "bg-gray-200" :" bg-yellow-200 hover:bg-yellow-300"} disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
+                <button className={foodTypeEdit ? (foodTypeEdit?.id === val?.id) && "bg-red-500" : " bg-red-300 hover:bg-red-400"} disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => showConfirmDel(val)}>ลบ</button>
             </div>,
         },
 
@@ -1112,7 +1114,7 @@ const ModalManageType = () => {
 
                 <div className="flex justify-end gap-2">
                     <Button htmlType="reset">ล้างค่า</Button>
-                    <Button type="primary" htmlType="submit">{!!foodTypeEdit ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}</Button>
+                    <Button type="primary" className={`${!!foodTypeEdit && "edit_button"}`} htmlType="submit">{!!foodTypeEdit ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}</Button>
                 </div>
             </Form>
             <Divider />

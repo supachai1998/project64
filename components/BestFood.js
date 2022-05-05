@@ -60,7 +60,7 @@ export default function BestFood({ title }) {
                         <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
                         <div className='mx-5 mb-2 lg:mb-10 flex flex-col gap-3'>
                             <div className=" flex-col text-center mb-0">
-                                <p className="card-header"> {name_th}</p>
+                                <p className="card-header pt-3"> {name_th}</p>
                                 <hr className='my-3 mx-20 border-b border-blue-900' />
                                 <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500 capitalize "> {name_en}</p>
                             </div>

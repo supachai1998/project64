@@ -3,9 +3,10 @@ import { Button, Table, Divider, Typography, Select, Modal, Spin, Form, Input, U
 import CusImage from '/components/cusImage';
 import { Button_Delete } from '/ulity/button';
 import ReactPlayer from 'react-player';
+import { useRouter, } from 'next/router'
 
 // Report
-import { FilePdfOutlined, DownloadOutlined, UploadOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { FilePdfOutlined, DownloadOutlined, UploadOutlined,EyeOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { CSVLink } from "react-csv"
 import { Chart as ChartJS, ArcElement, Tooltip as Too, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
@@ -16,6 +17,8 @@ moment.locale('th')
 ChartJS.register(ArcElement, Too, Legend);
 // END Report
 
+
+// import {blogs} from '@prisma/client'
 
 const { Title, Paragraph, Text, Link } = Typography;
 const { confirm } = Modal;
@@ -501,7 +504,8 @@ const ModalAdd = () => {
         }
         val['related'] = { create: [...related] }
         val["ref"] = { create: [...val["ref"]] }
-        console.log(val)
+        console.log(val.related)
+        // return
         const res = await fetch(`/api/getBlogs`, {
             headers: { 'Content-Type': 'application/json', },
             method: "POST",
@@ -819,46 +823,53 @@ const ModalEdit = () => {
                 ...(val?.image?.fileList?.length > 0) && { image: val.image.fileList[0].response.name }
             }
         })
-        console.log(val.subBlog)
+        // console.log(val.subBlog)
         delete val['image']
         delete val['subBlog']
         val['image'] = _tempimage
         val['subBlog'] = _tempsubBlog
         val['id'] = modalEdit.id
-        let related = []
+        let relatedFood = []
+        let relatedNcds = []
         // console.log(val['foodId'], val['ncdsId'])
+        // console.log(form.getFieldValue("related"))
         if (val['foodId']?.length > 0) {
+            // console.log("loop food")
             if (modalEdit?.related?.length > 0) {
                 for (const [kk, vv] of Object.entries(form.getFieldValue("related"))) {
                     val['foodId'].map((v) => {
-                        if (vv.foodId === v) related.push({ id: vv.id, foodId: vv.foodId })
-                        else related.push({ foodId: v })
+                        if (vv.foodId === v) relatedFood.push({ id: vv.id, foodId: vv.foodId })
+                        relatedFood.push({ foodId: v })
                     })
                 }
-                related = related.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
+                // console.log("food",relatedFood)
+                relatedFood = relatedFood.filter((v, i, a) => a.findIndex(v2 => (v2.foodId === v.foodId)) === i)
             } else {
-                val['foodId'].map(v => related.push({ foodId: v }))
+                val['foodId'].map(v => relatedFood.push({ foodId: v }))
             }
         }
         if (val['ncdsId']?.length > 0) {
+            // console.log("loop ncds")
             if (modalEdit?.related?.length > 0) {
                 for (const [kk, vv] of Object.entries(form.getFieldValue("related"))) {
                     val['ncdsId'].map((v) => {
-                        if (vv.ncdsId === v) related.push({ id: vv.id, ncdsId: vv.ncdsId })
-                        else related.push({ ncdsId: v })
+                        if (vv.ncdsId === v) relatedNcds.push({ id: vv.id, ncdsId: vv.ncdsId })
+                        relatedNcds.push({ ncdsId: v })
                     })
                 }
-                related = related.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
+                // console.log("ncds",relatedNcds)
+                relatedNcds = relatedNcds.filter((v, i, a) => a.findIndex(v2 => (v2.ncdsId === v.ncdsId)) === i)
             } else {
-                val['ncdsId'].map(v => related.push({ ncdsId: v }))
+                val['ncdsId'].map(v => relatedNcds.push({ ncdsId: v }))
             }
         }
         val["ref"] = [...val["ref"]]
-        val["related"] = [...related]
+        val["related"] = [...relatedNcds,...relatedFood]
 
         delete val['foodId']
         delete val['ncdsId']
-        console.log(val)
+        // console.log(val.related)
+        // return
         const res = await fetch(`/api/getBlogs`, {
             headers: { 'Content-Type': 'application/json', },
             method: "PATCH",
@@ -934,7 +945,7 @@ const ModalEdit = () => {
                     {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>}
-            {console.log(form.getFieldValue("related"))}
+            {/* {console.log(form.getFieldValue("related"))} */}
             {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
                 labelCol={{ span: 3, offset: 3 }}
                 labelAlign="left"
@@ -1129,19 +1140,25 @@ const ModalEdit = () => {
             </Form.List>
             <div className="flex justify-end gap-2">
                 <Button htmlType="reset">ล้างค่า</Button>
-                <Button type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
+                <Button className='edit_button' type="primary" htmlType="submit">แก้ไขข้อมูล</Button>
             </div>
         </Form>
     </Modal>
 }
 
 const ModalView = () => {
+    const router = useRouter()
     const { setModalView, modalView, reload } = useContext(Context)
     const onCancel = () => {
         setModalView(false)
     }
+    
     if (!modalView) return null
-    return <Modal title={modalView.name}
+    const handleRouterMenuClick = ()=>{
+        console.log(modalView)
+        router.push(`/blogs/${modalView.type.toLowerCase()}/${modalView.id}`)
+    }
+    return <Modal title={<div className='flex items-center gap-2'><span>{modalView.name}</span><Tooltip title="กดเพื่อดูตัวอย่าง"><EyeOutlined onClick={handleRouterMenuClick}  className="text-sm"/></Tooltip></div>}
         visible={modalView}
         okText={null}
         cancelText={<>ยกเลิก</>}

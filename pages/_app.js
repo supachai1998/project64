@@ -42,7 +42,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [blogs, setBlogs] = useState([
     { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
   ])
-
+  
   const toggle = () => { setCollapsed(!collapsed) }
   const reload = async () => {
     const n = await fetch(`/api/getNCDS?select=name_th,name_en,id`)
@@ -61,10 +61,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
   }, [])
 
-  useEffect(() => {
-    // call api machine learning 
-    !ncds && fetch(`/api/predict`)
-  }, [])
 
   const handleMenuClick = (val) => {
     // console.log(val,defaultSelectedKeys)
@@ -102,6 +98,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 
         <Layout className="site-layout">
           <Header className="flex justify-start space-x-6 item-center site-layout-background" style={{ margin: 0, padding: 0 }} >
+              {/* {console.log(session)} */}
             <Tooltip title="เมนู">
               <div className='px-3 my-auto text-lg text-white trigger hover:border-gray-50 hover:scale-110' onClick={toggle}>
                 {collapsed === null ? <></>
@@ -207,59 +204,3 @@ const TopProgressBar = dynamic(
   },
   { ssr: false },
 );
-
-// const Navigator = dynamic(
-//   () => {
-//     return import("/components/navigator");
-//   },
-//   { ssr: false },
-// );
-
-
-// const typeFood = [
-//   { key: "fried", name: "ทอด" },
-//   { key: "soup", name: "ต้ม" },
-//   { key: "steam", name: "นึ่ง" },
-//   { key: "sweets", name: "ขนมหวาน" },
-//   { key: "grilled", name: "ย่าง" },
-//   { key: "fry", name: "ผัด" },
-//   { key: "mix", name: "ยำ" }
-// ]
-const typeNcds = [
-  { key: "diabetes", name: "โรคเบาหวาน" },
-  { key: "pressure", name: "โรคความดันโลหิตสูง" },
-  { key: "emphysema", name: "โรคหัวใจ" },
-  { key: "staggers", name: "โรคสมอง" },
-  { key: "cancer", name: "โรคมะเร็ง" },
-  { key: "central_obesity", name: "โรคอ้วนลงพุง" },
-]
-const typeForm = [
-  { key: "form_diabetes", name: "โรคเบาหวาน" },
-  { key: "form_pressure", name: "โรคความดันโลหิตสูง" },
-  { key: "form_emphysema", name: "โรคถุงลมโป่งพอง" },
-  { key: "form_staggers", name: "โรคหลอดเลือดสมอง" },
-  { key: "form_cancer", name: "โรคมะเร็ง" },
-  { key: "form_central_obesity", name: "โรคอ้วนลงพุง" },
-]
-
-const typeAdmin = [
-  { key: "db_ncds", name: "ข้อมูลโรคไม่ติดต่อเรื้อรัง" },
-  { key: "db_food", name: "ข้อมูลอาหาร" },
-  { key: "db_blog", name: "ข้อมูลบทความ" },
-  { key: "db_form", name: "ข้อมูลแบบประเมิน" },
-]
-
-const typeReport = [
-  { key: "report_blogs_food", name: "บทความอาหาร" },
-  { key: "report_blogs_ncds", name: "บทความ NCDs" }
-]
-
-const typeIndex = [
-  { key: "/", name: "หน้าหลัก" }
-]
-const typeBlogs = [
-  { key: "blogs_food", name: "อาหาร" },
-  { key: "blogs_ncds", name: "โรคไม่ติดต่อเรื้อรัง" }
-]
-
-

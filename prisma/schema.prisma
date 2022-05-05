@@ -203,7 +203,7 @@ model subBlog {
 
 model form {
   id      Int       @id @default(autoincrement())
-  title   String    @unique
+  title   String 
   ncds    Ncds      @relation(fields: [ncdsId], references: [id], onDelete: Cascade)
   ncdsId  Int
   subForm subForm[]

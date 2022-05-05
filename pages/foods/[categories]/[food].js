@@ -94,14 +94,12 @@ export default function Index(props) {
                             <div className="flex flex-col justify-start flex-warp w-full overflow-hidden">
                                 <h3 className="text-left">อ้างอิง</h3>
                                     {data.ref && data.ref.length > 0 && data.ref.map(({ url }, index) =>
-                                    <><a href={url.split(",").at(-1)} target="_blank" key={index} className='text-left no-underline text-black whitespace-pre-wrap hover:bg-gray-100 hover:p-3 hover:rounded-md' rel="noreferrer">{url}</a><br/> </>
+                                    <><a href={url.split(",").at(-1)} target="_blank" key={index} className='text-left no-underline text-black whitespace-pre-wrap ' rel="noreferrer">{url}</a><br/> </>
                                     )}
-                            </div>
-                            
-                                 {data?.video && <div className="flex justify-end w-full"> 
-                                     <button href="#" className="w-32 text-lg border rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button> </div>}
-                            
+                            </div>        
                         </div>
+                        {data?.video && <div className="flex justify-end w-full mt-3"> 
+                                     <button href="#" className="w-32 text-lg border rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button> </div>}
                     </div>
                 </div>
                 <p className='text-right'>ยอดเข้าชม {data.views} ยอด</p>

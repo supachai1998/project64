@@ -2,7 +2,7 @@
 import { Card, Input, notification } from 'antd';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router';
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState,  useEffect, useContext } from 'react';
 import { _AppContext } from '/pages/_app'
 const { Meta } = Card
 const { Search } = Input;
@@ -13,8 +13,6 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
 
     const [loading, setLoading] = useState(false)
     const [loadingSearch, setLoadingSearch] = useState(false)
-    const refSearchInput = useRef()
-    const displaySearch = useRef()
     const router = useRouter()
     const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
     const refreshData = async () => {
@@ -33,39 +31,7 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
             refreshData()
         }
     }, [_data, categories, fetchData])
-    const handleSearch = async () => {
-        const val = refSearchInput.current.state.value
-        if (!!val && val.length > 2) {
-            setLoading(true)
-            await fetch(`/api/getFood?name=${val}&categories=${categories}`).then(async res => {
-                if (res.ok) {
-                    const _ = await res.json()
-                    try {
-                        console.log(_)
-                        const __ = _.map(_data => { return { id: _data.id, title: _data.name_th, detail: _data.calories, imgUrl: _data.image[0].name || null } })
-                        setData(__)
-                    } catch (err) { console.error(err); notification.error({ message: `ไม่สามารถแมพข้อมูลอาหาร${val}` }) }
-                } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร${val}` })
-            })
-        }
-        else {
-            setData(store)
-        }
-        setLoading(false)
-        displaySearch.current.scrollIntoView()
-    }
 
-    const onChange = () => {
-        const val = refSearchInput.current.state.value
-        if (!!val && val.length <= 1) {
-            const timer = setTimeout(async () => {
-                (async () => {
-                    refreshData()
-                }, 500)
-            })
-            return () => clearTimeout(timer)
-        }
-    }
     if (loading) return <>กำลังดึงข้อมูล</>
     if (!!!_data) return <>ไม่พบข้อมูล</>
     return (
@@ -80,7 +46,7 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
             </div>
             {/* const __ = _.map(_data => { return { id: _data.id, title: _data.name_th, detail: _data.calories, imgUrl: _data.image[0].name || null } })
                         setData(__) */}
-            <div className="gap-1  lg:grid-cols-4 sm:grid sm:grid-cols-2" ref={displaySearch}>
+            <div className="gap-1  lg:grid-cols-4 sm:grid sm:grid-cols-2" >
                 {_data && _data.map(({ id, title, detail, imgUrl , name_th,name_en , calories , image }, index) => (
                     <div key={index} className='card  p-0  sm:mx-2 lg:mx-5 mt-3'>
                         <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />

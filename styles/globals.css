@@ -464,3 +464,7 @@ a {
 .ytp-cued-thumbnail-overlay{
   @apply rounded-lg  w-full !important;
 }
+
+.edit_button {
+  @apply bg-yellow-500 hover:bg-yellow-600 border-yellow-500 hover:border-yellow-600
+}

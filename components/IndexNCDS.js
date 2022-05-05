@@ -13,7 +13,7 @@ export default function IndexNCDS() {
             setData(tempData)
         })()
     }, [form, ncds, router])
-    console.log(data)
+    // console.log(data)
     if (!data || !ncds || !form) return null
     return <div className="p-5 sm:p-10 rounded-md bg-white sm:w-2/3 w-full mx-auto">
         {data.map(({ title, content, color }, ind) => <div key={`${ind}.${title}`}>

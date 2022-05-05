@@ -9,6 +9,7 @@ const _Ncds = dynamic(() => import('./ncds'))
 const _Food = dynamic(() => import('./food'))
 const _Form = dynamic(() => import('./form'))
 const _Blogs = dynamic(() => import('./blogs'))
+const CusImage = dynamic(() => import('/components/cusImage'))
 const _Report_blogs_food = dynamic(() => import('./report_blogs_food/index'))
 const _Report_blogs_ncds = dynamic(() => import('./report_blogs_ncds/index'))
 
@@ -95,7 +96,7 @@ export default function Index() {
         // wrapperCol: { span: 20 },
     };
     return (
-        <div className="w-full h-full min-h-screen">
+        <div className="w-full h-full min-h-screen " >
             <div className="lg:w-1/4 mx-auto  h-auto p-6 m-6 rounded-lg ease-anima  bg-gray-50 ">
                 <Form name="login" autoComplete="off" validateMessages={validateMessages} onFinish={onFinish}
                     {...layout}>
