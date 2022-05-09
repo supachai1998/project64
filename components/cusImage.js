@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Image as Img, Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 // import { CircularProgress } from '@mui/material';
@@ -25,8 +25,9 @@ export default function CusImage({ width, height, src, name, className, preview 
         }
 
     }
-    useEffect(() => {
-        if (!onSrc) checkIfImageExists(`/static/${src}`, (exists) => {
+
+    React.useEffect(() => {
+        if (!onSrc || src !== onSrc.split("/")[onSrc.split("/").length - 1]) checkIfImageExists(`/static/${src}`, (exists) => {
             if (exists) {
                 setOnSrc(`/static/${src}`)
                 return
