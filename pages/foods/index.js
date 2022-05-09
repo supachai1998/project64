@@ -52,7 +52,7 @@ export default function Index() {
                         <>
                             {/* ถ้าเป็นอาหาร จะเข้าการ์ดอาหาร */}
                             {foodTypeId && <div
-                                key={id + index + Math.random()}
+                                key={id + index + name_th}
                                 className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                                 <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={200} preview={false} />
                                 <div className='mx-5 mt-3'>
@@ -73,7 +73,7 @@ export default function Index() {
                             </div>}
 
                             {approve && <div
-                                key={id + index + Math.random()}
+                                key={id + index + name}
                                 className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                                 <div className="relative w-full" >
                                     {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height="200px" preview={false} />}

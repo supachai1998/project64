@@ -352,6 +352,7 @@ export default async function handler(req, res,) {
                   }
                 }
               },
+              take : 1000
             })
           } catch (e) {
             if (e.message.includes("Field ncds is required to return data, got `null`")) {

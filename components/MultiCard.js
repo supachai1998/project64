@@ -38,7 +38,7 @@ export default function MultiCard({ loading, data,setData, title }) {
                     <>
                         {/* ถ้าเป็นอาหาร จะเข้าการ์ดอาหาร */}
                         {foodTypeId && <div
-                            key={id + index + Math.random()}
+                            key={id + index +name_th}
                             className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                             <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={200} preview={false} />
                             <div className='mx-5 mb-2 lg:mb-10 my-5'>

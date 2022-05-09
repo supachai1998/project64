@@ -215,6 +215,7 @@ const TableForm = () => {
     // console.log(_formGroupBy)
     return <div>
         <Table size='small' tableLayout='auto' dataSource={_formGroupBy} columns={columns}
+        pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
                     ตารางการประเมินผล

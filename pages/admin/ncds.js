@@ -399,6 +399,10 @@ const ModalEdit = () => {
                 name: name
             }
         }))
+        return () => {
+            form.resetFields()
+            setFileList([])
+        }
     }, [form, modalEdit]);
     // useEffect(() => {
     //     !fileList && modalEdit  && setFileList({fileList : modalEdit.image.map(({ name }, index) => { return { name: name, url: `/static/${name}` } })})
@@ -734,6 +738,7 @@ const TableForm = () => {
                 notification.success({
                     message: 'ลบข้อมูลสำเร็จ',
                 })
+                setSelectRows([])
                 await reload()
             } else if (res.status === 400) {
                 notification.error({
@@ -758,6 +763,7 @@ const TableForm = () => {
     return <div>
         <Table size='small' tableLayout='auto' dataSource={ncds} columns={columns}
             rowSelection={{ ...rowSelection }}
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
                     ตารางโรคไม่ติดต่อเรื้อรัง

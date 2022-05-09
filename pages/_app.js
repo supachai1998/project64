@@ -40,7 +40,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [ncds, setNCDS] = useState()
   const [form, setForm] = useState()
   const [blogs, setBlogs] = useState([
-    { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "ทั้งหมด" }
+    { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "อาหารและโรค" }
   ])
   
   const toggle = () => { setCollapsed(!collapsed) }

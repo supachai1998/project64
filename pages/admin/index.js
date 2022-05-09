@@ -18,17 +18,23 @@ export default function Index() {
 
     const { router } = useRouter()
     const { setTitle } = useContext(_AppContext)
-    const [titleAdmin, setTitleAdmin] = useState("จัดการข้อมูล")
+    const [titleAdmin, setTitleAdmin] = useState()
 
     const onSelectPage = (_titleAdmin) => {
+        setTitle("ผู้ดูแลระบบ : "+_titleAdmin)
         setTitleAdmin(_titleAdmin)
         localStorage?.setItem('page', _titleAdmin)
     }
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            setTitle("ผู้ดูแลระบบ")
             const _page = localStorage?.getItem('page')
-            setTitleAdmin(_page)
+            if(!!_page){
+                setTitleAdmin(_page)
+                setTitle("ผู้ดูแลระบบ : "+_page)
+            }else{
+                setTitleAdmin("โรคไม่ติดต่อเรื้อรัง")
+                setTitle("ผู้ดูแลระบบ : "+"โรคไม่ติดต่อเรื้อรัง")
+            }
         }
     }, [])
 
@@ -121,7 +127,7 @@ const { Option } = Select
 const HeaderAdmin = ({ titleAdmin, onSelectPage }) => {
     return (
         <div className=" flex flex-col w-full  gap-4 m-2">
-            <span className="text-xl duration-500 transform md:text-2xl">{titleAdmin}</span>
+            {/* <span className="text-xl duration-500 transform md:text-2xl">{titleAdmin}</span> */}
             <div className="flex flex-auto flex-wrap w-full gap-4 items-center">
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "โรคไม่ติดต่อเรื้อรัง" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</button >
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "บทความ" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("บทความ")}>บทความ</button >

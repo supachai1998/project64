@@ -282,7 +282,8 @@ export default async function handler(req, res) {
           data = await prisma.blogs.findMany({
 
             where: { approve: 1 },
-            select: _
+            select: _,
+            take : 1000
           })
         } else if (approve) {
           data = await prisma.blogs.findMany({
@@ -298,6 +299,7 @@ export default async function handler(req, res) {
                 }
               },
             },
+            take : 1000
           })
         }
         else {
@@ -314,6 +316,7 @@ export default async function handler(req, res) {
                 }
               },
             },
+            take : 1000
           })
         }
     }
@@ -346,7 +349,7 @@ export default async function handler(req, res) {
       data = data.map(item => {
         let subBlog = []
         if (item?.subBlog?.length > 0) {
-            subBlog = item.subBlog.map(({ image, ...rest }) => {
+          subBlog = item.subBlog.map(({ image, ...rest }) => {
             if (!image) return { ...rest }
             return {
               ...rest,
@@ -369,7 +372,7 @@ export default async function handler(req, res) {
         })
         const total_vote = item.vote_1 + item.vote_2 + item.vote_3 + item.vote_4 + item.vote_5
         const avg_vote = parseFloat(((1 * item.vote_1 + 2 * item.vote_2 + 3 * item.vote_3 + 4 * item.vote_4 + 5 * item.vote_5) / total_vote).toFixed(2)) || 0
-        if (subBlog.length > 0)  return { ...item, avg_vote, total_vote, image, subBlog }
+        if (subBlog.length > 0) return { ...item, avg_vote, total_vote, image, subBlog }
         else return { ...item, avg_vote, total_vote, image }
       })
       return res.status(200).json(data)

@@ -50,7 +50,7 @@ export default function Index() {
                         <>
 
                             {approve && <div
-                                key={id + index + Math.random()}
+                                key={id + index + name}
                                 className="grid-cols-12 h-full  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                                 {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height="250px" preview={false} />}
                                 {/* {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>} */}

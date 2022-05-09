@@ -234,7 +234,8 @@ const TableAdmin = ({ admin, reload ,reloading}) => {
                 <span>ตารางจัดการข้อมูลผู้ใช้</span>
                 <Button onClick={reload} icon={<RefreshIcon className={`text-blue-700 w-4 h-4 text-xs ${reloading && "animate-spin"}`} />} />
             </div>
-            <Table dataSource={admin} columns={columns} />
+            <Table dataSource={admin} columns={columns} 
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}/>
             <Modal title="แก้ไขข้อมูลผู้ใช้" visible={!!valUser && true} onOk={handleOk} onCancel={handleCancel} footer={null}>
                 <Form
                     form={form}

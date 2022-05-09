@@ -165,28 +165,22 @@ const countOccurrences = (arr, val) => arr.reduce((a, v) => (v.FoodType.name_th 
 
 const TableForm = () => {
 
-    const { food, setFood, reload,
+    const { food, setFood, reload,type,
         setModalEdit,
         setModalView,
         loading, store, inputRef } = useContext(Context)
-    const [foodtype, setFoodtype] = useState([])
     const [selectRows, setSelectRows] = useState([])
-    useEffect(() => {
-        (async () => {
-            const type = await fetch("/api/getTypeFood").then(res => res.ok && res.json())
-            setFoodtype(type)
-        })()
-    }, [])
-    if (!foodtype || !food) return null
+
+    if (!food) return null
     const columns = [
         {
-            
+
             title: <div classNamme="text-center" >ประเภท</div>,
             dataIndex: 'FoodType',
             key: 'FoodType',
             onFilter: (value, record) => record.FoodType.name_th.includes(value),
             sorter: (a, b) => a.name_th.localeCompare(b.name_th),
-            filters: foodtype.map(val => ({ text: `${val.name_th}(${countOccurrences(food, val.name_th)})`, value: val.name_th })),
+            filters: type.map(val => ({ text: `${val.name_th}(${countOccurrences(food, val.name_th)})`, value: val.name_th })),
             render: val => <Tooltip title={val.name_th} ><Paragraph className="mt-3" ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
         },
         {
@@ -285,6 +279,7 @@ const TableForm = () => {
                 notification.success({
                     message: 'ลบข้อมูลสำเร็จ',
                 })
+                setSelectRows([])
                 await reload()
             } else if (res.status === 400) {
                 notification.error({
@@ -311,6 +306,7 @@ const TableForm = () => {
     return <div>
         <Table size='small' tableLayout='auto' dataSource={food} columns={columns}
             rowSelection={{ ...rowSelection }}
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
                     ตารางอาหาร
@@ -331,8 +327,7 @@ const TableForm = () => {
     </div>
 }
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload, NCDS } = useContext(Context)
-    const [type, setFoodType] = useState(null)
+    const { modalAdd, setModalAdd, reload, NCDS,type } = useContext(Context)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
@@ -340,14 +335,6 @@ const ModalAdd = () => {
         form.setFieldsValue();
     }, [form, modalAdd]);
 
-    useEffect(() => {
-        (async () => {
-            if (modalAdd) {
-                const fetchTypeFood = await FetchTypeFood()
-                Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
-            }
-        })()
-    }, [modalAdd])
     const onOk = async (val) => {
         if (!val.ref) {
             notification.error({ message: "กรุณาเพิ่มแหล่งอ้างอิง" })
@@ -475,7 +462,7 @@ const ModalAdd = () => {
             <Form.Item
                 name="video"
                 label="ที่อยู่วิดีโอ"
-                className='ml-10'
+                className='sm:ml-10'
                 rules={[{ required: true }, {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน url ให้ถูกต้อง',
@@ -486,7 +473,7 @@ const ModalAdd = () => {
             <Form.Item
                 name="image"
                 label="รูปภาพ"
-                className='ml-10'
+                className='sm:ml-10'
                 rules={[{ required: true }]}
             >
 
@@ -500,7 +487,7 @@ const ModalAdd = () => {
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button className="w-full" disabled={fileList && fileList.length > 0 && true} icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList.length : 0}/1)</Button>
+                    <Button className="w-full" icon={<UploadOutlined />}> {fileList?.length > 0 ? "เปลี่ยนรูป" : "เพิ่มรูป"}</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="FoodNcds" rules={[{ required: true, message: "คุณลืมเพิ่มคำแนะนำสำหรับโรค" }]}>
@@ -638,31 +625,30 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload, NCDS } = useContext(Context)
-    const [type, setFoodType] = useState(null)
+    const { modalEdit, setModalEdit, reload, NCDS,type } = useContext(Context)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
     useEffect(() => {
-        form.setFieldsValue(modalEdit);
-        !!modalEdit && setFileList(modalEdit.image.map(({ id, name }) => {
-            return {
-                id: id,
-                status: "done",
-                url: `/static/${name}`,
-                name: name
-            }
-        }))
+        if (!!modalEdit) {
+            const image = modalEdit.image.map(({ id, name }) => {
+                return {
+                    id: id,
+                    status: "done",
+                    url: `/static/${name}`,
+                    name: name
+                  }
+            })
+            form.setFieldsValue({...modalEdit,image});
+            setFileList(image)
+        }
+        return () => {
+            form.resetFields()
+            setFileList([])
+        }
     }, [form, modalEdit]);
 
-    useEffect(() => {
-        (async () => {
-            if (modalEdit) {
-                const fetchTypeFood = await FetchTypeFood()
-                Array.isArray(fetchTypeFood) && setFoodType(fetchTypeFood)
-            }
-        })()
-    }, [modalEdit])
+
     const onOk = async (val) => {
         if (!val.ref) {
             notification.error({ message: "กรุณาเพิ่มแหล่งอ้างอิง" })
@@ -709,6 +695,7 @@ const ModalEdit = () => {
     const onReset = () => {
         setFileList(null)
     }
+    if (!modalEdit) return null
     return <Modal
         title={"แก้ไขข้อมูลอาหาร"}
         visible={modalEdit}
@@ -793,18 +780,18 @@ const ModalEdit = () => {
             <Form.Item
                 name="video"
                 label="ที่อยู่วิดีโอ"
-                className='ml-10'
+                className='sm:ml-10'
                 rules={[{ required: true }, {
                     pattern: /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/,
                     message: 'ป้อน url ให้ถูกต้อง',
                 }]}>
                 <Input placeholder="https://youtube.com/watch?" />
             </Form.Item>
-
+            {console.log(form.getFieldValue('image'))}
             <Form.Item
                 name="image"
                 label="รูปภาพ"
-                className='ml-10'
+                className='sm:ml-10'
                 rules={[{ required: true }]}
             >
 
@@ -814,11 +801,15 @@ const ModalEdit = () => {
                     maxCount={1}
                     action="/api/uploads"
                     listType="picture"
-                    defaultFileList={fileList}
+                    defaultFileList={!!form.getFieldValue('image') &&
+                        !form.getFieldValue('image')?.fileList ? form.getFieldValue('image') :
+                        form.getFieldValue('image')?.fileList?.length > 0 ? form.getFieldValue('image')?.fileList : []}
                     onChange={onChange}
                     className="upload-list-inline"
                 >
-                    <Button className="w-full" icon={<UploadOutlined />}>แก้ไขรูป ({fileList ? fileList.length : 0}/1)</Button>
+                    <Button className="w-full" icon={<UploadOutlined />}>{!!form.getFieldValue('image') &&
+                        !form.getFieldValue('image')?.fileList ? "เปลี่ยนรูป" :
+                        form.getFieldValue('image')?.fileList?.length > 0 ? "เปลี่ยนรูป" : "เพิ่มรูป"}</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="FoodNcds" rules={[{ required: true, message: "คุณลืมเพิ่มคำแนะนำสำหรับโรค" }]}>
@@ -830,7 +821,7 @@ const ModalEdit = () => {
                                 {...fields}
                                 noStyle
                                 shouldUpdate
-                                key={field.key}
+                                key={'food'+field.key+ind}
                                 required
                             >
 
@@ -1028,13 +1019,13 @@ const ModalManageType = () => {
                     setFoodTypeEdit(null)
                     form.resetFields()
                     await reload()
-                }else if (res.status === 400){
-                    const {error} = await res.json()
-                    if(error.includes("violate the required relation ")){
+                } else if (res.status === 400) {
+                    const { error } = await res.json()
+                    if (error.includes("violate the required relation ")) {
                         notification.error({
-                            message:"ไม่สามารถลบข้อมูลได้",
+                            message: "ไม่สามารถลบข้อมูลได้",
                             description: 'มีข้อมูลอาหารที่เกี่ยวข้องกับประเภทอาหารนี้',
-                         })
+                        })
                     }
                 } else {
                     notification.error({
@@ -1046,27 +1037,28 @@ const ModalManageType = () => {
             onCancel() { },
         });
     }
+    const handleCancle = () => {
+        form.resetFields();
+        setFoodTypeEdit(null)
+    }
     const columns = [
         {
-            responsive: ["md"],
             title: 'ภาษาไทย',
             dataIndex: 'name_th',
             key: 'name_th',
         },
         {
-            responsive: ["md"],
             title: 'ภาษาอังกฤษ',
             dataIndex: 'name_en',
             key: 'name_en',
         },
         {
-            responsive: ["md"],
             title: 'การจัดการ',
             dataIndex: '',
             key: '',
             render: val => <div className="flex flex-wrap gap-2">
                 {/* <Button type="text" className="bg-yellow-300" onClick={() => console.log(val)}>ดู</Button> */}
-                <button className={foodTypeEdit ? (foodTypeEdit?.id === val?.id) && "bg-gray-200" :" bg-yellow-200 hover:bg-yellow-300"} disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? setFoodTypeEdit(null) : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
+                <button className={foodTypeEdit ? (foodTypeEdit?.id === val?.id) && "bg-gray-200" : " bg-yellow-200 hover:bg-yellow-300"} disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => foodTypeEdit?.id === val?.id ? handleCancle() : setFoodTypeEdit(val)}>{foodTypeEdit?.id === val?.id ? "ยกเลิก" : "แก้ไข"}</button>
                 <button className={foodTypeEdit ? (foodTypeEdit?.id === val?.id) && "bg-red-500" : " bg-red-300 hover:bg-red-400"} disabled={foodTypeEdit && (foodTypeEdit?.id !== val?.id) || false} onClick={() => showConfirmDel(val)}>ลบ</button>
             </div>,
         },
@@ -1118,7 +1110,9 @@ const ModalManageType = () => {
                 </div>
             </Form>
             <Divider />
-            {!!type && <Table dataSource={type} columns={columns} />}
+            {!!type && <Table dataSource={type} columns={columns} 
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
+            />}
         </Modal>
 
     </>
@@ -1230,7 +1224,7 @@ const Chart = ({ food, type }) => {
             }],
         }
         setTYPE(_TYPE)
-       
+
         const countTypeFoodSuggess = type?.reduce((acc, val) => {
             const count_food = food?.reduce((acc, val_food) => val.name_th === val_food.FoodType.name_th && val_food.FoodNcds.some(({ suggess }) => suggess) ? acc + 1 : acc, 0)
             acc.push(count_food)
@@ -1241,7 +1235,7 @@ const Chart = ({ food, type }) => {
             acc.push(count_food)
             return acc
         }, [])
-        
+
         // console.log(countTypeFoodSuggess,countTypeFoodNotSuggess)
 
         const _suggess = {
@@ -1262,14 +1256,14 @@ const Chart = ({ food, type }) => {
         }
         setTYPE_SUGGESS(_suggess)
         setTYPE_NOT_SUGGESS(_not_suggess)
-        console.log(type,food)
+        // console.log(type,food)
     }, [type, food])
     if (!food || !type) return <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center" />
     </div>
     // console.log(food,type)
-    
+
     // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
     return (<div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
         <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">ประเภท</p><Doughnut data={TYPE} /></div>

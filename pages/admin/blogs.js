@@ -6,7 +6,7 @@ import ReactPlayer from 'react-player';
 import { useRouter, } from 'next/router'
 
 // Report
-import { FilePdfOutlined, DownloadOutlined, UploadOutlined,EyeOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { FilePdfOutlined, DownloadOutlined, UploadOutlined, EyeOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { CSVLink } from "react-csv"
 import { Chart as ChartJS, ArcElement, Tooltip as Too, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
@@ -211,7 +211,7 @@ const TableForm = () => {
             title: 'ชื่อบทความ',
             dataIndex: 'name',
             key: 'name',
-
+            width : '15%',
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
         },
         {
@@ -240,7 +240,7 @@ const TableForm = () => {
         },
         {
             responsive: ["md"],
-            title: 'จำนวนโรคที่เกี่ยวข้อง',
+            title: 'จำนวนความเกี่ยวข้อง',
             dataIndex: 'related',
             key: 'related',
             sorter: (a, b) => a.related.length - b.related.length,
@@ -350,6 +350,7 @@ const TableForm = () => {
                 notification.success({
                     message: 'ลบข้อมูลสำเร็จ',
                 })
+                setSelectRows([])
                 await reload()
             } else if (res.status === 400) {
                 notification.error({
@@ -429,6 +430,7 @@ const TableForm = () => {
         <Table size='small' tableLayout='auto'
             dataSource={blogs} columns={columns}
             rowSelection={{ ...rowSelection }}
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
                     ตารางบทความ
@@ -454,12 +456,11 @@ const TableForm = () => {
 }
 const ModalAdd = () => {
     const { modalAdd, setModalAdd, reload, ncds, food, ncdsLoading, foodLoading } = useContext(Context)
-    const [fileList, setFileList] = useState([])
-    const [fileListSubBlogs, setFileListSubBlogs] = useState([])
     const [type, setType] = useState(null)
+    const [imgChange, setImgChange] = useState(null)
     const [form] = Form.useForm();
     useEffect(() => {
-        form.setFieldsValue();
+        form.setFieldsValue()
     }, [form, modalAdd]);
 
 
@@ -469,7 +470,16 @@ const ModalAdd = () => {
     const onCancel = () => {
         setModalAdd(false)
     }
-
+    const onReset = () => {
+        try {
+            !!form && form?.resetFields();
+        } catch (err) {
+            console.error(err)
+        }
+    }
+    const handleImageChange = (e) => {
+        setImgChange(e)
+    }
     const onSubmit = async (val) => {
         if (!Array.isArray(val?.image?.fileList)) {
             notification.error({ message: "คุณไม่ได้เพิ่มรูปภาพ" })
@@ -517,11 +527,10 @@ const ModalAdd = () => {
             notification.success({
                 message: "เพิ่มข้อมูลสำเร็จ"
             })
+            setType()
             reload()
             setModalAdd(false)
             fetch(`/api/uploads`)
-            setFileListSubBlogs([])
-            setFileList([])
             form.resetFields();
         } else notification.error({
             message: 'ไม่สามารถเพิ่มข้อมูลได้',
@@ -532,19 +541,13 @@ const ModalAdd = () => {
     const onFinishFailed = () => {
 
     }
-    const onReset = () => {
-        setFileListSubBlogs([])
-        setFileList([])
-    }
-    const onChange = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-    }
-    const onChangeSubBlogs = ({ fileList: newFileList }) => {
-        setFileListSubBlogs(newFileList);
-    }
+
+
+
     const onTypeChange = (val) => {
         val !== 1 && setType(val)
     }
+    if (!modalAdd) return null
     return <Modal title={"เพิ่มข้อมูลบทความ"}
         visible={modalAdd}
         okText={<>ตกลง</>}
@@ -561,6 +564,7 @@ const ModalAdd = () => {
             onFinishFailed={onFinishFailed}
             scrollToFirstError={true}
             onReset={onReset}>
+
             <Form.Item
                 name="type"
                 label="ประเภทความสัมพันธ์"
@@ -578,7 +582,7 @@ const ModalAdd = () => {
             </Form.Item>
 
             {(type === "NCDS" || type === "ALL") && <Form.Item
-                labelCol={{ span: 3, offset: 3 }}
+                labelCol={{ sm: { span: 3, offset: 3 } }}
                 labelAlign="left"
                 name="ncdsId"
                 label="เลือกโรค"
@@ -590,7 +594,7 @@ const ModalAdd = () => {
                 </Select>
             </Form.Item>}
             {(type === "FOOD" || type === "ALL") && <Form.Item
-                labelCol={{ span: 3, offset: 3 }}
+                labelCol={{ sm: { span: 3, offset: 3 } }}
                 labelAlign="left"
                 name="foodId"
                 label="เลือกรายการอาหาร"
@@ -625,6 +629,8 @@ const ModalAdd = () => {
                 }]}>
                 <Input placeholder="https://youtube.com/watch?" />
             </Form.Item>
+            {/* {console.log(form.getFieldValue("image"))} */}
+            {console.log(form.getFieldValue())}
             <Form.Item
                 name="image"
                 label="รูปภาพ"
@@ -638,11 +644,11 @@ const ModalAdd = () => {
                     maxCount={1}
                     action="/api/uploads"
                     listType="picture"
-                    defaultFileList={fileList}
-                    onChange={onChange}
+                    defaultFileList={!!form.getFieldValue("image") ? form.getFieldValue("image").fileList : []}
+                    onChange={handleImageChange}
                     className="upload-list-inline"
                 >
-                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList ? fileList?.length : 0}/1)</Button>
+                    <Button className="w-full" icon={<UploadOutlined />}>{(form.getFieldValue("image")?.fileList?.length > 0) ? "เปลี่ยนรูป" : `เพิ่มรูป (${form.getFieldValue("image")?.fileList?.length || 0}/1)`}</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="subBlog" rules={[{ required: true, message: "คุณลืมเพิ่มหัวข้อย่อย" }]} >
@@ -695,6 +701,7 @@ const ModalAdd = () => {
                                     name={[field.name, 'image']}
                                     labelCol={{ span: 2, offset: 3 }}
                                     fieldKey={[field.fieldKey, 'image']}
+
                                     label="รูปภาพ"
                                     labelAlign="left"
                                 // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
@@ -706,11 +713,11 @@ const ModalAdd = () => {
                                         maxCount={1}
                                         action="/api/uploads"
                                         listType="picture"
-                                        defaultFileList={[]}
-                                        // onChange={onChangeSubBlogs}
+                                        defaultFileList={!!form.getFieldValue("subBlog")[ind]?.image ? form.getFieldValue("subBlog")[ind]?.image.fileList : []}
+                                        onChange={handleImageChange}
                                         className="upload-list-inline"
                                     >
-                                        <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป</Button>
+                                        <Button className="w-full" icon={<UploadOutlined />}>{(form.getFieldValue("subBlog")[ind]?.image?.fileList?.length > 0) ? "เปลี่ยนรูป" : `เพิ่มรูป (${form.getFieldValue("subBlog")[ind]?.image?.fileList?.length || 0}/1)`}</Button>
                                     </Upload>
                                 </Form.Item>
                             </Form.Item>
@@ -787,11 +794,12 @@ const ModalEdit = () => {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        if (modalEdit) {
-            setFileList(modalEdit?.image || [])
-            setFileListSubBlogs(modalEdit?.subBlog?.map(({ image }) => image) || [])
-        }
+        // if (modalEdit) {
+        //     setFileList(modalEdit?.image || [])
+        //     setFileListSubBlogs(modalEdit?.subBlog?.map(({ image }) => image) || [])
+        // }
         form.setFieldsValue(modalEdit);
+        console.log(modalEdit)
         return () => {
             form.resetFields()
             setFileList([])
@@ -864,7 +872,7 @@ const ModalEdit = () => {
             }
         }
         val["ref"] = [...val["ref"]]
-        val["related"] = [...relatedNcds,...relatedFood]
+        val["related"] = [...relatedNcds, ...relatedFood]
 
         delete val['foodId']
         delete val['ncdsId']
@@ -933,7 +941,7 @@ const ModalEdit = () => {
             </Form.Item>
             {/* {console.log()} */}
             {(form.getFieldValue("type") === "NCDS" || form.getFieldValue("type") === "ALL") && <Form.Item
-                labelCol={{ span: 3, offset: 3 }}
+                labelCol={{ sm: { span: 3, offset: 3 } }}
                 labelAlign="left"
                 name="ncdsId"
                 label="เลือกโรค"
@@ -945,9 +953,9 @@ const ModalEdit = () => {
                     {!!ncds && ncds.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>}
-            {/* {console.log(form.getFieldValue("related"))} */}
+
             {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
-                labelCol={{ span: 3, offset: 3 }}
+                labelCol={{ sm: { span: 3, offset: 3 } }}
                 labelAlign="left"
                 name="foodId"
                 label="เลือกรายการอาหาร"
@@ -983,13 +991,13 @@ const ModalEdit = () => {
                 }]}>
                 <Input placeholder="https://youtube.com/watch?" />
             </Form.Item>
+            {/* {console.log(form.getFieldValue("image"))} */}
             <Form.Item
                 name="image"
                 label="รูปภาพ"
                 labelAlign="left"
                 rules={[{ required: true, message: 'กรุณาเลือกรูปภาพ' }]}
             >
-
                 <Upload
                     multiple={true}
                     accept='image/png,image/jpeg'
@@ -997,8 +1005,14 @@ const ModalEdit = () => {
                     action="/api/uploads"
                     listType="picture"
                     className="upload-list-inline"
+                    onChange={(e) => setFileList(e)}
+                    defaultFileList={Array.isArray(form?.getFieldValue("image")) ?
+                    [...form?.getFieldValue("image")] :
+                        []}
                 >
-                    <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป ({fileList?.length || 0}/1)</Button>
+                    <Button className="w-full" icon={<UploadOutlined />}>{Array.isArray(form?.getFieldValue("image")) ?
+                        "เปลี่ยนรูป" :
+                        form?.getFieldValue("image")?.fileList?.length > 0 ? "เปลี่ยนรูป":"เพิ่มรูป"}</Button>
                 </Upload>
             </Form.Item>
             <Form.List name="subBlog" rules={[{ required: true, message: "คุณลืมเพิ่มหัวข้อย่อย" }]} >
@@ -1051,6 +1065,7 @@ const ModalEdit = () => {
                                     <TextArea rows={4} placeholder="เนื้อความ" />
                                 </Form.Item>
                                 {/* {console.log(form?.getFieldValue("subBlog"))} */}
+                                {/* {console.log(form.getFieldValue("subBlog")[ind]?.image)} */}
                                 <Form.Item
                                     {...field}
                                     key={`image ${ind}`}
@@ -1067,7 +1082,7 @@ const ModalEdit = () => {
                                         maxCount={1}
                                         action="/api/uploads"
                                         listType="picture"
-                                        // onChange={(e) => onChangeSubBlogs(ind, e)}
+                                        onChange={(e) => setFileListSubBlogs(e)}
                                         defaultFileList={form?.getFieldValue("subBlog")?.length > 0 ? (
                                             form?.getFieldValue("subBlog")?.[ind]?.fileList ?
                                                 form?.getFieldValue("subBlog")?.[ind]?.fileList :
@@ -1076,7 +1091,12 @@ const ModalEdit = () => {
                                         ) : []}
                                         className="upload-list-inline"
                                     >
-                                        <Button className="w-full" icon={<UploadOutlined />}>เพิ่มรูป</Button>
+                                        <Button className="w-full" icon={<UploadOutlined />}>{form?.getFieldValue("subBlog")?.length > 0 ? (
+                                            form.getFieldValue("subBlog")[ind]?.image?.fileList?.length > 0 ?
+                                                "เปลี่ยนรูป" :
+                                                form.getFieldValue("subBlog")[ind]?.image?.name ?
+                                                    "เปลี่ยนรูป" : "เพิ่มรูป"
+                                        ) : "เพิ่มรูป"}</Button>
                                     </Upload>
                                 </Form.Item>
                             </Form.Item>
@@ -1152,13 +1172,13 @@ const ModalView = () => {
     const onCancel = () => {
         setModalView(false)
     }
-    
+
     if (!modalView) return null
-    const handleRouterMenuClick = ()=>{
+    const handleRouterMenuClick = () => {
         console.log(modalView)
         router.push(`/blogs/${modalView.type.toLowerCase()}/${modalView.id}`)
     }
-    return <Modal title={<div className='flex items-center gap-2'><span>{modalView.name}</span><Tooltip title="กดเพื่อดูตัวอย่าง"><EyeOutlined onClick={handleRouterMenuClick}  className="text-sm"/></Tooltip></div>}
+    return <Modal title={<div className='flex items-center gap-2'><span>{modalView.name}</span><Tooltip title="กดเพื่อดูตัวอย่าง"><EyeOutlined onClick={handleRouterMenuClick} className="text-sm" /></Tooltip></div>}
         visible={modalView}
         okText={null}
         cancelText={<>ยกเลิก</>}
@@ -1192,7 +1212,7 @@ const ModalView = () => {
                 </div>)}
             </Form.Item>
             <Form.Item label="วิดีโอ"
-                labelAlign="left">{modalView?.video ? <div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer width="100%" url={modalView.video} /> </div>: "ไม่พบวิดีโอ"}</Form.Item>
+                labelAlign="left">{modalView?.video ? <div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer width="100%" url={modalView.video} /> </div> : "ไม่พบวิดีโอ"}</Form.Item>
             <Form.Item label={`อ้างอิง ${modalView?.ref?.length}`}>{!!modalView?.ref && modalView?.ref?.length > 0 ? modalView?.ref?.map(({ url }) => <><a key={url} rel="noopener noreferrer" target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line hover:bg-gray-100 hover:p-3 hover:rounded-md'>{url}</a><br /></>) : "ไม่พบข้อมูลอ้างอิง"}</Form.Item>
 
         </Form>

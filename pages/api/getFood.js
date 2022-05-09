@@ -143,187 +143,195 @@ export default async function handler(req, res) {
                         case "blogs": {
                             data = await prisma.food.findMany({
                                 where: {
-                                     relationBlog: { some: { blogsId: parseInt(self) } } 
+                                    relationBlog: { some: { blogsId: parseInt(self) } }
                                 },
-                            orderBy: [
-                                { views: 'desc', },
-                                { calories: 'asc', },
-                            ],
+                                orderBy: [
+                                    { views: 'desc', },
+                                    { calories: 'asc', },
+                                ],
                                 include: {
-                                image: true,
+                                    image: true,
+                                    ref: true,
+                                },
+                                take: 1000
+                            })
+                        } break;
+
+                        case "ncds": {
+                            data = await prisma.food.findMany({
+                                where: {
+                                    ...(categories && {
+                                        FoodNcds: {
+                                            some: {
+                                                suggess: true,
+                                                ncdsId: parseInt(categories)
+                                            },
+                                        }
+                                    })
+                                },
+                                orderBy: [
+                                    { calories: 'asc', },
+                                    { views: 'desc', },
+                                ],
+                                include: {
+                                    image: true,
                                     ref: true,
                                 },
                             })
-                } break;
+                        } break;
 
-            case "ncds": {
-                data = await prisma.food.findMany({
-                    where: {
-                        ...(categories && {
-                            FoodNcds: {
-                                some: {
-                                    suggess: true,
-                                    ncdsId: parseInt(categories)
+                        default: {
+                            data = await prisma.food.findMany({
+                                orderBy: [
+                                    { views: 'desc', },
+                                    { calories: 'asc', },
+                                ],
+                                include: {
+                                    image: true,
+                                    ref: true,
                                 },
-                            }
-                        })
-                    },
-                    orderBy: [
-                        { calories: 'asc', },
-                        { views: 'desc', },
-                    ],
-                    include: {
-                        image: true,
-                        ref: true,
-                    },
-                })
-            } break;
+                                take: 5,
+                            })
+                        } break;
+                    }
 
-            default: {
-                data = await prisma.food.findMany({
-                    orderBy: [
-                        { views: 'desc', },
-                        { calories: 'asc', },
-                    ],
-                    include: {
-                        image: true,
-                        ref: true,
-                    },
-                    take: 5,
-                })
-            } break;
-        }
-
-        if (!!data && data.length > 0) {
-            if (self) {
-                data = data.filter(val => parseInt(val.id) !== parseInt(self))
-                return res.status(200).json(data)
-            }
-            else return res.status(200).json(data)
-        } else { return res.status(404).json({ statusText: "data not found" }) }
-    }
-                if (categories) {
-        if (name) {
-            console.log(categories, name)
-            data = await prisma.food.findMany({
-                where: {
-                    name_th: { contains: name },
-                    foodTypeId: parseInt(categories),
-                },
-                include: {
-                    image: true,
-                    ref: true,
-                },
-            }) ||
-                await prisma.food.findMany({
-                    where: {
-                        name_en: { contains: name },
-                        foodTypeId: parseInt(categories),
-                    },
-                    include: {
-                        image: true,
-                        ref: true,
-                    },
-                })
-        } else {
-            data = await prisma.food.findMany({
-
-                where: { foodTypeId: parseInt(categories) },
-                include: {
-                    image: true,
-                    ref: true,
+                    if (!!data && data.length > 0) {
+                        if (self) {
+                            data = data.filter(val => parseInt(val.id) !== parseInt(self))
+                            return res.status(200).json(data)
+                        }
+                        else return res.status(200).json(data)
+                    } else { return res.status(404).json({ statusText: "data not found" }) }
                 }
-            })
-        }
-        if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json({ statusText: "data not found" }) }
-    }
-    if (name) {
-        data = await prisma.food.findMany({
+                if (categories) {
+                    if (name) {
+                        console.log(categories, name)
+                        data = await prisma.food.findMany({
+                            where: {
+                                name_th: { contains: name },
+                                foodTypeId: parseInt(categories),
+                            },
+                            include: {
+                                image: true,
+                                ref: true,
+                            },
+                            take : 1000
+                        }) ||
+                            await prisma.food.findMany({
+                                where: {
+                                    name_en: { contains: name },
+                                    foodTypeId: parseInt(categories),
+                                },
+                                include: {
+                                    image: true,
+                                    ref: true,
+                                },
+                                take : 1000
+                            })
+                    } else {
+                        data = await prisma.food.findMany({
 
-            where: { name_th: { contains: name } },
-            include: {
-                image: true,
-                ref: true,
-                FoodNcds: true
-            }
-        }) || await prisma.food.findMany({
+                            where: { foodTypeId: parseInt(categories) },
+                            include: {
+                                image: true,
+                                ref: true,
+                            },
+                            take: 1000
+                        })
+                    }
+                    if (!!data && data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json({ statusText: "data not found" }) }
+                }
+                if (name) {
+                    data = await prisma.food.findMany({
 
-            where: { name_en: { contains: name } },
-            include: {
-                image: true,
-                ref: true,
-                FoodNcds: true
-            }
-        })
-        if (!!data & data.length > 0) return res.status(200).json(data)
-    }
-    if (id) {
-        if (select) {
-            data = await prisma.food.findFirst({
+                        where: { name_th: { contains: name } },
+                        include: {
+                            image: true,
+                            ref: true,
+                            FoodNcds: true
+                        },
+                        take: 1000
+                    }) || await prisma.food.findMany({
 
-                where: { id: id },
-                select: { [select]: true }
-            })
-            if (!!data) return res.status(200).json(data)
-        }
-        data = await prisma.food.findFirst({
+                        where: { name_en: { contains: name } },
+                        include: {
+                            image: true,
+                            ref: true,
+                            FoodNcds: true
+                        },
+                        take: 1000
+                    })
+                    if (!!data & data.length > 0) return res.status(200).json(data)
+                }
+                if (id) {
+                    if (select) {
+                        data = await prisma.food.findFirst({
 
-            where: { id: id },
-            include: {
-                image: true,
-                ref: true,
-                FoodNcds: {
-                    include: {
-                        ncds: {
-                            select: {
-                                id: true,
-                                name_th: true,
-                                name_en: true,
-                                image: {
-                                    select: { name: true }
+                            where: { id: id },
+                            select: { [select]: true }
+                        })
+                        if (!!data) return res.status(200).json(data)
+                    }
+                    data = await prisma.food.findFirst({
+
+                        where: { id: id },
+                        include: {
+                            image: true,
+                            ref: true,
+                            FoodNcds: {
+                                include: {
+                                    ncds: {
+                                        select: {
+                                            id: true,
+                                            name_th: true,
+                                            name_en: true,
+                                            image: {
+                                                select: { name: true }
+                                            }
+                                        }
+                                    },
+                                }
+                            }
+                        }
+                    })
+                    if (data.id) return res.status(200).json(data)
+                } else if (select) {
+                    let _ = {}
+                    for (const val of select.split(",")) {
+                        _ = { ..._, [val]: true }
+                    }
+                    data = await prisma.food.findMany({
+                        select: _,
+                        take: 1000
+                    })
+                } else {
+                    data = await prisma.food.findMany({
+
+                        include: {
+                            image: true,
+                            ref: true,
+                            FoodType: true,
+                            FoodNcds: {
+                                include: {
+                                    ncds: {
+                                        select: {
+                                            name_th: true,
+                                            name_en: true,
+                                        }
+                                    },
                                 }
                             }
                         },
-                    }
+                        take: 1000
+                    })
+                    if (!!data & data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
                 }
-            }
-        })
-        if (data.id) return res.status(200).json(data)
-    } else if (select) {
-        let _ = {}
-        for (const val of select.split(",")) {
-            _ = { ..._, [val]: true }
+                if (!!data && data.length > 0) return res.status(200).json(data)
+                else return res.status(404).send({
+                    query: query.name,
+                    message: "data not found",
+                    data: data
+                })
         }
-        data = await prisma.food.findMany({
-            select: _
-        })
-    } else {
-        data = await prisma.food.findMany({
-
-            include: {
-                image: true,
-                ref: true,
-                FoodType: true,
-                FoodNcds: {
-                    include: {
-                        ncds: {
-                            select: {
-                                name_th: true,
-                                name_en: true,
-                            }
-                        },
-                    }
-                }
-            }
-        })
-        if (!!data & data.length > 0) { return res.status(200).json(data) } else { return res.status(404).json([]) }
-    }
-    if (!!data && data.length > 0) return res.status(200).json(data)
-    else return res.status(404).send({
-        query: query.name,
-        message: "data not found",
-        data: data
-    })
-}
     } catch (e) { console.log(e); return res.status(400).json({ message: "bad request", error: e.message }) }
 }

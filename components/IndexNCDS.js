@@ -52,7 +52,7 @@ const getData = async (router, ncds, form) => {
 \t•\tมีความเครียดสะสม ไม่สามารถจัดการความเครียดของตนเองได้`,
         },
         {
-            title: "โรค NCDs ",
+            title: "โรค NCDs ตัวอย่าง",
             content: <div >{!!ncds && ncds.length > 0 && ncds?.map(({ name_th, name_en, id }, ind) => <div key={`${ind}.${name_th}`} 
                     className="flex md:flex-row flex-col flex-warp gap-2 p-1 text-left rounded-md group hover:bg-blue-100 hover:my-2 duration-300 ease-in-out transition transform ">
                     <span className="p-1 rounded-md  md:px-4">{ind + 1}. {name_th} {name_en}</span>

@@ -128,7 +128,7 @@ export default function Index() {
             val["related"] = [...relatedNcds,...relatedFood]
             delete val['foodId']
             delete val['ncdsId']
-            console.log(val)
+            // console.log(val)
             const res = await fetch(`/api/getBlogs`, {
                 headers: { 'Content-Type': 'application/json', },
                 method: "PATCH",
@@ -216,7 +216,7 @@ export default function Index() {
         val !== 1 && setType(val)
     }
     return <div className='min-h-screen sm:-m-2 py-10 px-1 bg-white'>
-        {console.log(form.getFieldValue())}
+        {/* {console.log(form.getFieldValue())} */}
         <Form
             form={form}
             // initialValues={{}}
@@ -353,13 +353,14 @@ export default function Index() {
                                 {...fields}
                                 noStyle
                                 shouldUpdate
-                                key={field.key}
+                                key={"head"+field.key}
                                 required
                             >
                                 <Form.Item
                                     {...field}
                                     labelCol={null}
                                     wrapperCol={0}
+                                    key={"h_t"+field.key}
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">

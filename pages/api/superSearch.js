@@ -17,7 +17,8 @@ export default async function handler(req, res) {
                                 where: { name_th: { contains: txt } },
                                 include: {
                                     image: true,
-                                }
+                                },
+                                take : 1000
                             })
                             // console.log(data.length,data_fetch)
                             data = [...data, ...data_fetch]
@@ -25,7 +26,8 @@ export default async function handler(req, res) {
                                 where: { name_en: { contains: txt } },
                                 include: {
                                     image: true,
-                                }
+                                },
+                                take : 1000
                             })
                             data = [...data, ...data_fetch]
                         }
@@ -36,7 +38,8 @@ export default async function handler(req, res) {
                                 where: { name_th: { contains: txt } },
                                 include: {
                                     image: true,
-                                }
+                                },
+                                take : 1000
                             })
                             // console.log(data.length,data_fetch)
                             data = [...data, ...data_fetch]
@@ -45,7 +48,8 @@ export default async function handler(req, res) {
                                 where: { name_en: { contains: txt } },
                                 include: {
                                     image: true,
-                                }
+                                },
+                                take : 1000
                             })
                             // console.log(data.length,data_fetch)
                             data = [...data, ...data_fetch]
@@ -59,7 +63,8 @@ export default async function handler(req, res) {
 
                                 include: {
                                     image: true,
-                                }
+                                },
+                                take : 1000
                             })
                             if (!!data_fetch) {
                                 data_fetch = data_fetch.map(({ vote_1,

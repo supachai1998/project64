@@ -130,6 +130,7 @@ export default async function handler(req, res,) {
                   }
                 }
               },
+              take : 1000
             })
           }
         } else {
