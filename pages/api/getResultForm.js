@@ -18,32 +18,40 @@ export default async function handler(req, res,) {
         try {
           const data = JSON.parse(body)
           let count = 0
+          let result;
           // search answer for recommend
           if (data.score >= 0) {
             const score = data.score
             const dataQuery = await prisma.resultForm.findMany({
               where: { ncdsId: data.ncdsId }
             })
+            // console.log(score, dataQuery)
             if (dataQuery?.length > 0) {
               // find score between in data start to end
-              const result = dataQuery.findIndex(v => {
+                result = dataQuery.findIndex(v => {
                 return score >= v.start && score <= v.end // range of score
               })
               // console.log(result)
               let _data = dataQuery[result]
               if (!_data) {
-                const lastData = dataQuery[dataQuery.length - 1]
+                result = dataQuery.length - 1
+                const lastData = dataQuery[result]
                 if (score >= lastData.end) {
                   _data = lastData
                   // console.log(lastData)
                 }
               }
               // console.log(_data)
-              const sliceData = dataQuery.slice(0, result)
+              const sliceData = dataQuery.slice(0, result+1)
+              // console.log(dataQuery,sliceData)
               if (result > 0) {
                 const getRecommend = sliceData.map((v, ind) => {
                   const split = v.recommend.split('\n')
-                  const re = split.map((v, i) => { count += 1; return v.replace(/^[0-9]*\./, `${count}.`) })
+                  const re = split.map((v, i) => { 
+                    count += 1; 
+                    if(v.match(/^[0-9]*\./)?.index === 0) return v.replace(/^[0-9]*\./, `${count}.`) 
+                    else return `${count}. ${v}`
+                  })
                   return re
                 }).reduce((a, b) => { return a.concat(b) }).map(v => `${v}`).join("\n")
                 return res.status(200).json({ title: _data?.title, index: result, of: dataQuery.length, recommend: getRecommend })

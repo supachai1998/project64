@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { Steps, Button, Radio, message, Modal, Tooltip, Checkbox, Select, notification, } from 'antd';
+import { Steps, Button, Radio, message, InputNumber, Modal, Tooltip, Checkbox, Select, notification, } from 'antd';
 import { useState, useEffect, useRef, useContext } from 'react'
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 import { _AppContext } from '/pages/_app'
@@ -10,7 +10,6 @@ const { Option } = Select
 export default function Index() {
     const router = useRouter()
     const [datas, setDatas] = useState([])
-    const [score, setScore] = useState([])
     const [loading, setloading] = useState()
     const { categories } = router.query
     const [curIndPart, setcurIndPart] = useState(0);
@@ -41,7 +40,7 @@ export default function Index() {
         if (categories) {
             fetchData()
         }
-        return () => setDatas()
+        return () => { setDatas(); setcurIndPart(0) }
     }, [categories])
     if (loading) return <div className='min-h-screen'>กำลังดึงข้อมูล</div>
     if (!datas || datas?.length <= 0) return <div className='min-h-screen'>ไม่พบข้อมูล</div>
@@ -56,14 +55,60 @@ export default function Index() {
     };
     const onRadioChange = ({ target: { value } }, ind) => {
         // setcurIndPart(ind)
+        console.log(value, ind)
         const set = datas.map((v1, i1) => curIndPart === i1 ? ({
             ...v1, subForm: v1.subForm.map((v2, i2) => ind === i2 ? ({
                 ...v2, choice: v2.choice.map((v3, i3) => (curIndPart === i1 && ind === i2) ? (
                     v3.id === value ? ({
                         ...v3, select: true
-                    }) : ({ ...v3, select: false })) : { ...v3 })
+                    }) : ({ ...v3, select: false }))
+                    : { ...v3 })
             }) : ({ ...v2 }))
         }) : ({ ...v1 }))
+        console.log(set)
+        setDatas(set)
+    }
+    const onInputChange = (value, ind) => {
+    //     v3.name.split(" ")[0] === "มากกว่า" ?
+    //     parseInt(v3.name.split(" ")[1]) > value ? ({...v3, select: true}) : ({ ...v3, select: false }))
+    // : v3.name.split(" ")[0] === "มากกว่า" ?
+    // parseInt(v3.name.split(" ")[1]) > value ? ({...v3, select: true}) : ({ ...v3, select: false }))
+    // ? { ...v3 }
+        // setcurIndPart(ind)
+        const set = datas.map((v1, i1) => curIndPart === i1 ? ({
+            ...v1, subForm: v1.subForm.map((v2, i2) => ind === i2 ? ({
+                ...v2, choice: v2.choice.map((v3, i3) =>{
+                    if(curIndPart === i1 && ind === i2){
+                        try{
+                            let name = v3.name
+                            if(name.includes("-")){
+                                const _ = name.split("-")
+                                name = `${_[0]} ถึง ${_[1]}`
+                            }
+                            const split = name.split(" ")
+                            console.log(split , value)
+                            if(split[0] === "มากกว่า" || split[0] === "สูงกว่า"){
+                                return parseFloat(split[1]) > value ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else if(split[0] === "น้อยกว่า" || split[0] === "ต่ำกว่า"){
+                                return parseFloat(split[1]) < value ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else if(split[0] === "เท่ากับ"){
+                                return parseFloat(split[1]) === value ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else if(split[1] === "ถึง" || split[1] === "ระหว่าง" || split[1] === "ช่วง"){
+                                return parseFloat(split[0]) <= value && value <= parseFloat(split[2]) ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else if(split[0] === "ไม่มากกว่า"){
+                                return parseFloat(split[1]) < value ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else if(split[0] === "ไม่น้อยกว่า"){
+                                return parseFloat(split[1]) > value ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else if(split[0] === "ไม่เท่ากับ"){
+                                return parseFloat(split[1]) !== value ? ({...v3, select: true}) : ({ ...v3, select: false })
+                            }else return {...v3}
+
+                        }catch(e){;}
+                    }else return { ...v3}
+                } )
+            }) : ({ ...v2 }))
+        }) : ({ ...v1 }))
+        console.log(set)
         setDatas(set)
     }
     const sendForm = async () => {
@@ -122,15 +167,33 @@ export default function Index() {
                             <span className="text-md md:text-xl">ข้อที่ {ind + 1}. {sub.name}</span>
                             {/* {console.log(sub.choice.length)} */}
                             <div className={sub.choice.length === 2 ? 'grid grid-flow-row gap-2' : 'grid grid-flow-col gap-2'}>
-                                <Radio.Group onChange={e => onRadioChange(e, ind)} value={radioSelect?.id}>
-                                    {sub.choice.map(({ id, name, detail, select }, i) => <div key={i} className="my-1">
-                                        <Radio className={`hover:bg-gray-50 ease-anima p-3 rounded-md w-full ${select && "bg-gray-100"}`} value={id}><div>
-                                            <span className='text-md'>{name}</span>
-                                            <span className="text-sm ml-3 text-gray-800 whitespace-pre-wrap">{detail}</span>
-                                        </div>
-                                        </Radio>
-                                    </div>)}
-                                </Radio.Group>
+                                {/* {sub.choice.find(({ name }) => {
+                                    try {
+                                        const split = name.split(' ')[1]
+                                        const split_f = name.split(' ')[0]
+                                        if (split.includes("มากกว่า") || split.includes("น้อยกว่า") || split.includes("เท่ากับ") || split.includes("ไม่เท่ากับ") || split.includes("ไม่มากกว่า") || split.includes("ไม่น้อยกว่า") || split.includes("ไม่เท่ากับ") || split.includes("ถึง") || split.includes("ไม่ถึง") || split.includes("ระหว่าง") || split.includes("ช่วง")) {
+                                            return true
+                                        }
+                                        else if (split_f === "มากกว่า" || split_f === "น้อยกว่า" || split_f === "เท่ากับ" || split_f === "ไม่เท่ากับ" || split_f === "ไม่มากกว่า" || split_f === "ไม่น้อยกว่า" || split_f === "ไม่เท่ากับ" || split_f === "ถึง" || split_f === "ไม่ถึง" || split_f === "ระหว่าง" || split_f === "ช่วง") {
+                                            return true
+                                        }
+                                    } catch (error) {
+                                        return false
+                                    }
+                                    return false
+                                }) */}
+                                {(false)
+                                    ? <><InputNumber min={0} max={1000} step="0.01" className='my-3 rounded-md sm:w-11/12' onChange={v => onInputChange(v, ind)} /> </>
+                                    : <Radio.Group onChange={e => onRadioChange(e, ind)} value={radioSelect?.id}>
+                                        {sub.choice.map(({ id, name, detail, select }, i) => <div key={i} className="my-1">
+                                            <Radio className={`hover:bg-gray-50 ease-anima p-3 rounded-md w-full ${select && "bg-gray-100"}`} value={id}><div>
+                                                <span className='text-md'>{name}</span>
+                                                <span className="text-sm ml-3 text-gray-800 whitespace-pre-wrap">{detail}</span>
+                                            </div>
+                                            </Radio>
+                                        </div>)}
+                                    </Radio.Group>}
+
                             </div>
                         </div>
                     </>
@@ -159,14 +222,13 @@ export default function Index() {
 
 }
 
-const Result = ({ result, setResult, ncdsId ,ncdsName}) => {
+const Result = ({ result, setResult, ncdsId, ncdsName }) => {
     const router = useRouter()
     const handleCancel = () => {
         setResult();
     };
 
     if (!result) return null
-    const avg_score = result.index / result.of * 100
     console.log(result)
     return <Modal
 

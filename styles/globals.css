@@ -248,6 +248,9 @@ a:link,a:visited  {
 .ant-input-group > .ant-input:first-child, .ant-input-group-addon:first-child {
   border-right-width : 0px 
 }
+.ant-input-number-input-wrap , .ant-form-item-control-input{
+  @apply rounded-md !important;
+}
 /* custom fontsize header ant table */
 .ant-table-thead{
   font-size: .9rem;
@@ -302,6 +305,11 @@ a {
 }
 .ant-form-item-label > label{
   @apply md:text-lg sm:text-base !important;
+}
+.ant-modal{
+  @media (min-width: 768px) {
+    width: 100% !important; 
+  }
 }
 .ant-modal-title {
   @apply md:text-lg sm:text-base font-bold

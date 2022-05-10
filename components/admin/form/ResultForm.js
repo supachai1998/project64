@@ -60,6 +60,7 @@ export default function ResultForm() {
     const onCancel = () => {
         setModalResultForm(-1)
     }
+    if(modalResultForm === -1 ) return null
     return (
         <Modal title={`ผลการประเมิน${modalResultForm.name_th}`}
             visible={modalResultForm !== -1 ? true : false}
@@ -323,7 +324,7 @@ const ModalAdd = () => {
     const onCancel = () => {
         setModalAdd(false)
     }
-
+    if(!modalAdd) return null
     return <Modal title={`เพิ่มผลการประเมิน${modalResultForm.name_th}`}
         visible={modalAdd}
         okText={<>ตกลง</>}
@@ -331,7 +332,7 @@ const ModalAdd = () => {
         footer={<></>}
         onOk={onOk}
         onCancel={onCancel}
-        width="50vw"
+        width={'80%'}
     >
         <Form
             form={form}
@@ -369,8 +370,8 @@ const ModalAdd = () => {
                                     <div className="flex justify-center items-center gap-2 text-lg"><Button_Delete fx={() => remove(ind)} /> ช่วงคะแนนที่ {ind + 1} </div>
                                 </Form.Item>
                                 <Form.Item
-                                    labelCol={{ span: 8 }}
-                                    label={<>ระดับความเสี่ยง <Switch onChange={v => RiskChange(v, field, ind)} checkedChildren="กรอก" unCheckedChildren="เลือก" /></>}
+                                    labelCol={{ span: 5 }}
+                                    label={<>ระดับความเสี่ยง <Switch className='mx-3' onChange={v => RiskChange(v, field, ind)} checkedChildren="กรอก" unCheckedChildren="เลือก" /></>}
                                     name={[field.name, 'title']}
                                     fieldKey={[field.fieldKey, 'title']}
                                     rules={[{ required: true }]}
@@ -384,9 +385,9 @@ const ModalAdd = () => {
                                 {/* {console.log(form.getFieldValue("resultForm"), form.getFieldValue("resultForm").length)} */}
                                 <div className='grid grid-cols-2 gap-2'>
                                     <Form.Item
-                                        labelCol={{ span: 8 }}
                                         // wrapperCol={14}
                                         label={`คะแนนเริ่มต้น`}
+                                        labelCol={{ span: 10 }}
                                         name={[field.name, 'start']}
                                         fieldKey={[field.fieldKey, 'start']}
                                         rules={[{ required: true }]}
@@ -395,9 +396,9 @@ const ModalAdd = () => {
                                         <InputNumber min={requireMin(form, ind, resultForm)} max={100} step={1} stringMode={false} placeholder={`คะแนน ${requireMin(form, ind, resultForm)} - 100`} />
                                     </Form.Item>
                                     <Form.Item
-                                        labelCol={{ span: 8 }}
                                         // wrapperCol={14}
                                         label={`คะแนนสิ้นสุด`}
+                                        labelCol={{ span: 10 }}
                                         name={[field.name, 'end']}
                                         fieldKey={[field.fieldKey, 'end']}
                                         rules={[{ required: true }]}
@@ -407,6 +408,7 @@ const ModalAdd = () => {
                                 </div>
                                 <Form.Item
                                     label={`คำแนะนำ`}
+                                    labelCol={{ span: 5 }}
                                     name={[field.name, 'recommend']}
                                     fieldKey={[field.fieldKey, 'recommend']}
                                     rules={[{ required: true }]}
@@ -468,6 +470,7 @@ const ModalEdit = () => {
     const onReset = () => {
         form.setFieldsValue();
     }
+    if(!modalEdit) return null
     return <Modal title={`แก้ไขผลการประเมิน${modalResultForm.name_th}`}
         visible={modalEdit}
         okText={<>ตกลง</>}
@@ -477,7 +480,7 @@ const ModalEdit = () => {
         // onOk={onOk}
         onCancel={onCancel}
         forceRender
-        width="50vw"
+        width={'80%'}
     >
         <Form
             form={form}
@@ -520,9 +523,9 @@ const ModalEdit = () => {
                                 </Form.Item>
                                 <div className='grid grid-cols-2 gap-2'>
                                     <Form.Item
-                                        labelCol={{ span: 8 }}
                                         // wrapperCol={14}
                                         label={`คะแนนเริ่มต้น`}
+                                        labelCol={{ span: 10 }}
                                         name={[field.name, 'start']}
                                         fieldKey={[field.fieldKey, 'start']}
                                         rules={[{ required: true }]}
@@ -531,9 +534,9 @@ const ModalEdit = () => {
                                         <InputNumber min={requireMin(form, ind, resultForm, true)} max={requireMax(form, ind, resultForm, true)} step={1} stringMode={false} placeholder={`คะแนน ${requireMin(form, ind, resultForm, true)} - ${requireMax(form, ind, resultForm, true)}`} />
                                     </Form.Item>
                                     <Form.Item
-                                        labelCol={{ span: 8 }}
                                         // wrapperCol={14}
                                         label={`คะแนนสิ้นสุด`}
+                                        labelCol={{ span: 10 }}
                                         name={[field.name, 'end']}
                                         fieldKey={[field.fieldKey, 'end']}
                                         rules={[{ required: true }]}
@@ -543,6 +546,7 @@ const ModalEdit = () => {
                                 </div>
                                 <Form.Item
                                     label={`คำแนะนำ`}
+                                    labelCol={{ span: 5 }}
                                     name={[field.name, 'recommend']}
                                     fieldKey={[field.fieldKey, 'recommend']}
                                     rules={[{ required: true }]}
@@ -575,7 +579,7 @@ const ModalView = () => {
             form.setFieldsValue({ resultForm: [{ ...modalView }] });
         }
     }, [form, modalView]);
-
+    if(!modalView) return null
     return <Modal title={`ผลการประเมิน${modalResultForm.name_th}`}
         visible={modalView}
         okText={<>ตกลง</>}
@@ -585,7 +589,7 @@ const ModalView = () => {
         // onOk={onOk}
         onCancel={() => setModalView(null)}
         forceRender
-        width="50vw"
+        className='sm:w-2/3 w-full'
     >
         <Form
             form={form}
@@ -624,9 +628,9 @@ const ModalView = () => {
                                 </Form.Item>
                                 <div className='grid grid-cols-2 gap-2'>
                                     <Form.Item
-                                        labelCol={{ span: 8 }}
                                         // wrapperCol={14}
                                         label={`คะแนนเริ่มต้น`}
+                                        labelCol={{ span: 14 }}
                                         name={[field.name, 'start']}
                                         fieldKey={[field.fieldKey, 'start']}
                                         rules={[{ required: true }]}
@@ -634,9 +638,9 @@ const ModalView = () => {
                                         <Input className='input-disabled' bordered={false} placeholder="คะแนน 0 - 100" />
                                     </Form.Item>
                                     <Form.Item
-                                        labelCol={{ span: 8 }}
                                         // wrapperCol={14}
                                         label={`คะแนนสิ้นสุด`}
+                                        labelCol={{ span: 14 }}
                                         name={[field.name, 'end']}
                                         fieldKey={[field.fieldKey, 'end']}
                                         rules={[{ required: true }]}
@@ -646,6 +650,7 @@ const ModalView = () => {
                                 </div>
                                 <Form.Item
                                     label={`คำแนะนำ`}
+                                    labelCol={{ span: 5 }}
                                     name={[field.name, 'recommend']}
                                     fieldKey={[field.fieldKey, 'recommend']}
                                     rules={[{ required: true }]}
