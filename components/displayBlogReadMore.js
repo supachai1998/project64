@@ -40,11 +40,11 @@ export default function DisplayBlogReadMore({ data, setData, store, setStore, li
   if (loading) return <>กำลังดึงข้อมูล</>
   if (data?.length <= 0) return <>ไม่พบข้อมูล</>
   return (
-    <div className='min-h-screen' style={{ height: "fit-content" }}>
+    <div className='sm:m-full w-11/12 mx-auto min-h-screen' style={{ height: "fit-content" }}>
       <CusInput only="blogs" data={data} setData={setData}
         store={store} setStore={setStore}
         loading={loadingSearch} setLoading={setLoadingSearch} />
-      <div className=" lg:grid-cols-4 sm:grid sm:grid-cols-2 mt-5 gap-5" >
+      <div className=" lg:grid-cols-4 md:grid-cols-3 sm:grid sm:grid-cols-2 mt-5 gap-5" >
         {data && data?.map(({ id,
           type,
           name,
