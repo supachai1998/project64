@@ -62,33 +62,33 @@ export default function Index() {
             dataIndex: 'name',
             key: 'name',
             width: "10%",
-            render: val => <div >{val}</div>
+            render: val => <span className="table-txt" >{val}</span >
         },
         {
             title: 'คำอธิบาย',
             dataIndex: 'imply',
             key: 'imply',
             width: "20%",
-            render: val => <div >{val}</div>
+            render: val => <span className="text-2-line" >{val}</span>
         },
 
         {
             title: 'ชื่อหัวข้อย่อย',
             dataIndex: 'subBlog',
             key: 'subBlog',
-            render: val => <>{val.map((v, ind) => <div key={ind} className="text-left" >{ind + 1}. {v.name}</div>)}</>
+            render: val => <>{val.map((v, ind) => <span className="text-1-line" key={ind}  >{ind + 1}. {v.name}</span >)}</>
         },
         {
             title: 'ความสัมพันธ์',
             dataIndex: 'related',
             key: 'related',
-            render: val => <>{val?.map((v, ind) => <div key={ind}>{ind + 1}. {v?.ncds?.name_th || v?.Foods?.name_th}</div>)}</>
+            render: val => <>{val?.map((v, ind) => <span className="table-txt" key={ind}>{ind + 1}. {v?.ncds?.name_th || v?.Foods?.name_th}</span>)}</>
         },
         {
             title: 'ผลโหวต',
             dataIndex: 'avg_vote',
             key: 'avg_vote',
-            render: (val) => <div className="text-center" ellipsis={ellipsis}>{val >= 0 ? val : 0}</div>
+            render: (val) => <span className="table-txt" ellipsis={ellipsis}>{val >= 0 ? val : 0}</span>
         },
         {
             title: <div className='text-center'>การอนุมัติ</div>,

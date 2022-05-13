@@ -88,7 +88,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
             className="sm:p-2 site-layout-background"
           >
             <ConfigProvider locale={thTh}>
-              <div className={`mx-1 sm:mx-3 inside_body`}>
+              <div className={`ml-12 inside_body`}>
                 <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, title, ncds, form }}>
                   <Component {...pageProps} />
                 </_AppContext.Provider>

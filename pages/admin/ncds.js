@@ -44,57 +44,57 @@ export default function Index() {
             dataIndex: 'name_th',
             key: 'name_th',
             width: "5%",
-            render: (text, val, index) => <div className="h-76 overflow-hidden">{val.name_th}</div>
+            render: (text, val, index) => <span className="table-txt">{val.name_th}</span>
         },
         {
             title: < >ชื่อโรคภาษาอังกฤษ</>,
             dataIndex: 'name_en',
             key: 'name_en',
             width: "5%",
-            render: (text, val, index) => <div className="h-76 overflow-hidden">{val.name_en}</div>
+            render: (text, val, index) => <span className="table-txt">{val.name_en}</span>
         },
         {
             title: < >ความหมาย</>,
             dataIndex: 'imply',
             key: 'imply',
             width: '10%',
-            render: val => <div className="h-76 overflow-hidden">{val}</div>
+            render: val => <span className="table-txt">{val}</span>
         },
         {
             title: < >สาเหตุการเกิดโรค</>,
             dataIndex: 'cause',
             key: 'cause',
-            render: val => <div className="h-76 overflow-hidden">{val}</div>
+            render: val => <span className="table-txt">{val}</span>
         },
         {
             title: < >ลดความเสี่ยงการเกิดโรค</>,
             dataIndex: 'reduce',
             key: 'reduce',
-            render: val => <div className="h-76 overflow-hidden">{val}</div>
+            render: val => <span className="table-txt">{val}</span>
         },
         {
             title: < >สัญญาณการเกิดโรค</>,
             dataIndex: 'signs',
             key: 'signs',
-            render: val => <div className="h-76 overflow-hidden">{val}</div>
+            render: val => <span className="table-txt">{val}</span>
         },
         {
             title: < >คำแนะนำในการปฏิบัติตัว</>,
             dataIndex: 'sugess',
             key: 'sugess',
-            render: val => <div className="h-76 overflow-hidden">{val}</div>
+            render: val => <span className="table-txt">{val}</span>
         },
         {
             title: < >แหล่งอ้างอิง</>,
             dataIndex: 'ref',
             key: 'ref',
-            render: val => <ul >{val.map(v => <li key={v.url} >{(v.url).match(/(?:[\w-]+\.)+[\w-]+/)}</li>)}</ul>
+            render: val => <ul className="table-txt">{val.map(v => <li key={v.url} >{(v.url).match(/(?:[\w-]+\.)+[\w-]+/)}</li>)}</ul>
         },
         {
             title: < >จำนวนภาพ</>,
             dataIndex: 'image',
             key: 'image',
-            render: val => <div >{val.length}</div>
+            render: val => <span >{val.length}</span>
         },
 
     ];
@@ -152,7 +152,7 @@ export default function Index() {
                 <TableForm />
             </Context.Provider>
             <div className='hidden' ref={componentRef}>
-                <Table size='small' title={() => <span className="text-lg">โรคไม่ติดต่อ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={ncds} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+                <Table size='small' title={() => <span className="text-lg">โรคไม่ติดต่อ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={ncds} columns={columns} footer={() => <div className="flex justify-end"><span className="text-end">พิมพ์ : {moment().format("LLLL")}</span></div>} />
             </div>
         </div>
     )

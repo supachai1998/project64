@@ -497,6 +497,13 @@ a {
   z-index: 2;
 }
 
+.text-5-line{
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .text-3-line{
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -519,7 +526,17 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.table-txt{
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+  text-align: left;
+  @apply whitespace-pre-line
 
+}
 .ant-menu.ant-menu-inline-collapsed > .ant-menu-item, .ant-menu.ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-item, .ant-menu.ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-submenu > .ant-menu-submenu-title, .ant-menu.ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title{
   padding: auto;
   margin-left: auto;

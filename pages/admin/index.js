@@ -83,14 +83,14 @@ export default function Index() {
     }
     else if (status === "authenticated") {
         return (
-            <div className="w-full h-full min-h-screen flex flex-col">
+            <div className="h-full min-h-screen flex flex-col -ml-12" style={{width:"calc(100% + 3rem)"}}>
                 <HeaderAdmin titleAdmin={titleAdmin} onSelectPage={onSelectPage} />
 
                 {titleAdmin === "โรคไม่ติดต่อเรื้อรัง" ? <_Ncds />
                     : titleAdmin === "บทความ" ? <_Blogs />
                         : titleAdmin === "อาหาร" ? <_Food />
-                            : titleAdmin === "แบบประเมินโรค" ? <_Form />
-                                : titleAdmin === "รายงานแบบประเมินโรค" ? <_Report_blogs_food />
+                            : titleAdmin === "แบบประเมินความเสี่ยงโรคไม่ติดต่อเรื้อรัง" ? <_Form />
+                                : titleAdmin === "รายงานแบบประเมินความเสี่ยงโรคไม่ติดต่อเรื้อรัง" ? <_Report_blogs_food />
                                     : titleAdmin === "รายงานบทความ" && <_Report_blogs_ncds />
                 }
             </div>
@@ -132,7 +132,7 @@ const HeaderAdmin = ({ titleAdmin, onSelectPage }) => {
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "โรคไม่ติดต่อเรื้อรัง" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("โรคไม่ติดต่อเรื้อรัง")}>โรคไม่ติดต่อเรื้อรัง</button >
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "บทความ" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("บทความ")}>บทความ</button >
                 <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "อาหาร" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("อาหาร")}>อาหาร</button >
-                <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "แบบประเมินโรค" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("แบบประเมินโรค")}>แบบประเมินโรค</button >
+                <button className={`button text-blue-500 hover:bg-blue-200 hover:text-blue-800 ${titleAdmin === "แบบประเมินความเสี่ยงโรคไม่ติดต่อเรื้อรัง" && "border border-blue-600 text-blue-900 hover:bg-blue-400"}`} onClick={() => onSelectPage("แบบประเมินความเสี่ยงโรคไม่ติดต่อเรื้อรัง")}>แบบประเมินความเสี่ยงโรคไม่ติดต่อเรื้อรัง</button >
             </div>
             <hr />
         </div>

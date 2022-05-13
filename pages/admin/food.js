@@ -46,44 +46,44 @@ function Index() {
     const columns = [
         {
             responsive: ["md"],
-            title: <div classNamme="text-center" >ประเภท</div>,
+            title: <div className="table-txt" >ประเภท</div>,
             dataIndex: 'FoodType',
             key: 'FoodType',
-            render: val => <Tooltip title={val.name_th} ><div >{val.name_th}</div></Tooltip>
+            render: val => <Tooltip title={val.name_th} ><span className="table-txt">{val.name_th}</span></Tooltip>
         },
         {
             responsive: ["md"],
-            title: <div classNamme="text-center" >ชื่ออาหาร</div>,
+            title: <div className="table-txt" >ชื่ออาหาร</div>,
             dataIndex: 'name_th',
             key: 'name_th',
-            render: val => <Tooltip title={val} ><div >{val}</div></Tooltip>
+            render: val => <Tooltip title={val} ><span className="table-txt">{val}</span></Tooltip>
         },
         {
-            title: <div className="text-center" >คำอธิบาย</div>,
+            title: <div className="table-txt" >คำอธิบาย</div>,
             dataIndex: 'detail',
             key: 'detail',
             width: '30%',
-            render: val => <Tooltip title={val} ><div >{val}</div></Tooltip>
+            render: val => <Tooltip title={val} ><span className="table-txt">{val}</span></Tooltip>
         },
 
         {
-            title: <div className="text-center" >แนะนำ</div>,
+            title: <div className="table-txt" >แนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <div key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-xs">{v.detail}</span></div>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <span className="table-txt" key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
         },
         {
-            title: <div className="text-center" >ไม่แนะนำ</div>,
+            title: <div className="table-txt" >ไม่แนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <div key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-xs">{v.detail}</span></div>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <span className="table-txt" key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
         },
         {
-            title: <div className="text-center" >จำนวนอ้างอิง</div>,
+            title: <div className="table-txt" >จำนวนอ้างอิง</div>,
             dataIndex: 'ref',
             key: 'ref',
             width: "5%",
-            render: val => <>{val.map((v, ind) => <div key={v} className="text-left text-xs" >{ind + 1}. {v.url}</div>)}</>
+            render: val => <>{val.map((v, ind) => <span key={v} className="table-txt " >{ind + 1}. {v.url}</span>)}</>
         },
     ];
 
@@ -175,7 +175,7 @@ const TableForm = () => {
     const columns = [
         {
 
-            title: <div classNamme="text-center" >ประเภท</div>,
+            title: <div className="text-center" >ประเภท</div>,
             dataIndex: 'FoodType',
             key: 'FoodType',
             onFilter: (value, record) => record.FoodType.name_th.includes(value),
@@ -184,7 +184,7 @@ const TableForm = () => {
             render: val => <Tooltip title={val.name_th} ><Paragraph className="mt-3" ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
         },
         {
-            title: <div classNamme="text-center" >ชื่ออาหาร</div>,
+            title: <div className="text-center" >ชื่ออาหาร</div>,
             dataIndex: 'name_th',
             key: 'name_th',
             render: val => <Tooltip title={val} ><Paragraph ellipsis={ellipsis}>{val}</Paragraph></Tooltip>
