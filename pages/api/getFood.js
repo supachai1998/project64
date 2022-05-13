@@ -136,14 +136,17 @@ export default async function handler(req, res) {
                 return res.status(200).json({ status: true })
             default:
 
-                const { select, BestFood, self, categories, name, type } = query
+                const { select, BestFood, self, categories, name, type , suggess } = query
                 id = parseInt(query.id) || null
+                console.log(suggess)
                 if (BestFood) {
                     switch (type) {
                         case "blogs": {
                             data = await prisma.food.findMany({
                                 where: {
-                                    relationBlog: { some: { blogsId: parseInt(self) } }
+                                    relationBlog: { some: { 
+                                        blogsId: parseInt(self) ,
+                                        ...(suggess && { suggess : JSON.parse(suggess) }) } },
                                 },
                                 orderBy: [
                                     { views: 'desc', },
@@ -163,11 +166,11 @@ export default async function handler(req, res) {
                                     ...(categories && {
                                         FoodNcds: {
                                             some: {
-                                                suggess: true,
+                                                ...(suggess && { suggess : JSON.parse(suggess) }),
                                                 ncdsId: parseInt(categories)
                                             },
                                         }
-                                    })
+                                    }),
                                 },
                                 orderBy: [
                                     { calories: 'asc', },

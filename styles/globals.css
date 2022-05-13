@@ -188,8 +188,11 @@
 * {
   font-family: 'Kanit', sans-serif;
   /* font-family: 'Poppins', sans-serif; */
-}
 
+}
+.inside_body > * {
+  @apply sm:text-base text-sm
+}
 .h-fix73{
   height: 73vh !important;
 }
@@ -279,7 +282,8 @@ body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
   font-family: 'Charm', sans-serif;
-  
+  height: 100vh;
+  width: 100vw;
 }
 
 a {
@@ -319,40 +323,16 @@ a {
   width: 4px;
 }
 
-/* button */
-::-webkit-scrollbar-button {
-  background: #A78BFA; 
-}
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #A78BFA; 
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #A78BFA; 
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #DBEAFE; 
-}
 
 /* The track NOT covered by the handle.
 ::-webkit-scrollbar-track-piece {
   background: #000; 
 }
 
-/* Corner */
-::-webkit-scrollbar-corner {
-  background: #A78BFA; 
-}
 
-/* Resizer */
-::-webkit-resizer {
-  background: #000; 
-}
+
+
 
 .ant-select .ant-select-selector{
   border-radius: 10px !important;
@@ -475,4 +455,14 @@ a {
 
 .edit_button {
   @apply bg-yellow-500 hover:bg-yellow-600 border-yellow-500 hover:border-yellow-600
+}
+
+.ant-menu-submenu {
+  overflow: 'auto';
+  height: '100vh';
+  position: 'fixed';
+  margin-top: "64px";
+  top: 0;
+  left: 0;
+  z-index: 2;
 }

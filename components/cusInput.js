@@ -61,7 +61,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
   useEffect(() => {
     const val = input || refSearchInput.current?.state?.value
     !!val && val.length > 2 && handleSearch()
-    console.log(val)
+    // console.log(val)
     return () => {
       if (store?.length > 0) setData(store)
       else setData([])

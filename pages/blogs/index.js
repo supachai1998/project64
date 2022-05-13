@@ -28,12 +28,12 @@ export default function Index() {
     }, [router])
     if (!_data) return <div className='min-h-screen h-full'></div>
     return (
-        <div className="min-h-screen mb-10 lg:mx-10" style={{ height: "fit-content" }}>
+        <div className="min-h-screen mb-10 lg:mx-5" style={{ height: "fit-content" }}>
             <div className="justify-center mx-auto md:px-5 h-full">
                 <div className="my-5 ">
                     <CusInput only="blogs" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
                 </div>
-                <div className='grid grid-cols-1 lg:mx-10 sm:grid-cols-2 xl:grid-cols-4  gap-5 h-full'>
+                <div className='grid grid-cols-1 lg:mx-5 sm:grid-cols-2 xl:grid-cols-4  gap-5 h-full'>
                     {_data.map(({
                         id,
                         name_th,
@@ -68,8 +68,8 @@ export default function Index() {
                                             </div>
                                         </div>
                                         <p className=" mt-1 sm:mx-5 break-words overflow-hidden text-lg md:text-md h-20">{imply}...</p>
-                                        <hr className='' />
-                                        <a onClick={() => { router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  mx-auto mb-5 mt-2 text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 ">อ่านต่อ</a>
+                                        <hr className='mt-5' />
+                                        <a onClick={() => { router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  mx-auto my-2  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 ">อ่านต่อ</a>
                                     </div>
 
                                 </div>

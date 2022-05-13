@@ -72,6 +72,7 @@ export default function Index(props) {
             <span className="flex justify-end w-full">ยอดเข้าชม {NCDS?.views} ครั้ง</span>
             <div className=''>
                 <BestFood title="อาหารแนะนำ"/>
+                <BestFood title="อาหารไม่แนะนำ"/>
                 <BestBlog title="บทความแนะนำ"/>
             </div>
         </div>

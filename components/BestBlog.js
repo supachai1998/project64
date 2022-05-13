@@ -22,7 +22,7 @@ export default function DisplayBlogReadMore({title }) {
 
     const data = await fetch(api).then(async res => {
       if(res.status === 404){
-        notification.info({ message: `ไม่พบข้อมูลบทความ` })
+        // notification.info({ message: `ไม่พบข้อมูลบทความ` })
       }
       else if (res.ok) {
         const _ = await res.json()
@@ -85,9 +85,9 @@ export default function DisplayBlogReadMore({title }) {
                   </div>
                 </div>
                 <p className=" mt-1 sm:mx-5 break-words overflow-hidden text-lg md:text-md h-20">{imply}...</p>
-                <hr className='mb-2 ' />
+                <hr className='mt-5 ' />
                 <div className="flex justify-center ">
-                  <a onClick={() => {  router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                  <a onClick={() => {  router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 mt-3 ">อ่านต่อ</a>
                 </div>
               </div>
 

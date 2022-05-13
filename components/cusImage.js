@@ -1,10 +1,8 @@
 import React from 'react';
-import { Image as Img, Spin } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Image as Img } from 'antd';
 // import { CircularProgress } from '@mui/material';
 import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
-const antIcon = <LoadingOutlined className='text-lg' spin />;
 export default function CusImage({ width, height, src, name, className, preview }) {
     const [onSrc, setOnSrc] = React.useState()
     async function checkIfImageExists(url, callback) {
@@ -76,4 +74,6 @@ export default function CusImage({ width, height, src, name, className, preview 
         />
     );
 }
-const Load = () => <div className={"w-full h-full bg-gray-50 flex justify-center items-center"}><Spin indicator={antIcon} /></div>
+const Load = () => <svg className="animate-spin h-full w-full m-10  " viewBox="0 0 24 24">
+
+</svg>

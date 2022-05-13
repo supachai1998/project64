@@ -22,7 +22,7 @@ export default function Index(props) {
 
   return (
     <div className="flex flex-col min-h-screen ">
-      <div className='lg:mx-10'>
+      <div className=''>
         
         {
               categories === "ncds" ?

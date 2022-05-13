@@ -50,7 +50,7 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
                 {_data && _data.map(({ id, title, detail, imgUrl , name_th,name_en , calories , image }, index) => (
                     <div key={index} className='card  p-0  sm:mx-2 lg:mx-5 mt-3'>
                         <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
-                        <div className='mx-5 mb-2 lg:mb-10 flex flex-col gap-3'>
+                        <div className='mx-5  flex flex-col gap-3'>
                             <div className=" flex-col text-center mb-0">
                                 <p className="card-header pt-3"> {name_th}</p>
                                 <hr className='my-3 mx-20 border-b border-blue-900' />
@@ -60,9 +60,9 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
                                 <p className='mb-0 font-bold'>{calories}</p>
                                 <p className='text-sm sm:text-xl text-gray-500'>กิโลแคลอรี่</p>
                             </div>
-                            <hr className='mb-3' />
+                            <hr className='mt-3' />
                             <div className='flex justify-center justify-items-center '>
-                                <a onClick={() => router.push(`/foods/${categories}/${id}`)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
+                                <a onClick={() => router.push(`/foods/${categories}/${id}`)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 mb-3'>อ่านต่อ</a>
                             </div>
 
                         </div>

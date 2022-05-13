@@ -29,7 +29,7 @@ export default function Index() {
                 }))
             }))
 
-            setTitle(`แบบประเมิน${data[0]?.ncds?.name_th}`)
+            setTitle(`แบบประเมินความเสี่ยง ${data[0]?.ncds?.name_th}`)
             setDatas(setSelect)
         }
         setloading(false)
@@ -65,7 +65,7 @@ export default function Index() {
                     : { ...v3 })
             }) : ({ ...v2 }))
         }) : ({ ...v1 }))
-        console.log(set)
+        // console.log(set)
         setDatas(set)
     }
     const onInputChange = (value, ind) => {

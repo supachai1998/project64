@@ -15,12 +15,12 @@ export default function BestFood({ title }) {
     const fetchData = async (api) => {
         const data = await fetch(api).then(async res => {
             if (res.status === 404) {
-                notification.info({ message: `ไม่พบข้อมูลอาหาร` })
+                // notification.info({ message: `ไม่พบข้อมูล${title}` })
             }
             else if (res.ok ) {
                 const _ = await res.json()
                 return _
-            } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร` })
+            } else notification.error({ message: `ไม่สามารถดึง${title}` })
         })
 
         return data
@@ -33,12 +33,13 @@ export default function BestFood({ title }) {
             if (asPath[1]) api += `&type=${asPath[1]}`
             if (asPath[2]) api += `&categories=${asPath[2]}`
             if (asPath[3]) api += `&self=${asPath[3]}`
+            title === "อาหารไม่แนะนำ" ? api += `&suggess=${false}` : `&suggess=${true}`
             const data = await fetchData(api)
             !!data && setData([...data])
 
         })()
         
-    }, [blog, categories, food, router.query])
+    }, [ router.query])
 
     if (!_data && !Array.isArray(_data)) return null
     const handleLinkClick = (foodTypeId, id) => {
@@ -68,7 +69,7 @@ export default function BestFood({ title }) {
                                 <p className='mb-0 font-bold'>{calories}</p>
                                 <p className='text-sm sm:text-xl text-gray-500'>กิโลแคลอรี่</p>
                             </div>
-                            <hr className='mb-3' />
+                            <hr className='mb-2' />
                             <div className='flex justify-center justify-items-center pb-3'>
                                 <a onClick={() => handleLinkClick(foodTypeId, id)} className='w-32 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
                             </div>

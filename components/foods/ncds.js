@@ -108,11 +108,11 @@ const Suggess_true = ({ data, showModal }) => {
                                             แนะนำ
                                         </div>
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
-                                        <hr className='mb-2 ' />
-                                        <div className="flex flex-wrap gap-2 justify-center items-center">
-                                            {video && <a className="max-w-sm md:mx-auto flex justify-center items-center gap-3 w-20 text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
+                                        <hr className='' />
+                                        <div className="flex flex-wrap justify-center items-center gap-8 mb-3">
+                                            {video && <a className="flex justify-center items-center gap-3 px-6  text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
                                             <div className="flex justify-center items-center ">
-                                                <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="w-20  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                                <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="  text-white text-center rounded-3xl bg-black p-3 px-6 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 ">อ่านต่อ</a>
                                             </div>
                                         </div>
                                     </div>
@@ -163,11 +163,11 @@ const Suggess_false = ({ data, showModal }) => {
                                             ไม่แนะนำ
                                         </div>
                                         <div className='max-h-20 overflow-hidden'> {detail}</div>
-                                        <hr className='mb-2 ' />
-                                        <div className="flex flex-wrap gap-2 justify-center items-center">
-                                            {video && <a className="max-w-sm md:mx-auto flex justify-center items-center gap-3 w-20 text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
+                                        <hr className='' />
+                                        <div className="flex flex-wrap justify-center items-center gap-8 mb-3">
+                                            {video && <a className="flex justify-center items-center gap-3  text-white text-center rounded-full bg-black p-3 px-6 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
                                             <div className="flex justify-center items-center ">
-                                                <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="w-20  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                                <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="  text-white text-center rounded-3xl bg-black p-3 px-6 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 ">อ่านต่อ</a>
                                             </div>
                                         </div>
                                     </div>
