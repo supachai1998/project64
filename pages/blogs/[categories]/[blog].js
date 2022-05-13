@@ -102,7 +102,7 @@ export default function Index(props) {
     <div className="flex flex-col min-h-screen ">
       <div className="text-center w-full ">
         {/* Custom image */}
-        <div className='flex flex-col justify-center items-center gap-4'>
+        <div className='flex flex-col justify-center items-center gap-6'>
           {/* {console.log(data?.approve)} */}
 
           <div className="sm:w-7/12 w-full sm:h-96 h-60 relative">

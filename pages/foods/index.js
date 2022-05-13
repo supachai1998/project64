@@ -35,7 +35,7 @@ export default function Index() {
                 <div className="my-5">
                     <CusInput only="food" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
                 </div>
-                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-6'>
+                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-8'>
                     {_data.map(({
                         id,
                         name_th,

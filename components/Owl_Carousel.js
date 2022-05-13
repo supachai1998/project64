@@ -1,6 +1,6 @@
 
 import { FrownOutlined, MehOutlined, SmileOutlined } from '@ant-design/icons';
-
+import React from 'react'
 import router from 'next/router';
 import dynamic from 'next/dynamic'
 const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
@@ -50,7 +50,12 @@ const customIcons = {
 };
 
 export default function Owl_Carousel({ title, link,noheader=false, info_top, info_down, children, margin }) {
-  if (!window){ return null}
+  const [stateTitle , setStateTitle ] = React.useState()
+  // if (!window){ return null}
+  console.log(title)
+  React.useEffect(()=>{
+
+  },[])
   return (
     <div
       className='md:w-full pl-3 pr-4 sm:px-0 md:mx-2 '

@@ -1078,7 +1078,7 @@ const ModalManageType = () => {
                 form={form}
                 // initialValues={{}}
                 destroyOnClose={true}
-                labelCol={{ span: 6 }}
+                labelCol={{ span: 8 }}
                 wrapperCol={{ span: 18 }}
                 onFinish={onSubmit}
                 onFinishFailed={onFinishFailed}>

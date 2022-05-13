@@ -30,7 +30,7 @@ export default function ContentHeader({ headerData, url_yt }) {
             </div>
             {headerData.map(({ title, content }, index) => (
                 <div key={index} className="w-full grid grid-cols-1" ref={el => dataRef.current[index] = el}>
-                    <div className={`pl-1 text-xl font-thin border-l-2 border-green-600 lg:text-4xl mb-2 ${index !== 0 && "mt-4"}`}>{title}</div>
+                    <div className={`pl-1 text-xl font-thin border-l-2 border-green-600 lg:text-4xl mb-4 ${index !== 0 && "mt-8"}`}>{title}</div>
                     {title !== "อ้างอิง" ? <div className={index % 2 === 0
                         ? "pl-1 sm:mx-5  sm:text-sm whitespace-pre-line text-md "
                         : "pl-1 sm:mx-5 sm:h-full sm:text-sm whitespace-pre-line text-md"} >

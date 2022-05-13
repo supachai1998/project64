@@ -215,12 +215,13 @@ export default function Index() {
     const onTypeChange = (val) => {
         val !== 1 && setType(val)
     }
-    return <div className='min-h-screen sm:-m-2 py-10 px-1 bg-white'>
+    const add = 1
+    return <div className='min-h-screen p-6 bg-white w-10/12 mx-auto rounded-xl'>
         {/* {console.log(form.getFieldValue())} */}
         <Form
             form={form}
             // initialValues={{}}
-            labelCol={{ sm: { span: 8 }, md: { span: 6 }, lg: { span: 4 }, xl: { span: 3 } }}
+            labelCol={{ sm: { span: 8+add }, md: { span: 6+add }, lg: { span: 4+add }, xl: { span: 3+add } }}
             onFinish={onSubmit}
             onFinishFailed={onFinishFailed}
             scrollToFirstError={true}
@@ -229,6 +230,7 @@ export default function Index() {
                 name="type"
                 labelAlign="left"
                 label="ประเภทความสัมพันธ์"
+                labelCol={{ sm: { span: 10+add }, md: { span: 8+add }, lg: { span: 6+add }, xl: { span: 3+add } }}
                 rules={[{ required: true, message: 'กรุณาเลือกประเภทความสัมพันธ์' }]}>
                 <Select
                     showSearch
@@ -245,7 +247,7 @@ export default function Index() {
                 {(form.getFieldValue("type") === "NCDS" || form.getFieldValue("type") === "ALL") && <Form.Item
                     name="ncdsId"
                     label="เลือกโรค"
-                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelCol={{ sm:{span: 8+add ,offset: 3+add} , md:{span: 6+add, offset: 3+add} , lg:{span: 5+add, offset: 3+add},xl:{span: 3+add, offset: 3+add} }}
                     labelAlign="left"
                     initialValue={edit?.related?.filter(({ ncdsId }) => ncdsId).map(({ id, ncdsId }) => ncdsId)}
                     rules={[{ required: true }]}>
@@ -258,7 +260,7 @@ export default function Index() {
                 {(form.getFieldValue("type") === "FOOD" || form.getFieldValue("type") === "ALL") && <Form.Item
                     name="foodId"
                     label="เลือกรายการอาหาร"
-                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelCol={{ sm:{span: 8+add ,offset: 3+add} , md:{span: 6+add, offset: 3+add} , lg:{span: 5+add, offset: 3+add},xl:{span: 3+add, offset: 3+add} }}
                     labelAlign="left"
                     initialValue={edit?.related?.filter(({ foodId }) => foodId).map(({ foodId }) => foodId)}
                     rules={[{ required: true }]}>
@@ -271,7 +273,7 @@ export default function Index() {
                 {(type === "NCDS" || type === "ALL") && <Form.Item
                     name="ncdsId"
                     label="เลือกโรค"
-                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelCol={{ sm:{span: 8+add ,offset: 3+add} , md:{span: 6+add, offset: 3+add} , lg:{span: 5+add, offset: 3+add},xl:{span: 3+add, offset: 3+add} }}
                     labelAlign="left"
                     rules={[{ required: true }]}>
                     <Select mode="multiple"
@@ -282,7 +284,7 @@ export default function Index() {
                 </Form.Item>}
                 {(type === "FOOD" || type === "ALL") && <Form.Item
                     name="foodId"
-                    labelCol={{ sm:{span: 8 ,offset: 3} , md:{span: 6, offset: 3} , lg:{span: 5, offset: 3},xl:{span: 3, offset: 3} }}
+                    labelCol={{ sm:{span: 8+add ,offset: 3+add} , md:{span: 6+add, offset: 3+add} , lg:{span: 5+add, offset: 3+add},xl:{span: 3+add, offset: 3+add} }}
                     labelAlign="left"
                     label="เลือกรายการอาหาร"
                     rules={[{ required: true }]}>

@@ -58,7 +58,8 @@ export default async function handler(req, res) {
                             data_fetch = await prisma.blogs.findMany({
                                 where: {
                                     name: { contains: txt },
-                                    ...(categories && { type: categories.toUpperCase() })
+                                    ...(categories && { type: categories.toUpperCase() }),
+                                    approve : 1,
                                 },
 
                                 include: {

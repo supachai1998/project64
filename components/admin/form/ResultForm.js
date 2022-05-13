@@ -15,6 +15,7 @@ const ellipsis = {
 const { Step } = Steps;
 const ResultFormContext = createContext()
 const riskArr = ["เสี่ยงต่ำมาก", "เสี่ยงต่ำ", "เสี่ยงปานกลาง", "เสี่ยงสูง", "เสี่ยงสูงมาก"]
+const addLabelCol = 5
 import { ContextForm } from '/pages/admin/form.js'
 export default function ResultForm() {
     const [modalAdd, setModalAdd] = useState(false)
@@ -593,7 +594,7 @@ const ModalView = () => {
     >
         <Form
             form={form}
-            labelCol={{ span: 3 }}
+            labelCol={{ span: 3+addLabelCol }}
             // onValuesChange={v=>console.log(v)}
             labelWrap={true}
             labelAlign="left"
@@ -618,7 +619,7 @@ const ModalView = () => {
                             >
 
                                 <Form.Item
-                                    labelCol={{ span: 5 }}
+                                    labelCol={{ span: 5+addLabelCol }}
                                     label={<>ระดับความเสี่ยง </>}
                                     name={[field.name, 'title']}
                                     fieldKey={[field.fieldKey, 'title']}
@@ -630,7 +631,7 @@ const ModalView = () => {
                                     <Form.Item
                                         // wrapperCol={14}
                                         label={`คะแนนเริ่มต้น`}
-                                        labelCol={{ span: 14 }}
+                                        labelCol={{ span: 14+addLabelCol }}
                                         name={[field.name, 'start']}
                                         fieldKey={[field.fieldKey, 'start']}
                                         rules={[{ required: true }]}
@@ -640,7 +641,7 @@ const ModalView = () => {
                                     <Form.Item
                                         // wrapperCol={14}
                                         label={`คะแนนสิ้นสุด`}
-                                        labelCol={{ span: 14 }}
+                                        labelCol={{ span: 14+addLabelCol }}
                                         name={[field.name, 'end']}
                                         fieldKey={[field.fieldKey, 'end']}
                                         rules={[{ required: true }]}
@@ -650,7 +651,7 @@ const ModalView = () => {
                                 </div>
                                 <Form.Item
                                     label={`คำแนะนำ`}
-                                    labelCol={{ span: 5 }}
+                                    labelCol={{ span: 5+addLabelCol }}
                                     name={[field.name, 'recommend']}
                                     fieldKey={[field.fieldKey, 'recommend']}
                                     rules={[{ required: true }]}

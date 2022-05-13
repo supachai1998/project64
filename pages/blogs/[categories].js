@@ -21,7 +21,7 @@ export default function Index(props) {
 
 
   return (
-    <div className="flex flex-col min-h-screen ">
+    <div className="flex flex-col min-h-screen h-full">
       <div className=''>
         
         {

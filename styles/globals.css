@@ -12,6 +12,11 @@
   }
   /* ... */
 }
+/* @media (-webkit-device-pixel-ratio: 1.25) {
+  * {
+    zoom: 1.005;
+  }
+} */
 
 /* ใช้กับแนะนำ/ไม่แนะนำอาหารกับโรคไม่ติดต่อ */
 
@@ -188,11 +193,14 @@
 * {
   font-family: 'Kanit', sans-serif;
   /* font-family: 'Poppins', sans-serif; */
+  -moz-text-size-adjust: 0.58;
+  -webkit-text-size-adjust: 0.58;
+  text-size-adjust: 0.58;
+  font-size-adjust: 0.58;
+  line-height: 2rem!important;
+  box-sizing: border-box;
+}
 
-}
-.inside_body > * {
-  @apply sm:text-base text-sm
-}
 .h-fix73{
   height: 73vh !important;
 }
@@ -229,16 +237,34 @@ a:link,a:visited  {
 }
 
 /* custom curve ant design button */
-.ant-btn{
+.ant-btn,.ant-btn > *{
   border-radius: 8px!important;
-  @apply flex items-center justify-center my-auto  !important
+  /* padding: 1rem 1rem; */
+  @apply flex items-center justify-center  h-full !important
+  /* @apply w-full h-full */
+}
+.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child > * > * {
+  @apply w-10 h-10 text-xl text-blue-900 !important
+}
+.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child .ant-input-search-button{
+  @apply bg-transparent border-0 shadow-none rounded-full
 }
 
+.ant-input-group-addon{
+  @apply bg-transparent
+}
 .ant-btn > *  {
 
   position: relative;
   bottom:3px;
   /* @apply mb-auto */
+}
+.ant-btn > .anticon{
+  bottom: 0 !important;
+  margin: 0!important;
+}
+.ant-input-group-addon > *{
+  @apply w-9 h-9
 }
 .ant-btn > .anticon {
   position: relative;
@@ -291,13 +317,18 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
+
+
+.ant-upload ,.upload-list-inline,.ant-upload-list-item {
+  @apply w-full !important ;
+}
+.anticon .anticon-upload{
+  width: none !important;
+  height: none !important;
+  @apply relative !important;
 }
 
-.ant-upload ,.ant-upload-select, .ant-upload-select-text,.upload-list-inline,.ant-upload-list-item {
-  @apply w-full !important;
-}
+
 .upload-list-inline .ant-upload-list-item {
   float: left;
   width: '100%';
@@ -329,17 +360,17 @@ a {
 ::-webkit-scrollbar-track-piece {
   background: #000; 
 }
-
-
-
-
-
+/* custom curve ant design input */
 .ant-select .ant-select-selector{
   border-radius: 10px !important;
-  @apply mt-1
+  @apply  flex justify-center items-center py-1
 }
-
-/* custom curve ant design input */
+.ant-select-selection-overflow-item{
+  border-radius: 10px !important;
+}
+.ant-select-multiple .ant-select-selection-item{
+  @apply h-full py-1
+}
 .ant-form-item-control-input-content .ant-form-item-control-input  .ant-input-number-input  .ant-input-number .ant-form-item-control-input .ant-input{
   border-radius: 10px !important;
   @apply rounded-md  !important;
@@ -361,7 +392,8 @@ a {
 .card-header{
   @extend  .ease-anima;
   @extend  .title-article;
-  @apply text-xl  md:text-2xl lg:text-3xl pb-0 truncate mb-2 hover:text-gray-800 ;
+  
+  @apply text-xl  md:text-2xl lg:text-3xl py-2 truncate mb-2 hover:text-gray-800  ;
 }
 
 .ant-select-dropdown{
@@ -423,9 +455,7 @@ a {
 .ant-modal-confirm-btns {
   @apply w-full h-full flex justify-end !important
 }
-.whitespace-pre-line , .whitespace-pre-wrap {
-  line-height: 1.6rem!important;
-}
+
 .ease {
   @apply transition-all ease-in duration-500 transform !important
 }
@@ -465,4 +495,33 @@ a {
   top: 0;
   left: 0;
   z-index: 2;
+}
+
+.text-3-line{
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.text-2-line{
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-1-line{
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ant-menu.ant-menu-inline-collapsed > .ant-menu-item, .ant-menu.ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-item, .ant-menu.ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-submenu > .ant-menu-submenu-title, .ant-menu.ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title{
+  padding: auto;
+  margin-left: auto;
+  margin-right: auto;
 }

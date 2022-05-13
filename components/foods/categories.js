@@ -46,7 +46,7 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
             </div>
             {/* const __ = _.map(_data => { return { id: _data.id, title: _data.name_th, detail: _data.calories, imgUrl: _data.image[0].name || null } })
                         setData(__) */}
-            <div className="gap-1  lg:grid-cols-4 sm:grid sm:grid-cols-2" >
+            <div className="gap-5  lg:grid-cols-4 sm:grid sm:grid-cols-2" >
                 {_data && _data.map(({ id, title, detail, imgUrl , name_th,name_en , calories , image }, index) => (
                     <div key={index} className='card  p-0  sm:mx-2 lg:mx-5 mt-3'>
                         <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />

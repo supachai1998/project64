@@ -107,7 +107,7 @@ const Suggess_true = ({ data, showModal }) => {
                                         <div className='text-green-500 text-2xl '>
                                             แนะนำ
                                         </div>
-                                        <div className='max-h-20 overflow-hidden'> {detail}</div>
+                                        <div className='text-3-line h-24'> {detail}</div>
                                         <hr className='' />
                                         <div className="flex flex-wrap justify-center items-center gap-8 mb-3">
                                             {video && <a className="flex justify-center items-center gap-3 px-6  text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
@@ -162,9 +162,9 @@ const Suggess_false = ({ data, showModal }) => {
                                         <div className='text-red-500 text-2xl '>
                                             ไม่แนะนำ
                                         </div>
-                                        <div className='max-h-20 overflow-hidden'> {detail}</div>
+                                        <div className='text-3-line h-24'> {detail}</div>
                                         <hr className='' />
-                                        <div className="flex flex-wrap justify-center items-center gap-8 mb-3">
+                                        <div className="flex flex-wrap justify-center items-center gap-10 mb-3">
                                             {video && <a className="flex justify-center items-center gap-3  text-white text-center rounded-full bg-black p-3 px-6 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
                                             <div className="flex justify-center items-center ">
                                                 <a onClick={() => { router.push(`/ncds/${ncds?.id}`) }} className="  text-white text-center rounded-3xl bg-black p-3 px-6 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 ">อ่านต่อ</a>

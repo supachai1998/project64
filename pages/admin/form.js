@@ -1323,7 +1323,7 @@ const Chart = ({ NCDS,
     // const ncds_data = data.ncds.map(({ name, count }) => ({ name, value: count }))
     return (
         <div className="flex gap-3 flex-wrap justify-center bg-gray-900 py-20 mb-5 rounded-sm">
-            {_formGroupBy?.map((v, ind) => <div key={ind} className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">จำนวนคำถาม{v.name_th}</p><Doughnut data={{
+            {_formGroupBy?.map((v, ind) => <div key={ind} className="h-80 w-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">จำนวนคำถาม{v.name_th}</p><Doughnut data={{
                 labels: v.data.map(({ title }) => title),
                 datasets: [{
                     data: v.data.map(({ subForm }) => subForm.length),
@@ -1332,7 +1332,7 @@ const Chart = ({ NCDS,
                 }],
             }} />
             </div>)}
-            <div className="w-72 h-72 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คะแนนทั้งหมด</p><Doughnut data={{
+            <div className="w-72 h-80 bg-blue-50 p-7 rounded-md flex flex-col justify-center"><p className="text-xs text-center text-gray-800">คะแนนทั้งหมด</p><Doughnut data={{
                 labels: _formGroupBy.map(({ name_th }) => name_th),
                 datasets: [{
                     //  data =>_formGroupBy => subForm => choice => score

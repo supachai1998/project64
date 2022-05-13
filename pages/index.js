@@ -18,11 +18,12 @@ export default function Index() {
   const [data, setData] = useState()
   const [loading, setLoading] = useState(false)
   const [pageSelect, setPageSelect] = useState(0)
+  const [input, setInput] = useState(null)
   // Fetch First Time
   // if(!data) return null
   
+  const { home } = router.query
   useEffect(() => {
-    const { home } = router.query
     if (home === "recommends") {
       setPageSelect(1)
       setTitle("อาหารและบทความยอดนิยม")
@@ -32,7 +33,8 @@ export default function Index() {
       setTitle(project_name)
       setDefaultSelectedKeys('/')
     }
-  }, [router?.query])
+    console.log(pageSelect)
+  }, [home])
   return (
     <div className="flex flex-col w-full h-full min-h-screen gap-3  sm:mx-auto mx-0"
       initial="hidden"
@@ -53,8 +55,8 @@ export default function Index() {
           {pageSelect === 1 && <>
             {/* <hr /> */}
             {/* <h1 className="ml-10 text-blue-900 text-2xl lg:text-4xl underline mb-6">อาหารและบทความ</h1> */}
-            <CusInput data={data} setData={setData} loading={loading} setLoading={setLoading} />
-            <MultiCard loading={loading} data={data} setData={setData} title={"ผลการค้นหา"} />
+            <CusInput data={data} setData={setData} loading={loading} setLoading={setLoading} input={input} setInput={setInput} />
+            <MultiCard loading={loading} data={data} setData={setData}  title={"ผลการค้นหา "+input} />
           </>}
         </div>
         {/* {loading && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>} */}

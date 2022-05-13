@@ -18,7 +18,7 @@ export default function MultiCard({ loading, data,setData, title }) {
     return (
         <Owl_Carousel
             title={title}
-            info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {data.length} รายการ <Tooltip title="ยกเลิก"><CloseCircleOutlined className="text-red-500" onClick={handleCancle}/></Tooltip></div>}
+            info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {data.length} รายการ </div>}
             info_down={`อ่านทั้งหมด`}
         >
             <>
@@ -40,18 +40,18 @@ export default function MultiCard({ loading, data,setData, title }) {
                         {foodTypeId && <div
                             key={id + index +name_th}
                             className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
-                            <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={200} preview={false} />
+                            <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
                             <div className='mx-5 mb-2 lg:mb-10 my-5'>
                                 <div className=" flex-col text-center mb-0">
                                     <p className="card-header pt-3"> {name_th}</p>
                                     <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500"> {name_en}</p>
                                 </div>
-                                <div className='text-center leading-none text-2xl  my-10'>
+                                <div className='text-center leading-none text-2xl h-24 my-10'>
 
                                     <p className='mb-0 font-bold'>{calories}</p>
-                                    <p className='text-sm sm:text-xl text-gray-500'>กิโลแคลอรี่</p>
+                                    <p className='text-sm sm:text-xl text-gray-500 '>กิโลแคลอรี่</p>
                                 </div>
-                                <hr className='mb-3' />
+                                <hr className='mt-2' />
                                 <div className='flex justify-center justify-items-center pb-3 '>
                                     <a onClick={() => router.push(`/foods/${foodTypeId}/${id}`)} className='w-32 my-5 mx-auto text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50'>อ่านต่อ</a>
                                 </div>
@@ -59,11 +59,11 @@ export default function MultiCard({ loading, data,setData, title }) {
                             </div>
                         </div>}
 
-                        {approve && <div
+                        {approve === 1 && <div
                             key={id + index + Math.random()}
                             className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                             <div className="relative w-full" >
-                                {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height="200px" preview={false} />}
+                                {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height={250} preview={false} />}
                                 {/* {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>} */}
                                 {calories && <Tooltip title="ปริมาณแคลอรี่"><p className="absolute bottom-0 left-0 p-2 text-xs text-left bg-opacity-60 bg-gray-50 sm:text-sm rounded-xl">{calories} KgCal</p></Tooltip>}
                             </div>
@@ -81,10 +81,10 @@ export default function MultiCard({ loading, data,setData, title }) {
                                             <span className="text-gray-900 font-bold text-lg leading-none">{total_vote}</span>
                                         </div>
                                     </div>
-                                    <p className=" mt-1 sm:mx-5 break-words overflow-hidden text-lg md:text-md h-20">{imply}...</p>
-                                    <hr className='mb-2 ' />
+                                    <p className=" mt-1 sm:mx-5  text-lg md:text-md h-24 text-2-line">{imply}...</p>
+                                    <hr className='mt-2 ' />
                                     <div className="flex justify-center ">
-                                        <a onClick={() => { router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 m-5 ">อ่านต่อ</a>
+                                        <a onClick={() => { router.push(`/blogs/${type.toLowerCase()}/${id}`) }} className="w-32  text-white text-center rounded-3xl bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50 mb-4 mt-4 ">อ่านต่อ</a>
                                     </div>
                                 </div>
 

@@ -14,11 +14,11 @@ const { Option } = AutoComplete;
 const { Search } = Input
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-export default function CusInput({ setData, loading, setLoading, store = [], only = "", _api }) {
+export default function CusInput({ setData,input, setInput, loading, setLoading, store = [], only = "", _api }) {
   const router = useRouter()
   const refSearchInput = useRef()
   const [statusWebCam, setStatusWebCam] = useState(false)
-  const [input, setInput] = useState(null)
+  // const [input, setInput] = useState(null)
   const [isSearch, setIsSearch] = useState(false)
   const [machineLearningStatus, setMachineLearningStatus] = useState(false)
 
@@ -31,7 +31,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
   }, [])
 
   const handleSearch = async () => {
-    setIsSearch(true)
+    
     const asPath = router.asPath.split("/")
     let api = `/api/superSearch?${only ? `&only=${only}` : "&only=ALL"}`
     if (asPath[1]) api += `&type=${asPath[1]}`
@@ -39,8 +39,10 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
     if (asPath[3]) api += `&self=${asPath[3]}`
     const val = input || refSearchInput.current?.state?.value
     if (!!val && val.length > 2) {
+      setIsSearch(true)
       setLoading(true)
       api += `&txt=${val}`
+      if(setInput) setInput(val)
       if (_api) api = _api += `&name=${val}`
       const query_data = await fetch(api).then(res => res.ok && res.json())
       if (!query_data) notification.error({ message: "ไม่พบข้อมูล" })
@@ -51,9 +53,10 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
       const typeTime = setTimeout(() => {
         if (store?.length > 0) setData(store)
         else setData([])
+        if(setInput) setInput()
       }, 1000);
       clearTimeout(typeTime)
-
+      refSearchInput.current.focus()
     }
 
 
@@ -65,7 +68,7 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
     return () => {
       if (store?.length > 0) setData(store)
       else setData([])
-      setInput()
+      if(setInput) setInput()
     }
   }, [input,])
 
@@ -75,12 +78,14 @@ export default function CusInput({ setData, loading, setLoading, store = [], onl
     if (!!val && val.length <= 1) {
       if (store?.length > 0) setData(store)
       else setData([])
+      if(setInput) setInput()
     }
   }
   const handleClear = (() => {
     if (store?.length > 0) setData(store)
     else setData([])
     setIsSearch(false)
+    if(setInput) setInput()
   })
   return (
     <div className="grid w-full rounded-xl ">

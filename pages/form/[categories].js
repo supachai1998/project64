@@ -188,7 +188,7 @@ export default function Index() {
                                         {sub.choice.map(({ id, name, detail, select }, i) => <div key={i} className="my-1">
                                             <Radio className={`hover:bg-gray-50 ease-anima p-3 rounded-md w-full ${select && "bg-gray-100"}`} value={id}><div>
                                                 <span className='text-md'>{name}</span>
-                                                <span className="text-sm ml-3 text-gray-800 whitespace-pre-wrap">({detail})</span>
+                                                {!!detail &&<span className="text-sm ml-3 text-gray-800 whitespace-pre-wrap">({detail})</span>}
                                             </div>
                                             </Radio>
                                         </div>)}
@@ -210,9 +210,9 @@ export default function Index() {
                         </Button>
                     )}
                     {(curIndPart === datas.length - 1) && (
-                        <Button type="primary" onClick={sendForm}>
+                        <button className=' button bg-blue-200 shadow-md hover:bg-blue-400' onClick={sendForm}>
                             ส่งแบบประเมิน
-                        </Button>
+                        </button>
                     )}
                 </div>
             </div>
