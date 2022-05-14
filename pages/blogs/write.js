@@ -291,7 +291,7 @@ export default function Index() {
                     <Select mode="multiple"
                         loading={foodLoading}
                         filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                        {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                        {!!foodType && foodType.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                     </Select>
                 </Form.Item>}
                 </>}
