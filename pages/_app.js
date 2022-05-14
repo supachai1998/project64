@@ -6,11 +6,11 @@ import 'owl.carousel/dist/assets/owl.carousel.css';
 import "owl.carousel/dist/assets/owl.theme.default.css";
 
 import thTh from 'antd/lib/locale/th_TH';
-import React, { useState, useEffect, createContext, useContext } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import { SessionProvider, useSession, signOut } from "next-auth/react"
 import { useRouter, } from 'next/router'
 import Head from 'next/head'
-import { Layout, Menu, Tooltip, Button, ConfigProvider, notification, Drawer } from 'antd';
+import { Layout, Menu,  ConfigProvider, notification} from 'antd';
 import {
   MenuOutlined,
   AppleOutlined,
@@ -171,7 +171,7 @@ const NavBar = ({ blogs, form, ncds, reload, defaultSelectedKeys, router,setTitl
         scrollMargin: "0"
       }}
       onMouseLeave={() => toggle(true)}
-      trigger={null} collapsible breakpoint="lg" width={`20vw`} collapsedWidth={`3rem`} defaultCollapsed={collapsed} collapsed={collapsed}
+      trigger={null} collapsible breakpoint="lg" width="20rem" collapsedWidth={`3rem`} defaultCollapsed={collapsed} collapsed={collapsed}
     >
       <Menu theme="dark" mode="inline" triggerSubMenuAction={isMobile ? "click" : "hover"}
         defaultSelectedKeys={defaultSelectedKeys} selectedKeys={defaultSelectedKeys} onClick={handleMenuClick}
