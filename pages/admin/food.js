@@ -70,20 +70,20 @@ function Index() {
             title: <div className="table-txt" >แนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <span className="table-txt" key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <span className="table-txt" key={ind+v.suggess+v.ncds.name_th}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
         },
         {
             title: <div className="table-txt" >ไม่แนะนำ</div>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <span className="table-txt" key={v}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <span className="table-txt" key={ind+v.suggess+v.ncds.name_th}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
         },
         {
             title: <div className="table-txt" >จำนวนอ้างอิง</div>,
             dataIndex: 'ref',
             key: 'ref',
             width: "5%",
-            render: val => <>{val.map((v, ind) => <span key={v} className="table-txt " >{ind + 1}. {v.url}</span>)}</>
+            render: val => <>{val.map((v, ind) => <span key={v.url} className="table-txt " >{ind + 1}. {v.url}</span>)}</>
         },
     ];
 
@@ -499,7 +499,7 @@ const ModalAdd = () => {
                                 {...fields}
                                 noStyle
                                 shouldUpdate
-                                key={field.key}
+                                key={'food'+field.key+ind}
                                 required
                             >
 
@@ -508,6 +508,7 @@ const ModalAdd = () => {
                                     {...field}
                                     labelCol={{ span: 0 }}
                                     label={""}
+                                    key={'food head'+field.key+ind}
                                     rules={[{ required: true }]}
                                 >
                                     {ind !== 0 && <hr />}
@@ -830,6 +831,7 @@ const ModalEdit = () => {
                                     {...field}
                                     labelCol={{ span: 0 }}
                                     label={""}
+                                    key={'food head'+field.key+ind}
                                     rules={[{ required: true }]}
                                 >
                                     {ind !== 0 && <hr />}

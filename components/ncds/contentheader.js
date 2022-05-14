@@ -22,8 +22,8 @@ export default function ContentHeader({ headerData, url_yt }) {
                 {headerData.map(({ title, content }, index) =>
                     <button key={index}
                         className={ind === index ?
-                            "text-black hover:text-black rounded-md border-black border-2 mx-1 p-2  mb-2" :
-                            "text-gray-500 hover:text-gray-500 rounded-md border-gray-300 border-2 mx-1 p-2  mb-2"}
+                            "text-black hover:text-black text-base rounded-md border-black border-2 mx-1 p-2  mb-2" :
+                            "text-gray-500 hover:text-gray-500 text-base rounded-md border-gray-300 border-2 mx-1 p-2  mb-2"}
                         onClick={() => menu_click(index)}
                     >{title}</button>
                 )}
@@ -32,8 +32,8 @@ export default function ContentHeader({ headerData, url_yt }) {
                 <div key={index} className="w-full grid grid-cols-1" ref={el => dataRef.current[index] = el}>
                     <div className={`pl-1 text-xl font-thin border-l-2 border-green-600 lg:text-4xl mb-4 ${index !== 0 && "mt-8"}`}>{title}</div>
                     {title !== "อ้างอิง" ? <div className={index % 2 === 0
-                        ? "pl-1 sm:mx-5  sm:text-sm whitespace-pre-line text-md "
-                        : "pl-1 sm:mx-5 sm:h-full sm:text-sm whitespace-pre-line text-md"} >
+                        ? "pl-1 sm:mx-5  sm:text-md  whitespace-pre-line "
+                        : "pl-1 sm:mx-5 sm:h-full sm:text-md whitespace-pre-line "} >
                         {content}
                     </div> :
                         content.map(({ url }, ind) => <div key={url} className="sm:pl-5 pl-1 w-full overflow-hidden">

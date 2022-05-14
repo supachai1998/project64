@@ -799,7 +799,7 @@ const ModalEdit = () => {
         //     setFileListSubBlogs(modalEdit?.subBlog?.map(({ image }) => image) || [])
         // }
         form.setFieldsValue(modalEdit);
-        console.log(modalEdit)
+        // console.log(modalEdit)
         return () => {
             form.resetFields()
             setFileList([])
@@ -1019,6 +1019,7 @@ const ModalEdit = () => {
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         <Divider />
+                        {/* {console.log(fields)} */}
                         {!!fields && fields.map((field, ind) => (
                             <Form.Item
                                 {...fields}
@@ -1035,7 +1036,12 @@ const ModalEdit = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                            <Button_Delete className="text-gray-800" fx={() => { remove(field.name); setFileListSubBlogs(prev => prev.filter((v, i) => i !== ind)) }} />{`หัวข้อย่อยที่ ${ind + 1}`}
+                                            <Button_Delete className="text-gray-800" fx={() => {
+                                                setFileListSubBlogs(prev => prev.filter((v, i) => i !== field.name));
+                                                // console.log(form.getFieldValue("subBlog")[field.name]); 
+                                                remove(field.name);  
+                                                }} />
+                                            {`หัวข้อย่อยที่ ${ind + 1}`}
                                         </div>
                                     </>
                                 </Form.Item>
@@ -1068,7 +1074,7 @@ const ModalEdit = () => {
                                 {/* {console.log(form.getFieldValue("subBlog")[ind]?.image)} */}
                                 <Form.Item
                                     {...field}
-                                    key={`image ${ind}`}
+                                    key={`sub image ${ind}`}
                                     name={[field.name, 'image']}
                                     labelCol={{ span: 2, offset: 3 }}
                                     fieldKey={[field.fieldKey, 'image']}

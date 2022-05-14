@@ -63,7 +63,7 @@ export default function BestFood({ title }) {
                             <div className=" flex-col text-center mb-0">
                                 <p className="card-header pt-3"> {name_th}</p>
                                 <hr className='my-3 mx-20 border-b border-blue-900' />
-                                <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500 capitalize "> {name_en}</p>
+                                <p className=" text-base sm:text-md pb-0 truncate text-gray-500 capitalize "> {name_en}</p>
                             </div>
                             <div className='text-center leading-none text-2xl '>
                                 <p className='mb-0 font-bold'>{calories}</p>

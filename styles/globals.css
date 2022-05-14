@@ -3,6 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 @import '~antd/dist/antd.css';
+
 @layer components {
   .card {
     background-color: theme('colors.white');
@@ -10,8 +11,10 @@
     padding: theme('spacing.6');
     box-shadow: theme('boxShadow.xl');
   }
+
   /* ... */
 }
+
 /* @media (-webkit-device-pixel-ratio: 1.25) {
   * {
     zoom: 1.005;
@@ -21,68 +24,80 @@
 /* ใช้กับแนะนำ/ไม่แนะนำอาหารกับโรคไม่ติดต่อ */
 
 .card-suggession {
-  @apply mx-3 my-3 rounded-xl bg-gray-50 grid-cols-4  shadow-md
+  @apply mx-3 my-3 rounded-xl bg-gray-50 grid-cols-4 shadow-md
 }
+
 .card-suggession-image {
   @apply w-full h-96 md:w-full !important
 }
+
 .card-suggestion-header-content {
-  @apply flex flex-col w-full h-5/6 gap-3 px-5  text-center mt-5
+  @apply flex flex-col w-full h-5/6 gap-3 px-5 text-center mt-5
 }
+
 /* -------------- */
 
-.font-Poppins{
+.font-Poppins {
   font-family: 'Kanit', sans-serif;
   /* font-family: 'Poppins', sans-serif; */
 }
-.owl-item .ant-image-img{
+
+.owl-item .ant-image-img {
   box-shadow: inset -4px -4px 4px rgba(0, 0, 0, 0.2), inset 0px 4px 4px rgba(0, 0, 0, 0.2);
   /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
 }
 
-.item{
+.item {
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   margin: 4px;
   margin-bottom: 10px;
 }
-.ant-image-preview-img{
+
+.ant-image-preview-img {
   display: inline-flex !important;
 }
-.food-content-body{
+
+.food-content-body {
   text-overflow: ellipsis;
-  @apply w-full h-full pl-4 sm:text-lg  whitespace-pre-line truncate break-words  text-left
+  @apply w-full h-full pl-4 sm:text-lg whitespace-pre-line truncate break-words text-left
 }
-.food-content-header{
-  @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left  lg:text-3xl my-5 tracking-tighter
+
+.food-content-header {
+  @apply border-l-2 border-green-700 pl-3 text-2xl font-thin text-left lg:text-3xl my-5 tracking-tighter
 }
-@media only screen and (max-width: 1256px){
-  .ant-steps{
-    display:flex !important;
+
+@media only screen and (max-width: 1256px) {
+  .ant-steps {
+    display: flex !important;
     flex-direction: column !important;
     margin: 10px;
     padding-left: 16px;
     width: 100%;
   }
-  .ant-steps-item-container{
-    
+
+  .ant-steps-item-container {
+
     padding-bottom: 16px;
   }
-  .ant-steps-item-active{
+
+  .ant-steps-item-active {
     padding-left: 16px !important;
   }
 }
 
 
-.mv-10{
+.mv-10 {
   top: -50px;
   position: relative;
 }
-.text-shadow{
+
+.text-shadow {
   text-shadow: 0px 15px 15px rgba(0, 0, 0, 0.75);
   /* font-family: Poppins; */
   font-style: normal;
   font-weight: normal;
 }
+
 /* thai */
 @font-face {
   font-family: 'Kanit';
@@ -91,6 +106,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZbdhMWJy.woff2) format('woff2');
   unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
 }
+
 /* vietnamese */
 @font-face {
   font-family: 'Kanit';
@@ -99,6 +115,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZaxhMWJy.woff2) format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
 }
+
 /* latin-ext */
 @font-face {
   font-family: 'Kanit';
@@ -107,6 +124,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZa1hMWJy.woff2) format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+
 /* latin */
 @font-face {
   font-family: 'Kanit';
@@ -115,6 +133,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKS-Go6G5tXcraQI6miZaNhMQ.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
 /* thai */
 @font-face {
   font-family: 'Kanit';
@@ -123,6 +142,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcraBGwCYdA.woff2) format('woff2');
   unicode-range: U+0E01-0E5B, U+200C-200D, U+25CC;
 }
+
 /* vietnamese */
 @font-face {
   font-family: 'Kanit';
@@ -131,6 +151,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcraaGwCYdA.woff2) format('woff2');
   unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
 }
+
 /* latin-ext */
 @font-face {
   font-family: 'Kanit';
@@ -139,6 +160,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcrabGwCYdA.woff2) format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+
 /* latin */
 @font-face {
   font-family: 'Kanit';
@@ -147,6 +169,7 @@
   src: url(https://fonts.gstatic.com/s/kanit/v7/nKKZ-Go6G5tXcraVGwA.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
 /* devanagari */
 @font-face {
   font-family: 'Poppins';
@@ -155,6 +178,7 @@
   src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJbecmNE.woff2) format('woff2');
   unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
 }
+
 /* latin-ext */
 @font-face {
   font-family: 'Poppins';
@@ -163,6 +187,7 @@
   src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJnecmNE.woff2) format('woff2');
   unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+
 /* latin */
 @font-face {
   font-family: 'Poppins';
@@ -171,10 +196,12 @@
   src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJfecg.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-.icon-arrow-prev,.icon-arrow-next{
+
+.icon-arrow-prev,
+.icon-arrow-next {
   font-size: 1.5rem;
   background-color: black;
-  color:white;
+  color: white;
   position: absolute;
   padding: 8px 8px;
   top: 50%;
@@ -182,106 +209,178 @@
   opacity: 0.5;
   /* width: 10px; */
 }
-.icon-arrow-prev{
+
+.icon-arrow-prev {
   left: -30px;
 }
-.icon-arrow-next{
+
+.icon-arrow-next {
   right: -30px;
 }
 
-/* custom font */
+
+
+@supports(-webkit-text-security: circle) {
+    * {
+    font-family: 'Kanit', sans-serif;
+    /* font-family: 'Poppins', sans-serif; */
+    -moz-text-size-adjust: 0.58;
+    -webkit-text-size-adjust: 0.58;
+    text-size-adjust: 0.58;
+    font-size-adjust: 0.58;
+    line-height: 2rem !important;
+    box-sizing: border-box;
+    
+    @apply text-md
+  }
+  .anticon{
+    @apply text-lg
+  }
+  * > .anticon{
+    @apply text-lg
+  }
+  /* .ant-menu-item {
+    @apply  flex justify-center items-center !important;
+  }
+  .anticon {
+   @apply  my-auto w-full h-full !important; 
+  }*/
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
+  * {
+    font-family: 'Kanit', sans-serif;
+    /* font-family: 'Poppins', sans-serif; */
+    -moz-text-size-adjust: 0.58 ;
+    -webkit-text-size-adjust: 0.58 ;
+    text-size-adjust: 0.58 ;
+    font-size-adjust: 0.58 ;
+    line-height: 2rem !important;
+    box-sizing: border-box;
+    /* @apply text-base sm:text-md */
+  }
+}
 * {
   font-family: 'Kanit', sans-serif;
   /* font-family: 'Poppins', sans-serif; */
-  -moz-text-size-adjust: 0.58;
-  -webkit-text-size-adjust: 0.58;
-  text-size-adjust: 0.58;
-  font-size-adjust: 0.58;
-  line-height: 2rem!important;
+  -moz-text-size-adjust: 0.54 ;
+  -webkit-text-size-adjust: 0.54 ;
+  text-size-adjust: 0.54 ;
+  font-size-adjust: 0.54 ;
+  line-height: 2rem !important;
   box-sizing: border-box;
+  /* @apply text-base sm:text-md */
 }
 
-.h-fix73{
+.ant-pagination-item  {
+  @apply flex justify-center items-center
+}
+.ant-pagination-item-link > *  {
+  @apply flex justify-center items-center
+}
+.ant-pagination {
+  @apply flex items-center
+}
+
+.h-fix73 {
   height: 73vh !important;
 }
+
 /* .title-article{
   border-bottom: 4px solid #4DA44D;
 } */
-.border-b-green{
+.border-b-green {
   border-bottom-color: #4DA44D;
 }
+
 .ease-anima {
   transition: 'all  ease-in-out';
-  @apply transform transition-transform  ease-in-out;
+  @apply transform transition-transform ease-in-out;
 }
 
 button {
-  @apply rounded-lg  py-1 px-3  transform duration-500 transition-all ease-in-out flex gap-2 flex-wrap justify-center items-center ;
+  @apply rounded-lg py-1 px-3 transform duration-500 transition-all ease-in-out flex gap-2 flex-wrap justify-center items-center;
 }
+
 .button-cus {
-  @apply rounded-lg  py-1 px-3 shadow-md  transform duration-500 transition-all ease-in-out flex gap-2 flex-wrap justify-center items-center ;
+  @apply rounded-lg py-1 px-3 shadow-md transform duration-500 transition-all ease-in-out flex gap-2 flex-wrap justify-center items-center;
 }
-.ant-typography ,
-.ant-typography-ellipsis ,
+
+.ant-typography,
+.ant-typography-ellipsis,
 .ant-tooltip-inner {
   @apply whitespace-pre-line overflow-hidden w-full
 }
+
 /* custom curve ant design input */
 
-.ant-input-number{
+.ant-input-number {
   @apply w-full !important
 }
 
-a:link,a:visited  {
+a:link,
+a:visited {
   @apply text-gray-900
 }
 
 /* custom curve ant design button */
-.ant-btn,.ant-btn > *{
-  border-radius: 8px!important;
+.ant-btn,
+.ant-btn>* {
+  border-radius: 8px !important;
   /* padding: 1rem 1rem; */
-  @apply flex items-center justify-center  h-full !important
+  @apply flex items-center justify-center h-full !important
   /* @apply w-full h-full */
 }
-.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child > * > * {
+
+.ant-input-search>.ant-input-group>.ant-input-group-addon:last-child>*>* {
   @apply w-10 h-10 text-xl text-blue-900 !important
 }
-.ant-input-search > .ant-input-group > .ant-input-group-addon:last-child .ant-input-search-button{
+
+.ant-input-search>.ant-input-group>.ant-input-group-addon:last-child .ant-input-search-button {
   @apply bg-transparent border-0 shadow-none rounded-full
 }
 
-.ant-input-group-addon{
+.ant-input-group-addon {
   @apply bg-transparent
 }
-.ant-btn > *  {
+
+.ant-btn>* {
 
   position: relative;
-  bottom:3px;
+  bottom: 3px;
   /* @apply mb-auto */
 }
-.ant-btn > .anticon{
+
+.ant-btn>.anticon {
   bottom: 0 !important;
-  margin: 0!important;
+  margin: 0 !important;
 }
-.ant-input-group-addon > *{
+
+.ant-input-group-addon>* {
   @apply w-9 h-9
 }
-.ant-btn > .anticon {
+
+.ant-btn>.anticon {
   position: relative;
-  bottom : auto;
+  bottom: auto;
   @apply mb-auto
 }
+
 .anticon-search {
   @apply flex justify-center items-center my-auto
 }
-.ant-input-group > .ant-input:first-child, .ant-input-group-addon:first-child {
-  border-right-width : 0px 
+
+.ant-input-group>.ant-input:first-child,
+.ant-input-group-addon:first-child {
+  border-right-width: 0px
 }
-.ant-input-number-input-wrap , .ant-form-item-control-input{
+
+.ant-input-number-input-wrap,
+.ant-form-item-control-input {
   @apply rounded-md !important;
 }
+
 /* custom fontsize header ant table */
-.ant-table-thead{
+.ant-table-thead {
   font-size: .9rem;
 }
 
@@ -291,12 +390,13 @@ a:link,a:visited  {
   border-radius: 10px !important;
   /* background-color: #7367f0; */
 }
+
 .ant-radio-inner:after {
   border: none !important;
 }
 
 /* custom title right to left */
-.ant-form-item-label > label {
+.ant-form-item-label>label {
   text-align: left !important;
   font-size: 0.875rem !important;
 }
@@ -319,10 +419,13 @@ a {
 
 
 
-.ant-upload ,.upload-list-inline,.ant-upload-list-item {
-  @apply w-full !important ;
+.ant-upload,
+.upload-list-inline,
+.ant-upload-list-item {
+  @apply w-full !important;
 }
-.anticon .anticon-upload{
+
+.anticon .anticon-upload {
   width: none !important;
   height: none !important;
   @apply relative !important;
@@ -338,17 +441,21 @@ a {
 .upload-list-inline [class*='-upload-list-rtl'] .ant-upload-list-item {
   float: right;
 }
-.ant-form-item-label > label{
+
+.ant-form-item-label>label {
   @apply md:text-lg sm:text-base !important;
 }
-.ant-modal{
+
+.ant-modal {
   @media (min-width: 768px) {
-    width: 100% !important; 
+    width: 100% !important;
   }
 }
+
 .ant-modal-title {
   @apply md:text-lg sm:text-base font-bold
 }
+
 /* width */
 ::-webkit-scrollbar {
   width: 4px;
@@ -361,83 +468,96 @@ a {
   background: #000; 
 }
 /* custom curve ant design input */
-.ant-select .ant-select-selector{
+.ant-select .ant-select-selector {
   border-radius: 10px !important;
-  @apply  flex justify-center items-center py-1
+  @apply flex justify-center items-center py-1
 }
-.ant-select-selection-overflow-item{
+
+.ant-select-selection-overflow-item {
   border-radius: 10px !important;
 }
-.ant-select-multiple .ant-select-selection-item{
+
+.ant-select-multiple .ant-select-selection-item {
   @apply h-full py-1
 }
-.ant-form-item-control-input-content .ant-form-item-control-input  .ant-input-number-input  .ant-input-number .ant-form-item-control-input .ant-input{
+
+.ant-form-item-control-input-content .ant-form-item-control-input .ant-input-number-input .ant-input-number .ant-form-item-control-input .ant-input {
   border-radius: 10px !important;
-  @apply rounded-md  !important;
+  @apply rounded-md !important;
 }
 
 .ytp-cued-thumbnail-overlay .ytp-cued-thumbnail-overlay-image {
-  @apply rounded-lg  !important;
+  @apply rounded-lg !important;
 }
 
-.admin-bg{
+.admin-bg {
   background-image: url("https://th.jobsdb.com/th-th/wp-content/uploads/sites/3/2021/09/remote_content-2.png");
 }
 
 /* card */
-.card-header-top{
-  @apply mt-4 text-xl md:text-4xl mb-0 font-bold  transition transform w-full text-center;
+.card-header-top {
+  @apply mt-4 text-xl md:text-4xl mb-0 font-bold transition transform w-full text-center;
 }
 
-.card-header{
-  @extend  .ease-anima;
-  @extend  .title-article;
-  
-  @apply text-xl  md:text-2xl lg:text-3xl py-2 truncate mb-2 hover:text-gray-800  ;
+.card-header {
+  @extend .ease-anima;
+  @extend .title-article;
+
+  @apply text-xl md:text-2xl lg:text-3xl py-2 truncate mb-2 hover:text-gray-800;
 }
 
-.ant-select-dropdown{
+
+.ant-select-dropdown {
   z-index: 1000001 !important;
 }
 
-.input-disabled{
+.input-disabled {
   color: #000 !important;
 }
+
 /* card */
 
-.owl-prev{
-  @apply absolute top-1/2 left-2 
+.owl-prev {
+  @apply absolute top-1/2 left-2
 }
-.owl-next{
-  @apply absolute top-1/2 right-2 
+
+.owl-next {
+  @apply absolute top-1/2 right-2
 }
-.owl-prev.disabled{
+
+.owl-prev.disabled {
   @apply invisible
 }
-.owl-next.disabled{
+
+.owl-next.disabled {
   @apply invisible
 }
 
 /* search ที่เป็นปุ่มๆ */
-.search-div-top-1{
+.search-div-top-1 {
   @apply w-full flex justify-end;
 }
-.search-div-top-2{
+
+.search-div-top-2 {
   @apply flex lg:w-1/3;
 }
-.search-search{
+
+.search-search {
   /* .input .search .loading with enterButton; */
-  @apply lg:w-full   rounded-md;
+  @apply lg:w-full rounded-md;
 }
-.search-span{
+
+.search-span {
   @apply justify-center text-right text-sm;
 }
-.absolute-center{
+
+.absolute-center {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 /* search ที่เป็นปุ่มๆ */
 
 .ant-input-wrapper input {
@@ -452,6 +572,7 @@ a {
 .ant-table-title {
   @apply bg-gray-900 text-white
 }
+
 .ant-modal-confirm-btns {
   @apply w-full h-full flex justify-end !important
 }
@@ -461,26 +582,33 @@ a {
 }
 
 .button {
-  @apply rounded-lg py-1 px-2  
+  @apply rounded-lg py-1 px-2
 }
-.ant-form-item-explain-error{
+
+.ant-form-item-explain-error {
   text-align: center !important
 }
+
 .ant-notification {
   z-index: 9999999 !important;
 }
 
 
 /* ant color */
-.green-ghost-green{@apply border-green-500 hover:border-green-300 text-green-500 hover:text-green-400}
-.green{@apply bg-green-500 hover:bg-green-700}
-
-.no_overflow{
-  @apply overflow-ellipsis truncate 
+.green-ghost-green {
+  @apply border-green-500 hover:border-green-300 text-green-500 hover:text-green-400
 }
 
-.ytp-cued-thumbnail-overlay{
-  @apply rounded-lg  w-full !important;
+.green {
+  @apply bg-green-500 hover:bg-green-700
+}
+
+.no_overflow {
+  @apply overflow-ellipsis truncate
+}
+
+.ytp-cued-thumbnail-overlay {
+  @apply rounded-lg w-full !important;
 }
 
 .edit_button {
@@ -497,21 +625,23 @@ a {
   z-index: 2;
 }
 
-.text-5-line{
+.text-5-line {
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.text-3-line{
+
+.text-3-line {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.text-2-line{
+
+.text-2-line {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -519,14 +649,15 @@ a {
   text-overflow: ellipsis;
 }
 
-.text-1-line{
+.text-1-line {
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.table-txt{
+
+.table-txt {
   display: -webkit-box;
   -webkit-line-clamp: 10;
   -webkit-box-orient: vertical;
@@ -535,9 +666,12 @@ a {
   vertical-align: top;
   text-align: left;
   @apply whitespace-pre-line
-
 }
-.ant-menu.ant-menu-inline-collapsed > .ant-menu-item, .ant-menu.ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-item, .ant-menu.ant-menu-inline-collapsed > .ant-menu-item-group > .ant-menu-item-group-list > .ant-menu-submenu > .ant-menu-submenu-title, .ant-menu.ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title{
+
+.ant-menu.ant-menu-inline-collapsed>.ant-menu-item,
+.ant-menu.ant-menu-inline-collapsed>.ant-menu-item-group>.ant-menu-item-group-list>.ant-menu-item,
+.ant-menu.ant-menu-inline-collapsed>.ant-menu-item-group>.ant-menu-item-group-list>.ant-menu-submenu>.ant-menu-submenu-title,
+.ant-menu.ant-menu-inline-collapsed>.ant-menu-submenu>.ant-menu-submenu-title {
   padding: auto;
   margin-left: auto;
   margin-right: auto;

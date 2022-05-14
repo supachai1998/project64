@@ -20,7 +20,7 @@ export default function IndexNCDS() {
             {title && <h1 className={`text-xl whitespace-pre-wrap sm:text-3xl font-bold text-left ${color ? color : ind % 2 === 0 ? "text-green-800" : "text-blue-800"} my-3 ${ind !== 0 && "mt-12"}`}>
                 {title}
             </h1>}
-            <p className="text-sm sm:text-md whitespace-pre-wrap">
+            <p className="text-md sm:text-lg whitespace-pre-wrap">
                 {content}
             </p>
         </div>)}

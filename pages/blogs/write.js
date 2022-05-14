@@ -16,17 +16,17 @@ const ellipsis = {
 }
 
 export default function Index() {
-    const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
+    const { setTitle, setDefaultSelectedKeys,foodType,ncds } = useContext(_AppContext)
     const router = useRouter()
     const { id } = router.query
     const [modalAdd, setModalAdd] = useState(false)
     const [ncdsLoading, setNCDSLoading] = useState()
     const [foodLoading, setFoodLoading] = useState()
-    const [ncds, setNCDS] = useState()
-    const [food, setFood] = useState()
+    // const [ncds, setNCDS] = useState()
+    // const [food, setFood] = useState()
     const [edit, setEdit] = useState()
     const [fileList, setFileList] = useState([])
-    const [fileListSubBlogs, setFileListSubBlogs] = useState([])
+
     const [type, setType] = useState(null)
     const [form] = Form.useForm();
 
@@ -36,16 +36,16 @@ export default function Index() {
     }, []);
     useEffect(() => {
         (async () => {
-            setNCDSLoading(true)
-            const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
-                .then(async resp => resp.ok && resp.json())
-                .then(data => setNCDS(data)).catch(err => notification.error({ message: "Error", description: err.message }))
-            setNCDSLoading(false)
-            setFoodLoading(true)
-            const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
-                .then(async resp => resp.ok && resp.json())
-                .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
-            setFoodLoading(false)
+            // setNCDSLoading(true)
+            // const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
+            //     .then(async resp => resp.ok && resp.json())
+            //     .then(data => setNCDS(data)).catch(err => notification.error({ message: "Error", description: err.message }))
+            // setNCDSLoading(false)
+            // setFoodLoading(true)
+            // const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
+            //     .then(async resp => resp.ok && resp.json())
+            //     .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
+            // setFoodLoading(false)
         })()
     }, [])
     const query = async () => {
@@ -267,7 +267,7 @@ export default function Index() {
                     <Select mode="multiple"
                         loading={foodLoading}
                         filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                        {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                        {!!foodType && foodType.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                     </Select>
                 </Form.Item>}</> : <>
                 {(type === "NCDS" || type === "ALL") && <Form.Item
@@ -355,14 +355,14 @@ export default function Index() {
                                 {...fields}
                                 noStyle
                                 shouldUpdate
-                                key={"head"+field.key}
+                                key={'food head'+field.key+ind}
                                 required
                             >
                                 <Form.Item
                                     {...field}
                                     labelCol={null}
                                     wrapperCol={0}
-                                    key={"h_t"+field.key}
+                                    key={"h_t"+field.key+ind}
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
@@ -377,6 +377,7 @@ export default function Index() {
                                     labelAlign="left"
                                     name={[field.name, 'name']}
                                     fieldKey={[field.fieldKey, 'name']}
+                                    key={[field.fieldKey, 'name']}
                                     rules={[{ required: true }]}
                                 >
                                     <Input placeholder="ชื่อหัวข้อ" />
@@ -388,6 +389,7 @@ export default function Index() {
                                     labelAlign="left"
                                     name={[field.name, 'detail']}
                                     fieldKey={[field.fieldKey, 'detail']}
+                                    key={[field.fieldKey, 'detail']}
                                     rules={[{ required: true }]}
                                 >
                                     <TextArea rows={4} placeholder="เนื้อความ" />
@@ -398,6 +400,7 @@ export default function Index() {
                                     labelAlign="left"
                                     name={[field.name, 'image']}
                                     fieldKey={[field.fieldKey, 'image']}
+                                    key={[field.fieldKey, 'image']}
                                     label="รูปภาพ"
                                 // rules={[{ required: true , message: 'กรุณาเลือกรูปภาพ' }]}
                                 >
