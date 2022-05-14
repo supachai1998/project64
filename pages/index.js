@@ -33,7 +33,7 @@ export default function Index() {
       setTitle(project_name)
       setDefaultSelectedKeys('/')
     }
-    console.log(pageSelect)
+    // console.log(pageSelect)
   }, [home])
   return (
     <div className="flex flex-col w-full h-full min-h-screen gap-3  sm:mx-auto mx-0"

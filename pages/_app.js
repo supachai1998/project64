@@ -41,6 +41,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const [title, setTitle] = useState(project_name)
   const [ncds, setNCDS] = useState()
   const [form, setForm] = useState()
+  const [foodType, setFoodType] = useState(null)
   
   const [blogs, setBlogs] = useState([
     { name_th: "โรคไม่ติดต่อเรื้อรัง", name_en: "NCDS" }, { name_en: "FOOD", name_th: "อาหาร" }, { name_en: "ALL", name_th: "อาหารและโรค" }
@@ -56,6 +57,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       .then(data => data)
       .catch(err => notification.error({ message: err.message }))
     const f = n.filter(({ id }) => q_f.find(v => v === id))
+    const data = await fetch(`/api/getTypeFood?order=des`).then(res => res.ok && res.json())
+    Array.isArray(data) && setFoodType(data)
     setNCDS(n)
     setForm(f)
   }
@@ -74,8 +77,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
           <meta name="viewport" content={`initial-scale=1, width=device-width`} />
         </Head>
 
-        <NavBar blogs={blogs} form={form} router={router} ncds={ncds} reload={reload}
-          setTitle={setTitle} defaultSelectedKeys={defaultSelectedKeys}
+        <NavBar blogs={blogs} foodType={foodType} form={form} 
+            router={router} ncds={ncds} reload={reload}
+            setTitle={setTitle} defaultSelectedKeys={defaultSelectedKeys}
            />
 
         <Layout className="site-layout">
@@ -89,7 +93,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
           >
             <ConfigProvider locale={thTh}>
               <div className={`ml-12 inside_body`}>
-                <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle, title, ncds, form }}>
+                <_AppContext.Provider value={{ setDefaultSelectedKeys, setTitle,foodType, title, ncds, form }}>
                   <Component {...pageProps} />
                 </_AppContext.Provider>
               </div>
@@ -107,9 +111,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
 }
 export default MyApp
 
-const NavBar = ({ blogs, form, ncds, reload, defaultSelectedKeys, router,setTitle  }) => {
+const NavBar = ({ blogs,foodType, form, ncds, reload, defaultSelectedKeys, router,setTitle  }) => {
   const [collapsed, setCollapsed] = useState(!!isMobile ? true : false)
-  const [foodType, setFoodType] = useState(null)
+  
   const { status } = useSession()
   const { scrollX, scrollY } = useWindowScrollPositions()
 
@@ -127,8 +131,7 @@ const NavBar = ({ blogs, form, ncds, reload, defaultSelectedKeys, router,setTitl
     (async () => {
       if (status === "unauthenticated") {
         reload()
-        const data = await fetch(`/api/getTypeFood?order=des`).then(res => res.ok && res.json())
-        Array.isArray(data) && setFoodType(data)
+        
       }
     })()
   }, [status])
@@ -170,6 +173,7 @@ const NavBar = ({ blogs, form, ncds, reload, defaultSelectedKeys, router,setTitl
         zIndex: 2,
         scrollMargin: "0"
       }}
+      // onMouseEnter={reload}
       onMouseLeave={() => toggle(true)}
       trigger={null} collapsible breakpoint="lg" width="20rem" collapsedWidth={`3rem`} defaultCollapsed={collapsed} collapsed={collapsed}
     >

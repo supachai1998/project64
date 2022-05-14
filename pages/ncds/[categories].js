@@ -90,7 +90,7 @@ export async function getServerSideProps({ req, res, query }) {
             const cookie_ref = getCookie(`NCDS${categories}`, { req, res })
             if (!cookie_ref) {
                 setCookies(`NCDS${categories}`, true, { req, res, maxAge: 60 * 60 * 24 * 30 })
-                console.log("update views", categories)
+                // console.log("update views", categories)
                 fetch(`${serverip}/api/getNCDS?views=${categories}`, { method: "PATCH", })
                     .then(resq => resq.ok)
             }

@@ -170,7 +170,7 @@ export async function getServerSideProps({ req, res, query }) {
       const cookie_ref = getCookie(`blog${blog}`, { req, res })
       if (!cookie_ref) {
         setCookies(`blog${blog}`, true, { req, res, maxAge: 60 * 60 * 24 * 30 })
-        console.log("update views", blog)
+        // console.log("update views", blog)
         fetch(`${serverip}/api/getBlogs?views=${blog}`, { method: "PATCH", })
           .then(resq => resq.ok)
       }

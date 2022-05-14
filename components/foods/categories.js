@@ -2,35 +2,44 @@
 import { Card, Input, notification } from 'antd';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router';
-import { useState,  useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { _AppContext } from '/pages/_app'
 const { Meta } = Card
 const { Search } = Input;
 const CusImage = dynamic(() => import('./../cusImage.js'));
 const CusInput = dynamic(() => import('/components/cusInput.js'));
 
-export default function _Categories({ fetchData, categories, store, setStore, placeholder, _data, setData }) {
+export default function _Categories({ categories, store, setStore, placeholder, _data, setData }) {
 
     const [loading, setLoading] = useState(false)
     const [loadingSearch, setLoadingSearch] = useState(false)
     const router = useRouter()
-    const { setTitle, setDefaultSelectedKeys } = useContext(_AppContext)
+    const { setTitle, setDefaultSelectedKeys, foodType } = useContext(_AppContext)
     const refreshData = async () => {
+        if(!foodType) return
         setLoading(true)
-        const raw = await fetchData(categories)
-        if (!raw) { setLoading(false); return null }
-        const { title_th, title_en, data } = raw
-        setData(data)
-        setStore(data)
+        const { id, name_th, name_en } = foodType.find(item => item.id === parseInt(categories))
+        const query_data = await fetch(`/api/getFood?categories=${id}`).then(async res => {
+            if (res.ok) {
+                const _ = await res.json()
+                try {
+                    // const __ = _.map(data => { return { id: data.id, title: data.name_th, detail: data.calories, imgUrl: data.image[0].name || null } })
+                    return _
+                } catch (err) { console.error(err); notification.error({ message: `ไม่สามารถแมพข้อมูลอาหาร${categories}` }) }
+            } else notification.error({ message: `ไม่สามารถดึงข้อมูลอาหาร${categories}` })
+        })
+        setData(query_data)
+        setStore(query_data)
         setLoading(false)
         setDefaultSelectedKeys(`foods_${categories}`)
-        setTitle(`ประเภทอาหาร ${title_th}`)
+        setTitle(`ประเภทอาหาร ${name_th}`)
+
     }
     useEffect(() => {
         if (!_data && categories) {
             refreshData()
         }
-    }, [_data, categories, fetchData])
+    }, [_data, categories])
 
     if (loading) return <>กำลังดึงข้อมูล</>
     if (!!!_data) return <>ไม่พบข้อมูล</>
@@ -47,7 +56,7 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
             {/* const __ = _.map(_data => { return { id: _data.id, title: _data.name_th, detail: _data.calories, imgUrl: _data.image[0].name || null } })
                         setData(__) */}
             <div className="gap-5  lg:grid-cols-4 sm:grid sm:grid-cols-2" >
-                {_data && _data.map(({ id, title, detail, imgUrl , name_th,name_en , calories , image }, index) => (
+                {_data && _data.map(({ id, title, detail, imgUrl, name_th, name_en, calories, image }, index) => (
                     <div key={index} className='card  p-0  sm:mx-2 lg:mx-5 mt-3'>
                         <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
                         <div className='mx-5  flex flex-col gap-3'>
@@ -69,7 +78,7 @@ export default function _Categories({ fetchData, categories, store, setStore, pl
                     </div>
 
                 ))}
-                
+
             </div>
         </>
     )
