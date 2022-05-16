@@ -102,7 +102,7 @@ export default function Index(props) {
                                      <button href="#" className="w-32 text-lg border rounded-3xl bg-white sm:p-3 p-1  ease-anima hover:text-blue-400 shadow-lg shadow-cyan-500/50" onClick={() => { setContent({ name_th: data.name_th, video: data.video }) }}> <i><VideoCameraOutlined className='text-lg' /></i> <span> ดูวิดีโอ</span></button> </div>}
                     </div>
                 </div>
-                <p className='text-right'>ยอดเข้าชม {data.views} ยอด</p>
+                <p className='text-right'>ยอดเข้าชม {data.views} ครั้ง</p>
 
 
                 <NCDS ncds={data.FoodNcds} />

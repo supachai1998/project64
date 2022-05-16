@@ -54,7 +54,7 @@ export default function Index() {
                             {foodTypeId && <div
                                 key={id + index + name_th}
                                 className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
-                                <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={200} preview={false} />
+                                <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
                                 <div className='mx-5 mt-3'>
                                     <div className=" flex-col text-center my-2">
                                         <p className="card-header pt-3"> {name_th}</p>

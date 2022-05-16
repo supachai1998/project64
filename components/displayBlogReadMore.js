@@ -27,7 +27,7 @@ export default function DisplayBlogReadMore({ data, setData, store, setStore, li
     setStore(raw)
     setLoading(false)
     setDefaultSelectedKeys(`blogs_${categories}`)
-    if (categories === 'all') setTitle("บทความ ทั้งหมด")
+    if (categories === 'all') setTitle("บทความ อาหารและโรคไม่ติดต่อทั้งหมด")
     else if (categories === 'ncds') setTitle("บทความ โรคไม่ติดต่อทั้งหมด")
     else if (categories === 'food') setTitle("บทความ อาหารทั้งหมด")
   }

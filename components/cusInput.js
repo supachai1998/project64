@@ -72,7 +72,7 @@ export default function CusInput({ setData,input, setInput, loading, setLoading,
     }
   }, [input,])
 
-  const onChange = () => {
+  const onChange = (v) => {
     setIsSearch(false)
     const val = refSearchInput.current.state.value
     if (!!val && val.length <= 1) {
@@ -111,7 +111,7 @@ export default function CusInput({ setData,input, setInput, loading, setLoading,
             {only !== "blogs" && only !== "food_no_camera" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} disabled={!machineLearningStatus} />}
 
             <div className="flex items-center gap-2 w-full">
-              <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} onPressEnter={handleSearch} maxLength={30} loading={loading} enterButton inputMode="search"
+              <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} onPressEnter={handleSearch}  maxLength={30} loading={loading} enterButton inputMode="search"
                 placeholder={only === "food" || only === "food_no_camera" ? "ชื่ออาหาร" :
                   only === "ncds" ? "ชื่อโรค" :
                     only === "blogs" ? "ชื่อบทความ"

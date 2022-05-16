@@ -146,7 +146,7 @@ export default function Index(props) {
 
         </div>
 
-        <p className='text-right'>ยอดเข้าชม {data?.views} ยอด</p>
+        <p className='text-right'>ยอดเข้าชม {data?.views} ครั้ง</p>
       </div>
 
       <div>

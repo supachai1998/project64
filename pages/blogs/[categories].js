@@ -30,7 +30,7 @@ export default function Index(props) {
                 : categories === "food" ?
                   <DisplayBlogReadMore className="h-fix73" data={data} store={store} setStore={setStore} setData={setData} getData={getData} title={`บทความอาหาร`} link={false} />
                   :
-                  <DisplayBlogReadMore className="h-fix73" data={data} store={store} setStore={setStore} setData={setData} getData={getData} title={`บทความทั้งหมด`} link={false} />
+                  <DisplayBlogReadMore className="h-fix73" data={data} store={store} setStore={setStore} setData={setData} getData={getData} title={`บทความอาหารและโรค`} link={false} />
         }
       </div>
     </div>
