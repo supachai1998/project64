@@ -16,14 +16,14 @@ const ellipsis = {
 }
 
 export default function Index() {
-    const { setTitle, setDefaultSelectedKeys,foodType,ncds } = useContext(_AppContext)
+    const { setTitle, setDefaultSelectedKeys,ncds } = useContext(_AppContext)
     const router = useRouter()
     const { id } = router.query
     const [modalAdd, setModalAdd] = useState(false)
     const [ncdsLoading, setNCDSLoading] = useState()
     const [foodLoading, setFoodLoading] = useState()
     // const [ncds, setNCDS] = useState()
-    // const [food, setFood] = useState()
+    const [food, setFood] = useState()
     const [edit, setEdit] = useState()
     const [fileList, setFileList] = useState([])
 
@@ -36,16 +36,11 @@ export default function Index() {
     }, []);
     useEffect(() => {
         (async () => {
-            // setNCDSLoading(true)
-            // const req_ncds = await fetch('/api/getNCDS?select=id,name_th,name_en')
-            //     .then(async resp => resp.ok && resp.json())
-            //     .then(data => setNCDS(data)).catch(err => notification.error({ message: "Error", description: err.message }))
-            // setNCDSLoading(false)
-            // setFoodLoading(true)
-            // const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
-            //     .then(async resp => resp.ok && resp.json())
-            //     .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
-            // setFoodLoading(false)
+            setFoodLoading(true)
+            const req_food = await fetch('/api/getFood?select=id,name_th,name_en')
+                .then(async resp => resp.ok && resp.json())
+                .then(data => setFood(data)).catch(err => notification.error({ message: "Error", description: err.message }))
+            setFoodLoading(false)
         })()
     }, [])
     const query = async () => {
@@ -267,7 +262,7 @@ export default function Index() {
                     <Select mode="multiple"
                         loading={foodLoading}
                         filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                        {!!foodType && foodType.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                        {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                     </Select>
                 </Form.Item>}</> : <>
                 {(type === "NCDS" || type === "ALL") && <Form.Item
@@ -291,7 +286,7 @@ export default function Index() {
                     <Select mode="multiple"
                         loading={foodLoading}
                         filterOption={(input, option) => !!option && option?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0}>
-                        {!!foodType && foodType.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
+                        {!!food && food.map(({ id, name_th, name_en }, ind) => <Option key={`${ind}_${name_th}`} value={id}>{name_th}</Option>)}
                     </Select>
                 </Form.Item>}
                 </>}
