@@ -40,13 +40,14 @@ export default function MultiCard({ loading, data,setData, title }) {
                         {foodTypeId && <div
                             key={id + index +name_th}
                             className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
-                            <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
-                            <div className='mx-5 mb-2 lg:mb-10 my-5'>
+                            <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={300} preview={false} />
+                            <div className='mx-5 mb-2 lg:mb-10 my-3'>
                                 <div className=" flex-col text-center mb-0">
                                     <p className="card-header pt-3"> {name_th}</p>
-                                    <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500"> {name_en}</p>
+                                    <hr className='border-blue-800 border border-solid w-1/2 mx-auto'/>
+                                    <p className=" text-xs sm:text-sm pb-0 truncate text-gray-500 mt-2"> {name_en}</p>
                                 </div>
-                                <div className='text-center leading-none text-2xl h-24 my-10'>
+                                <div className='text-center leading-none text-2xl sm:h-24 my-10'>
 
                                     <p className='mb-0 font-bold'>{calories}</p>
                                     <p className='text-sm sm:text-xl text-gray-500 '>กิโลแคลอรี่</p>
@@ -63,7 +64,7 @@ export default function MultiCard({ loading, data,setData, title }) {
                             key={id + index + Math.random()}
                             className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
                             <div className="relative w-full" >
-                                {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height={250} preview={false} />}
+                                {image && <CusImage src={image[0].name} alt={id} className="" width="100%" height={300} preview={false} />}
                                 {/* {!name_en && <Tooltip title={name_en}><p className="absolute bg-opacity-60 bg-gray-50 w-1.5/2 p-3 top-0 right-0 flex justify-center  rounded-xl font-bold text-base  ">{name_en}</p></Tooltip>} */}
                                 {calories && <Tooltip title="ปริมาณแคลอรี่"><p className="absolute bottom-0 left-0 p-2 text-xs text-left bg-opacity-60 bg-gray-50 sm:text-sm rounded-xl">{calories} KgCal</p></Tooltip>}
                             </div>

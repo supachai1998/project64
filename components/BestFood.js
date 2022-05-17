@@ -17,7 +17,7 @@ export default function BestFood({ title }) {
             if (res.status === 404) {
                 // notification.info({ message: `ไม่พบข้อมูล${title}` })
             }
-            else if (res.ok ) {
+            else if (res.ok) {
                 const _ = await res.json()
                 return _
             } else notification.error({ message: `ไม่สามารถดึง${title}` })
@@ -33,13 +33,16 @@ export default function BestFood({ title }) {
             if (asPath[1]) api += `&type=${asPath[1]}`
             if (asPath[2]) api += `&categories=${asPath[2]}`
             if (asPath[3]) api += `&self=${asPath[3]}`
-            title === "อาหารไม่แนะนำ" ? api += `&suggess=${false}` : `&suggess=${true}`
+            if (asPath[1] === "ncds") {
+                if (title === "อาหารไม่แนะนำ") api += `&suggess=${false}`;
+                if (title === "อาหารแนะนำ") api += `&suggess=${true}`;
+            }
             const data = await fetchData(api)
             !!data && setData([...data])
 
         })()
-        
-    }, [ router.query])
+
+    }, [router.query])
 
     if (!_data && !Array.isArray(_data)) return null
     const handleLinkClick = (foodTypeId, id) => {

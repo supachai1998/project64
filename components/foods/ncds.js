@@ -1,4 +1,4 @@
-import { Modal, Select } from 'antd';
+import { Modal, Select  } from 'antd';
 import dynamic from 'next/dynamic'
 // import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -107,7 +107,7 @@ const Suggess_true = ({ data, showModal }) => {
                                         <div className='text-green-500 text-2xl '>
                                             แนะนำ
                                         </div>
-                                        <div className='text-3-line h-24'> {detail}</div>
+                                        <span className='text-3-line h-24 hover:full '> {detail}</span>
                                         <hr className='' />
                                         <div className="flex flex-wrap justify-center items-center gap-8 mb-3">
                                             {video && <a className="flex justify-center items-center gap-3 px-6  text-white text-center rounded-full bg-black p-3 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}
@@ -162,7 +162,7 @@ const Suggess_false = ({ data, showModal }) => {
                                         <div className='text-red-500 text-2xl '>
                                             ไม่แนะนำ
                                         </div>
-                                        <div className='text-3-line h-24'> {detail}</div>
+                                        <span className='text-3-line h-24 hover:full '> {detail}</span>
                                         <hr className='' />
                                         <div className="flex flex-wrap justify-center items-center gap-10 mb-3">
                                             {video && <a className="flex justify-center items-center gap-3  text-white text-center rounded-full bg-black p-3 px-6 hover:text-white hover:bg-gray-800 shadow-lg shadow-cyan-500/50" onClick={() => showModal(name_th, video)}  ><VideoCameraOutlined /> <span >วิดีโอ</span></a>}

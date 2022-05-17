@@ -373,6 +373,12 @@ a:visited {
 .ant-form-item-control-input {
   @apply rounded-md !important;
 }
+.ant-input-number-input-wrap > *:focus {
+  outline: none!important;
+}
+.ant-input-number-handler-wrap {
+  @apply invisible
+}
 
 /* custom fontsize header ant table */
 .ant-table-thead {
@@ -496,6 +502,15 @@ a {
 /* card */
 .card-header-top {
   @apply mt-4 text-xl md:text-4xl mb-0 font-bold transition transform w-full text-center;
+}
+.ant-switch-handle {
+  top: 25%;
+  left: auto;
+  width: 18px;
+  height: 18px;
+}
+.ant-switch{
+  height: 100%;
 }
 
 .card-header {
@@ -624,13 +639,18 @@ a {
   z-index: 2;
 }
 
-.text-5-line {
+.text-5-line  {
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.text-5-line:hover{
+  -webkit-line-clamp: 1000;
+  height:auto
+}
+
 
 .text-3-line {
   display: -webkit-box;
@@ -638,6 +658,10 @@ a {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.text-3-line:hover{
+  -webkit-line-clamp: 1000;
+  height:auto
 }
 
 .text-2-line {
@@ -647,6 +671,10 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.text-2-line:hover{
+  -webkit-line-clamp: 1000;
+  height:auto
+}
 
 .text-1-line {
   display: -webkit-box;
@@ -654,6 +682,10 @@ a {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.text-1-line:hover{
+  -webkit-line-clamp: 1000;
+  height:auto
 }
 
 .table-txt {

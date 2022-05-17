@@ -94,7 +94,7 @@ export default function Index(props) {
                             <div className="flex flex-col justify-start flex-warp w-full overflow-hidden">
                                 <h3 className="text-left">อ้างอิง</h3>
                                     {data.ref && data.ref.length > 0 && data.ref.map(({ url }, index) =>
-                                    <><a href={url.split(",").at(-1)} target="_blank" key={index} className='text-left no-underline text-black whitespace-pre-wrap ' rel="noreferrer">{url}</a><br/> </>
+                                    <><a href={url.split(",").at(-1)} target="_blank" key={index} className='text-left hover:underline text-black whitespace-pre-wrap ' rel="noreferrer">{url}</a><br/> </>
                                     )}
                             </div>        
                         </div>
