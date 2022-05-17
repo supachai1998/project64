@@ -671,10 +671,7 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.text-2-line:hover{
-  -webkit-line-clamp: 1000;
-  height:auto
-}
+
 
 .text-1-line {
   display: -webkit-box;
@@ -683,10 +680,7 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.text-1-line:hover{
-  -webkit-line-clamp: 1000;
-  height:auto
-}
+
 
 .table-txt {
   display: -webkit-box;
