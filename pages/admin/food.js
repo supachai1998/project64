@@ -178,8 +178,8 @@ const TableForm = () => {
             title: <div className="text-center" >ประเภท</div>,
             dataIndex: 'FoodType',
             key: 'FoodType',
-            onFilter: (value, record) => record.FoodType.name_th.includes(value),
-            sorter: (a, b) => a.name_th.localeCompare(b.name_th),
+            onFilter: (value, record) => record.FoodType.name_th === value,
+            // sorter: (a, b) => a.name_th.localeCompare(b.name_th),
             filters: type.map(val => ({ text: `${val.name_th}(${countOccurrences(food, val.name_th)})`, value: val.name_th })),
             render: val => <Tooltip title={val.name_th} ><Paragraph className="mt-3" ellipsis={ellipsis}>{val.name_th}</Paragraph></Tooltip>
         },

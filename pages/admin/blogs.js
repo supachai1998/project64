@@ -34,6 +34,7 @@ export default function Index() {
     const [modalAdd, setModalAdd] = useState(false)
     const [modalEdit, setModalEdit] = useState(false)
     const [modalView, setModalView] = useState(false)
+    const [modalConfirm, setModalConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [blogs, setBlogs] = useState([])
     const [store, setStore] = useState([])
@@ -172,11 +173,13 @@ export default function Index() {
                 ncds, food,
                 ncdsLoading, foodLoading,
                 blogs, setBlogs, store,
-                inputRef
+                inputRef,
+                modalConfirm, setModalConfirm
             }}>
                 <ModalAdd />
                 <ModalEdit />
                 <ModalView />
+                <ModalConfirm />
                 <TableForm />
             </Context.Provider>
             <div className='hidden' ref={componentRef}>
@@ -191,7 +194,8 @@ export default function Index() {
 const TableForm = () => {
     const { blogs, setBlogs, store, reload, loading,
         setModalEdit,
-        setModalView, inputRef } = useContext(Context)
+        setModalView, inputRef,
+        setModalConfirm } = useContext(Context)
 
     const [selectRows, setSelectRows] = useState([])
 
@@ -202,7 +206,7 @@ const TableForm = () => {
             key: 'type',
             filters: [{ text: 'โรคไม่ติดต่อ', value: "NCDS", }, { text: 'อาหาร', value: "FOOD", }, { text: 'อาหารและโรค', value: "ALL", }],
             onFilter: (value, record) => record.type === value,
-            sorter: (a, b) => a.type.localeCompare(b.type),
+            sorter: (a, b) => a.type === b.type,
             render: val => <Paragraph className='mt-3' >
                 {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "อาหารและโรค"}
             </Paragraph>
@@ -253,7 +257,7 @@ const TableForm = () => {
             filters: [{ text: 'รออนุมัติ', value: 0, }, { text: 'อนุมัติ', value: 1, }, { text: 'ไม่อนุมัติ', value: 2, }],
             onFilter: (value, record) => record.approve === value,
             sorter: (a, b) => a.approve - b.approve,
-            render: (val, source) => <button className="w-full ml-3 mb-2" onClick={() => showConfirmApprove(source)}>
+            render: (val, source) => <button className="w-full ml-3 mb-2" onClick={() => setModalConfirm(source)}>
                 {val === 1 ? <Tooltip title="อนุมัติ">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -367,41 +371,7 @@ const TableForm = () => {
         })
 
     }
-    const showConfirmApprove = async (val) => {
-        const { approve } = val
-        const th_approve = approve === 0 ? "รอการอนุมัติ" : approve === 1 ? "อนุมัติ" || approve === 2 : "ไม่อนุมัติ"
-        const th_request = approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"
-        const preData = { id: val.id, approve: approve === 0 ? 1 : approve === 1 ? 2 || approve === 2 : 1 }
-        confirm({
-            title: `คุณต้องการจะ${approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"}`,
-            content: <div>
-                <p>หัวข้อ : {val.name}</p>
-                <p>สถานะ : {th_approve}</p>
-            </div>,
-            okText: th_request,
-            okType: approve === 0 || approve === 2 ? "primary" : "danger",
-            cancelText: "ยกเลิก",
-            async onOk() {
-                const res = await fetch("/api/getBlogs", {
-                    headers: { 'Content-Type': 'application/json', },
-                    method: "PATCH",
-                    body: JSON.stringify(preData)
-                })
-                if (res.status === 200) {
-                    notification.success({
-                        message: `${th_request}สำเร็จ`,
-                    })
-                    await reload()
-                } else {
-                    notification.error({
-                        message: `${th_request}ไม่สำเร็จ`,
-                        description: 'ไม่สามารถติดต่อ server ',
-                    })
-                }
-            },
-            onCancel() { },
-        });
-    }
+
     if (!blogs) return null
     const search = () => {
         let userInput = inputRef.current.value
@@ -1225,6 +1195,79 @@ const ModalView = () => {
     </Modal>
 
 }
+const ModalConfirm = () => {
+    const { setModalConfirm, modalConfirm, reload } = useContext(Context)
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
+    const handleCancel = () => {
+      setModalConfirm(false);
+    };
+    if(!modalConfirm) return null
+    const { approve } = modalConfirm
+    const th_approve = approve === 0 ? "รอการอนุมัติ" : approve === 1 ? "อนุมัติ" || approve === 2 : "ไม่อนุมัติ"
+    const th_request = approve === 0 ? "อนุมัติ" : approve === 1 ? "ไม่อนุมัติ" || approve === 2 : "อนุมัติ"
+    
+    const onOk = async(value) => {
+        setConfirmLoading(true);
+        const preData = { id: modalConfirm.id, approve: value }
+        const res = await fetch("/api/getBlogs", {
+            headers: { 'Content-Type': 'application/json', },
+            method: "PATCH",
+            body: JSON.stringify(preData)
+        })
+        if (res.status === 200) {
+            notification.success({
+                message: `${th_request}สำเร็จ`,
+            })
+            setConfirmLoading(false)
+            setModalConfirm(false)
+            await reload()
+        } else {
+            notification.error({
+                message: `${th_request}ไม่สำเร็จ`,
+                description: 'ไม่สามารถติดต่อ server ',
+            })
+        }
+    }
+    if(!modalConfirm) return null
+    return (
+      <>
+        <Modal
+          title={`การอนุมัติบทความ`}
+          visible={!!modalConfirm}
+          confirmLoading={confirmLoading}
+          onCancel={handleCancel}
+          footer={null}
+        >
+          <div>
+          <div className="flex justify-center">{approve === 1 ? <Tooltip title="อนุมัติ">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg></Tooltip>
+                    : approve === 2 ?
+                        <Tooltip title="ไม่อนุมัติ"><svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                        </svg></Tooltip>
+                        : <Tooltip title="รออนุมัติ">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 animate-pulse text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </Tooltip>
+                }
+                </div>
+            <p>หัวข้อ : {modalConfirm.name}</p>
+            <p>สถานะ : {th_approve}</p>
+                <div className='flex flex-wrap items-center justify-end gap-3'>
+                    <button className='button hover:border-2 border' onClick={handleCancel}>ยกเลิก</button>
+                    {(approve == 0 || approve === 1) &&<button onClick={()=>onOk(2)} className='button  hover:border-red-800 border bg-red-400 hover:bg-red-500'>ไม่อนุมัติ</button>}
+                    {(approve == 0 || approve === 2) &&<button onClick={()=>onOk(1)} className='button  hover:border-green-800 border bg-green-400 hover:bg-green-500'>อนุมัติ</button>}
+                </div>
+        </div>
+
+        </Modal>
+      </>
+    );
+  };
 const Type = [
     { name_en: "NCDS", name_th: "โรคไม่ติดต่อ" },
     { name_en: "FOOD", name_th: "อาหาร" },
