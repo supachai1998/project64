@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef,useCallback } from 'react';
 import { Input, message, Button, Tooltip, Modal, notification, Spin, AutoComplete } from 'antd'
-import { CameraOutlined, LoadingOutlined, SwapOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CameraOutlined,  SwapOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import Webcam from "react-webcam";
 import Image from 'next/image'
 import Resizer from "react-image-file-resizer";
@@ -12,7 +12,6 @@ import { fetchWithTimeout } from '/ulity/fetchWithTimeout'
 const { Option } = AutoComplete;
 // <CameraOutlined />
 const { Search } = Input
-const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 export default function CusInput({ setData,input, setInput, loading, setLoading, store = [], only = "", _api }) {
   const router = useRouter()
@@ -58,7 +57,7 @@ export default function CusInput({ setData,input, setInput, loading, setLoading,
       clearTimeout(typeTime)
       refSearchInput.current.focus()
     }
-
+    setLoading(false)
 
   }
   useEffect(() => {
@@ -86,11 +85,12 @@ export default function CusInput({ setData,input, setInput, loading, setLoading,
     else setData([])
     setIsSearch(false)
     if(setInput) setInput()
+    setLoading(false)
   })
   return (
     <div className="grid w-full rounded-xl ">
       {only !== "blogs" && only !== "food_no_camera" && statusWebCam ? <WebcamCapture setInput={setInput} setStatusWebCam={setStatusWebCam} />
-        : <div className="grid grid-cols-1 gap-3 mx-10 row-span-full">
+        : <div className="grid grid-cols-1 gap-3 mx-2 sm:mx-10 row-span-full">
           <div className="grid ">
             <label className='sm:text-2xl text-xl'>ค้นหา {input}</label>
           </div>
@@ -98,19 +98,14 @@ export default function CusInput({ setData,input, setInput, loading, setLoading,
             "flex justify-end"}>
 
             {only !== "blogs" && only !== "food_no_camera" && <Tooltip title={!machineLearningStatus ? "ไม่สามารถใช้งานได้" : "ถ่ายภาพ"}>
-              <label className={`flex items-center justify-center gap-3 px-3  tracking-wide text-gray-800 uppercase border ${!machineLearningStatus ? "border-gray-600 bg-gray-400 " : "border-gray-300 bg-white hover:border-blue-600 hover:text-blue-600"} shadow-sm cursor-pointer rounded-lg `}>
-                <CameraOutlined />
-                {loading
-                  ? <LinearProgressBar className="w-20" />
-                  : <>
-                    <button onClick={() => setStatusWebCam(true)} disabled={!machineLearningStatus} >ถ่ายภาพอาหาร</button>
-                  </>}
+              <label className={`flex items-center justify-center    tracking-wide text-gray-800 uppercase border ${!machineLearningStatus ? "border-gray-600 bg-gray-400 " : "border-gray-300 bg-white hover:border-blue-600 hover:text-blue-600"} shadow-sm cursor-pointer rounded-lg `}>
+                <CameraOutlined /><button onClick={() => setStatusWebCam(true)} disabled={!machineLearningStatus} >{loading ? "กำลังโหลด...": "ถ่ายภาพอาหาร"}</button>
               </label>
             </Tooltip>}
 
             {only !== "blogs" && only !== "food_no_camera" && <CustomUpload setInput={setInput} loading={loading} setLoading={setLoading} disabled={!machineLearningStatus} />}
 
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex items-center w-full">
               <Search className="z-0 w-full input search loading with enterButton" disabled={loading} onChange={onChange} onSearch={handleSearch} onPressEnter={handleSearch}  maxLength={30} loading={loading} enterButton inputMode="search"
                 placeholder={only === "food" || only === "food_no_camera" ? "ชื่ออาหาร" :
                   only === "ncds" ? "ชื่อโรค" :
@@ -151,7 +146,7 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
   const capture = React.useCallback(
     () => {
       const capt = webcamRef.current.getScreenshot()
-      setImageSrc(prev => [capt, ...prev]);
+      setImageSrc([capt]);
     },
     [webcamRef]
   );
@@ -204,11 +199,12 @@ const WebcamCapture = ({ setStatusWebCam, setInput }) => {
             สลับกล้อง
           </Button>
           <Button
-            icon={loading ? <Spin indicator={antIcon} style={{ width: "20px", height: "20px", marginRight: "3%" }} /> : <CameraOutlined />}
+            icon={ <CameraOutlined />}
+            
             shape="round"
             onClick={handleCaptureCamera}
             disable={loading}>
-            ถ่ายภาพ
+            {loading  ? "กำลังโหลด": "ถ่ายภาพ"}
           </Button>
         </div>
       </div>

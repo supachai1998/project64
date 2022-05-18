@@ -12,6 +12,7 @@ const CusInput = dynamic(() => import('/components/cusInput.js'));
 export default function _Categories({ categories, store, setStore, placeholder, _data, setData }) {
 
     const [loading, setLoading] = useState(false)
+    const [input, setInput] = useState(false)
     const [loadingSearch, setLoadingSearch] = useState(false)
     const router = useRouter()
     const { setTitle, setDefaultSelectedKeys, foodType } = useContext(_AppContext)
@@ -49,7 +50,7 @@ export default function _Categories({ categories, store, setStore, placeholder, 
             <div className="grid lg:mx-10">
                 {/* <span className="card-header-top">{title_th}</span> */}
                 <div className='my-3'>
-                    <CusInput only="food" _api={`/api/getFood?categories=${categories}`} data={_data} setData={setData} store={store} setStore={setStore} loading={loadingSearch} setLoading={setLoadingSearch} />
+                    <CusInput only="food" _api={`/api/getFood?categories=${categories}`} data={_data} input={input} setInput={setInput} setData={setData} store={store} setStore={setStore} loading={loadingSearch} setLoading={setLoadingSearch} />
                 </div>
                 <div className='border-b-2 border-solid border-green-800 w-full my-3' />
             </div>

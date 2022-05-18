@@ -18,6 +18,7 @@ export default function Index() {
     const [_data, setData] = useState()
     const [store, setStore] = useState()
     const [loading, setLoading] = useState()
+    const [input, setInput] = useState()
     const router = useRouter()
     useEffect(() => {
         (async () => {
@@ -30,12 +31,12 @@ export default function Index() {
     }, [router])
     if (!_data) return <div className='min-h-screen'></div>
     return (
-        <div className="mt-3 min-h-screen">
-            <div className="justify-center  mx-auto md:px-5">
+        <div className="mt-3 min-h-screen mx-auto  w-full sm:w-11/12">
+            <div className="justify-center   ">
                 <div className="my-5">
-                    <CusInput only="food" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
+                    <CusInput only="food" data={_data} input={input} setInput={setInput} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
                 </div>
-                <div className='grid sm:grid-cols-2 xl:grid-cols-4 gap-8'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8 w-full'>
                     {_data.map(({
                         id,
                         name_th,
@@ -53,8 +54,9 @@ export default function Index() {
                             {/* ถ้าเป็นอาหาร จะเข้าการ์ดอาหาร */}
                             {foodTypeId && <div
                                 key={id + index + name_th}
-                                className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center  item shadow-xs  m-0 p-0">
-                                <CusImage className="duration-150 transform " src={image[0].name} alt={"0"} width="100%" height={250} preview={false} />
+                                // style={{width:"fit-content"}}
+                                className="grid-cols-12  flex-warp rounded-xl  h-full bg-gray-50 items-center justify-center  item shadow-xs w-full  m-0 p-0">
+                                <div className="w-full"><CusImage className="duration-150 transform w-full" src={image[0].name} alt={"0"} width="100%" height={250} preview={false} /></div>
                                 <div className='mx-5 mt-3'>
                                     <div className=" flex-col text-center my-2">
                                         <p className="card-header pt-3"> {name_th}</p>
