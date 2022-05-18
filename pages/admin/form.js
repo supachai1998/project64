@@ -18,6 +18,7 @@ import moment from 'moment'
 import 'moment/locale/th'
 moment.locale('th')
 ChartJS.register(ArcElement, Too, Legend);
+ChartJS.defaults.font.size = 16;
 // END Report
 const ellipsis = {
     rows: 3,
@@ -151,7 +152,7 @@ export default function Index() {
                 <ResultForm />
             </ContextForm.Provider>
             <div className='hidden' ref={componentRef}>
-                <Table size='small' title={() => <span className="text-lg">แบบประเมิน {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={_formGroupBy} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+                <Table size='small' bordered title={() => <span className="text-lg">แบบประเมิน {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={_formGroupBy} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
             </div>
         </div>
     )
@@ -627,7 +628,7 @@ const ModalAdd = () => {
                                                     {/* {console.log(form.getFieldValue("form")[ind]?.subForm)} */}
                                                     <Collapse defaultActiveKey={{}} ghost collapsible="header" >
                                                         <Panel showArrow={false} header={<Form.Item
-                                                            label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind2 + 1} </>}
+                                                            label={<>ชื่อคำถามที่ {ind2 + 1} <Button_Delete fx={() => remove(fieldsubForm.name)} /></>}
                                                             name={[fieldsubForm.name, 'name']}
                                                             fieldKey={[fieldsubForm.fieldKey, 'name']}
                                                             rules={[{ required: true }]}
@@ -869,7 +870,7 @@ const ModalEdit = () => {
                             >
                                 <Collapse defaultActiveKey={0} ghost collapsible="header" >
                                     <Panel showArrow={false} header={<Form.Item
-                                        label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1} </>}
+                                        label={<>ชื่อคำถามที่ {ind + 1} <Button_Delete fx={() => remove(fieldsubForm.name)} /></>}
                                         name={[fieldsubForm.name, 'name']}
                                         fieldKey={[fieldsubForm.fieldKey, 'name']}
                                         rules={[{ required: true }]}
@@ -1089,7 +1090,7 @@ const ModalAddSubForm = () => {
                             >
                                 <Collapse defaultActiveKey={0} ghost collapsible="header" >
                                     <Panel showArrow={false} header={<Form.Item
-                                        label={<><Button_Delete fx={() => remove(fieldsubForm.name)} />ชื่อคำถามที่ {ind + 1} </>}
+                                        label={<>ชื่อคำถามที่ {ind + 1} <Button_Delete fx={() => remove(fieldsubForm.name)} /></>}
                                         name={[fieldsubForm.name, 'name']}
                                         fieldKey={[fieldsubForm.fieldKey, 'name']}
                                         rules={[{ required: true }]}

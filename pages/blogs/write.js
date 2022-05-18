@@ -361,7 +361,7 @@ export default function Index() {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                            <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip><div > หัวข้อย่อยที่ {ind + 1}</div>
+                                            <div >หัวข้อย่อยที่ {ind + 1}</div><Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>
                                         </div>
                                     </>
                                 </Form.Item>
@@ -451,7 +451,7 @@ export default function Index() {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip> อ้างอิงที่ {ind + 1}
+                                         อ้างอิงที่ {ind + 1} <Tooltip title={"ลบอ้างอิงที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}

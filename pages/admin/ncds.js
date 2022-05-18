@@ -44,33 +44,33 @@ export default function Index() {
             dataIndex: 'name_th',
             key: 'name_th',
             width: "5%",
-            render: (text, val, index) => <span className="table-txt">{val.name_th}</span>
+            render: (text, val, index) => <div className="table-txt">{val.name_th}</div>
         },
         {
             title: < >ชื่อโรคภาษาอังกฤษ</>,
             dataIndex: 'name_en',
             key: 'name_en',
             width: "5%",
-            render: (text, val, index) => <span className="table-txt">{val.name_en}</span>
+            render: (text, val, index) => <div className="table-txt">{val.name_en}</div>
         },
         {
             title: < >ความหมาย</>,
             dataIndex: 'imply',
             key: 'imply',
             width: '10%',
-            render: val => <span className="table-txt">{val}</span>
+            render: val => <div className="table-txt">{val}</div>
         },
         {
             title: < >สาเหตุการเกิดโรค</>,
             dataIndex: 'cause',
             key: 'cause',
-            render: val => <span className="table-txt">{val}</span>
+            render: val => <div className="table-txt">{val}</div>
         },
         {
             title: < >ลดความเสี่ยงการเกิดโรค</>,
             dataIndex: 'reduce',
             key: 'reduce',
-            render: val => <span className="table-txt">{val}</span>
+            render: val => <div className="table-txt">{val}</div>
         },
         {
             title: < >สัญญาณการเกิดโรค</>,
@@ -121,7 +121,7 @@ export default function Index() {
             className="ease-div flex flex-col gap-4">
             {/* <Spin spinning={loading}> */}
             <div className="flex justify-end mt-4 mb-2 gap-3">
-                <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "none"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
+                <Button onClick={() => { componentRef.current.style.display = "block"; handlePrint(); componentRef.current.style.display = "block"; }} type="ghost" danger><FilePdfOutlined /> PDF </Button>
                 <Button className='green-ghost-green' icon={<DownloadOutlined />}>
                     <CSVLink
                         filename={`ตารางอาหาร ${inputRef.current?.value}-${moment().format("LLLL")}.csv`}
@@ -152,7 +152,7 @@ export default function Index() {
                 <TableForm />
             </Context.Provider>
             <div className='hidden' ref={componentRef}>
-                <Table size='small' title={() => <span className="text-lg">โรคไม่ติดต่อ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={ncds} columns={columns} footer={() => <div className="flex justify-end"><span className="text-end">พิมพ์ : {moment().format("LLLL")}</span></div>} />
+                <Table size='small' bordered title={() => <span className="text-lg">โรคไม่ติดต่อ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={ncds} columns={columns} footer={() => <div className="flex justify-end"><span className="text-end">พิมพ์ : {moment().format("LLLL")}</span></div>} />
             </div>
         </div>
     )
@@ -180,7 +180,7 @@ const ModalView = () => {
             <Form.Item label="ลดความเสี่ยงการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.reduce}</span></Form.Item>
             <Form.Item label="สัญญาณการเกิดโรค"><span className='text-md whitespace-pre-line'>{modalView.signs}</span></Form.Item>
             <Form.Item label="คำแนะนำในการปฏิบัติตัว"><span className='text-md whitespace-pre-line'>{modalView.sugess}</span></Form.Item>
-            <Form.Item label="วิดีโอ">{modalView?.video ? <div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer url={modalView.video} width="100%" height="100%" /> </div>: "ไม่พบวิดีโอ"}</Form.Item>
+            <Form.Item label="วิดีโอ">{modalView?.video ? <div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer url={modalView.video} width="100%" height="100%" /> </div> : "ไม่พบวิดีโอ"}</Form.Item>
             <Form.Item label={`อ้างอิง ${modalView.ref.length}`}>{modalView.ref.map(({ url }) => <><a key={url} target="_blank" href={url.split(",").at(-1)} className='text-md whitespace-pre-line' rel="noreferrer">{url}</a><br /></>)}</Form.Item>
         </Form>
     </Modal>
@@ -596,7 +596,7 @@ const ModalEdit = () => {
             </Form.List>
             <div className="flex justify-end gap-2">
                 <Button htmlType="reset">ล้างค่า</Button>
-                <Button type="primary" htmlType="submit">แก้ไข</Button>
+                <Button type="ghost" className="bg-yellow-500 hover:bg-yellow-400 border-0  text-black" htmlType="submit">แก้ไข</Button>
             </div>
         </Form>
     </Modal>
@@ -649,7 +649,7 @@ const TableForm = () => {
             title: <Paragraph className='mt-3' align="center" >ชื่อโรค</Paragraph>,
             dataIndex: 'name_th',
             key: 'name_th',
-            width: [{sm:"40%"},{md:"30%"},{lg:"20%"}],
+            width: [{ sm: "40%" }, { md: "30%" }, { lg: "20%" }],
             render: (text, val, index) => <Tooltip title={val.name_th} ><Paragraph className='mt-3' ellipsis={ellipsis}>{val.name_th}({val.name_en})</Paragraph></Tooltip>
         },
         {
@@ -763,7 +763,7 @@ const TableForm = () => {
     return <div>
         <Table size='small' tableLayout='auto' dataSource={ncds} columns={columns}
             rowSelection={{ ...rowSelection }}
-            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100'] }}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
                     ตารางโรคไม่ติดต่อเรื้อรัง

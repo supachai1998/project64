@@ -44,7 +44,7 @@ export default function DisplayBlogReadMore({ data, setData, store, setStore, li
       <CusInput only="blogs" data={data} setData={setData}
         store={store} setStore={setStore}
         loading={loadingSearch} setLoading={setLoadingSearch} />
-      <div className=" lg:grid-cols-4 md:grid-cols-3 sm:grid sm:grid-cols-2 mt-5 gap-10" >
+      <div className=" xl:grid-cols-3  gap-16 md:grid-cols-3 sm:grid sm:grid-cols-2 mt-5 " >
         {data && data?.map(({ id,
           type,
           name,

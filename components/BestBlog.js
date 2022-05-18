@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 const CustImage = dynamic(() => import("/components/cusImage.js"))
 
 
-export default function DisplayBlogReadMore({title }) {
+export default function DisplayBlogReadMore({title,subTitle }) {
   const [_data, setData] = useState()
 
   const router = useRouter()
@@ -46,6 +46,7 @@ export default function DisplayBlogReadMore({title }) {
   return (
     <Owl_Carousel
       title={title}
+      subTitle={subTitle}
       link="/blogs"
       info_top={`พบ ${_data.length} รายการ`}
       info_down={`ดูบทความทั้งหมด`}

@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 const CusImage = dynamic(() => import('./cusImage.js'));
 const Owl_Carousel = dynamic(() => import('./Owl_Carousel.js'));
 
-export default function BestFood({ title }) {
+export default function BestFood({ title,subTitle }) {
     const router = useRouter()
 
     const [_data, setData] = useState()
@@ -53,6 +53,7 @@ export default function BestFood({ title }) {
         <Owl_Carousel
             title={title}
             link={`/foods`}
+            subTitle={subTitle}
             info_top={`พบ ${_data.length} รายการ`}
             info_down={`ดูอาหารทั้งหมด`}
         >

@@ -11,14 +11,18 @@ export default function MultiCard({ loading, data,setData, title }) {
 
     if (loading) return null
     if (!!!data || !Array.isArray(data) || data?.length <= 0) return null
-    console.log(data)
+    // console.log(data)
     const handleCancle = () =>{
         setData()
     }
+    const count_food =  data.filter(({foodTypeId})=>foodTypeId).length
+    const count_blog =  data.filter(({approve})=>approve).length
     return (
-        <Owl_Carousel
-            title={title}
-            info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {data.length} รายการ </div>}
+        <>
+        {count_food > 0 &&<Owl_Carousel
+            title={"ผลการค้นหาอาหาร"}
+            subTitle={title}
+            info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {count_food} รายการ </div>}
             info_down={`อ่านทั้งหมด`}
         >
             <>
@@ -60,6 +64,31 @@ export default function MultiCard({ loading, data,setData, title }) {
                             </div>
                         </div>}
 
+                    </>
+                ))}
+            </>
+        </Owl_Carousel>}
+        {count_blog > 0 &&<Owl_Carousel
+            title={"ผลการค้นหา"}
+            subTitle={title}
+            info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {count_blog} รายการ </div>}
+            info_down={`อ่านทั้งหมด`}
+        >
+            <>
+                {data.map(({
+                    id,
+                    name_th,
+                    foodTypeId,
+                    calories,
+                    image,
+                    name_en,
+                    type,
+                    name,
+                    imply,
+                    avg_vote,
+                    approve,
+                    total_vote, }, index) => (
+                    <>
                         {approve === 1 && <div
                             key={id + index + Math.random()}
                             className="grid-cols-12  flex-warp rounded-xl  bg-gray-50 items-center  item shadow-xs  m-0 p-0">
@@ -94,8 +123,8 @@ export default function MultiCard({ loading, data,setData, title }) {
                     </>
                 ))}
             </>
-        </Owl_Carousel>
-
+        </Owl_Carousel>}
+        </>
     )
 }
 

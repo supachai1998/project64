@@ -49,10 +49,10 @@ const customIcons = {
   5: <SmileOutlined className="text-green-600" />,
 };
 
-export default function Owl_Carousel({ title, link,noheader=false, info_top, info_down, children, margin }) {
+export default function Owl_Carousel({ title,subTitle, link,noheader=false, info_top, info_down, children, margin }) {
   const [stateTitle , setStateTitle ] = React.useState()
   // if (!window){ return null}
-  console.log(title)
+  // console.log(title)
   React.useEffect(()=>{
 
   },[])
@@ -62,6 +62,7 @@ export default function Owl_Carousel({ title, link,noheader=false, info_top, inf
     >
      {!noheader&& title && info_top && <div className="flex justify-center flex-col w-full px-3 py-3 transition-all duration-500 ease-in-out rounded-2xl">
         {title && <p className={"card-header-top"}>{title}</p>}
+        {subTitle && <p className={"text-center mt-2 text-gray-500 text-md"}>&quot;{subTitle}&quot;</p>}
         {info_top && <span className=' w-full text-right mb-4 border-b border-b-green hover:text-gray-500 text-black' >
           {info_top}
         </span>}

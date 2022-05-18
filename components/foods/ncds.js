@@ -37,9 +37,11 @@ const NCDS = ({ ncds }) => {
         setSuggestion(value)
     })
 
+
     if (!data) return null
     const total = data.length
     const count_sugess = ncds.filter(item => item.suggess).length
+    console.log(ncds)
     return (
         <div className="w-full h-auto sm:px-5">
             <hr className="my-3" />

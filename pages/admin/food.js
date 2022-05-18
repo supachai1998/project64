@@ -14,6 +14,7 @@ import moment from 'moment'
 import 'moment/locale/th'
 moment.locale('th')
 ChartJS.register(ArcElement, Too, Legend);
+ChartJS.defaults.font.size = 16;
 // END Report
 
 
@@ -45,21 +46,19 @@ function Index() {
     });
     const columns = [
         {
-            responsive: ["md"],
-            title: <div className="table-txt" >ประเภท</div>,
+            title: <>ประเภท</>,
             dataIndex: 'FoodType',
             key: 'FoodType',
             render: val => <Tooltip title={val.name_th} ><span className="table-txt">{val.name_th}</span></Tooltip>
         },
         {
-            responsive: ["md"],
-            title: <div className="table-txt" >ชื่ออาหาร</div>,
+            title: <>ชื่ออาหาร</>,
             dataIndex: 'name_th',
             key: 'name_th',
             render: val => <Tooltip title={val} ><span className="table-txt">{val}</span></Tooltip>
         },
         {
-            title: <div className="table-txt" >คำอธิบาย</div>,
+            title: <>คำอธิบาย</>,
             dataIndex: 'detail',
             key: 'detail',
             width: '30%',
@@ -67,19 +66,19 @@ function Index() {
         },
 
         {
-            title: <div className="table-txt" >แนะนำ</div>,
+            title: <>แนะนำ</>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <span className="table-txt" key={ind+v.suggess+v.ncds.name_th}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => v.suggess).map((v, ind) => <span className="table-txt" key={ind + v.suggess + v.ncds.name_th}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
         },
         {
-            title: <div className="table-txt" >ไม่แนะนำ</div>,
+            title: <>ไม่แนะนำ</>,
             dataIndex: 'FoodNcds',
             key: 'FoodNcds',
-            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <span className="table-txt" key={ind+v.suggess+v.ncds.name_th}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
+            render: (text, val, index) => <>{val.FoodNcds.filter((v, ind) => !v.suggess).map((v, ind) => <span className="table-txt" key={ind + v.suggess + v.ncds.name_th}>{ind + 1}. {v.ncds.name_th}<br /><span className="text-2-line">{v.detail}</span></span>)}</>
         },
         {
-            title: <div className="table-txt" >จำนวนอ้างอิง</div>,
+            title: <>จำนวนอ้างอิง</>,
             dataIndex: 'ref',
             key: 'ref',
             width: "5%",
@@ -149,8 +148,8 @@ function Index() {
                 <ModalManageType />
                 <TableForm />
             </Context.Provider>
-            <div className='hidden' ref={componentRef}>
-                <Table size='small' title={() => <span className="text-lg">อาหาร {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={food} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+            <div className='hidden'   ref={componentRef}>
+            <Table size='small' bordered title={() => <span className="text-lg">อาหาร {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={food} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
             </div>
         </div>
     )
@@ -165,7 +164,7 @@ const countOccurrences = (arr, val) => arr.reduce((a, v) => (v.FoodType.name_th 
 
 const TableForm = () => {
 
-    const { food, setFood, reload,type,
+    const { food, setFood, reload, type,
         setModalEdit,
         setModalView,
         loading, store, inputRef } = useContext(Context)
@@ -306,7 +305,7 @@ const TableForm = () => {
     return <div>
         <Table size='small' tableLayout='auto' dataSource={food} columns={columns}
             rowSelection={{ ...rowSelection }}
-            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
+            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100'] }}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
                     ตารางอาหาร
@@ -327,7 +326,7 @@ const TableForm = () => {
     </div>
 }
 const ModalAdd = () => {
-    const { modalAdd, setModalAdd, reload, NCDS,type } = useContext(Context)
+    const { modalAdd, setModalAdd, reload, NCDS, type } = useContext(Context)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
@@ -438,16 +437,16 @@ const ModalAdd = () => {
                 <TextArea rows={4} placeholder="ใช้ในการอธิบายถึงอาหารนั้นๆ" />
             </Form.Item>
             <Form.Item
-                name="proceduce"
-                label="วิธีการทำ"
-                rules={[{ required: true },]}>
-                <TextArea rows={4} placeholder={"วิธีการทำ \n1.\n2.\n3."} />
-            </Form.Item>
-            <Form.Item
                 name="ingredient"
                 label="ส่วนผสม"
                 rules={[{ required: true },]}>
                 <TextArea rows={4} placeholder={"ส่วนผสม \n1.\n2.\n3."} />
+            </Form.Item>
+            <Form.Item
+                name="proceduce"
+                label="วิธีการทำ"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder={"วิธีการทำ \n1.\n2.\n3."} />
             </Form.Item>
             <Form.Item
                 name="calories"
@@ -499,7 +498,7 @@ const ModalAdd = () => {
                                 {...fields}
                                 noStyle
                                 shouldUpdate
-                                key={'food'+field.key+ind}
+                                key={'food' + field.key + ind}
                                 required
                             >
 
@@ -508,12 +507,12 @@ const ModalAdd = () => {
                                     {...field}
                                     labelCol={{ span: 0 }}
                                     label={""}
-                                    key={'food head'+field.key+ind}
+                                    key={'food head' + field.key + ind}
                                     rules={[{ required: true }]}
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip><div className="text-lg"> โรคที่ {ind + 1}</div>
+                                        <div className="text-lg"> โรคที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>
                                     </div>
 
                                 </Form.Item>
@@ -592,7 +591,7 @@ const ModalAdd = () => {
                                     {...field}
                                     labelCol={{ span: 5 }}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
+                                        แหล่งอ้างอิงที่ {ind + 1} <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -626,7 +625,7 @@ const ModalAdd = () => {
     </Modal>
 }
 const ModalEdit = () => {
-    const { modalEdit, setModalEdit, reload, NCDS,type } = useContext(Context)
+    const { modalEdit, setModalEdit, reload, NCDS, type } = useContext(Context)
     const [fileList, setFileList] = useState()
     const [form] = Form.useForm();
 
@@ -638,9 +637,9 @@ const ModalEdit = () => {
                     status: "done",
                     url: `/static/${name}`,
                     name: name
-                  }
+                }
             })
-            form.setFieldsValue({...modalEdit,image});
+            form.setFieldsValue({ ...modalEdit, image });
             setFileList(image)
         }
         return () => {
@@ -757,16 +756,16 @@ const ModalEdit = () => {
                 <TextArea rows={4} placeholder="ใช้ในการอธิบายถึงอาหารนั้นๆ" />
             </Form.Item>
             <Form.Item
-                name="proceduce"
-                label="วิธีการทำ"
-                rules={[{ required: true },]}>
-                <TextArea rows={4} placeholder={"วิธีการทำ \n1.\n2.\n3."} />
-            </Form.Item>
-            <Form.Item
                 name="ingredient"
                 label="ส่วนผสม"
                 rules={[{ required: true },]}>
                 <TextArea rows={4} placeholder={"ส่วนผสม \n1.\n2.\n3."} />
+            </Form.Item>
+            <Form.Item
+                name="proceduce"
+                label="วิธีการทำ"
+                rules={[{ required: true },]}>
+                <TextArea rows={4} placeholder={"วิธีการทำ \n1.\n2.\n3."} />
             </Form.Item>
             <Form.Item
                 name="calories"
@@ -822,7 +821,7 @@ const ModalEdit = () => {
                                 {...fields}
                                 noStyle
                                 shouldUpdate
-                                key={'food'+field.key+ind}
+                                key={'food' + field.key + ind}
                                 required
                             >
 
@@ -831,12 +830,12 @@ const ModalEdit = () => {
                                     {...field}
                                     labelCol={{ span: 0 }}
                                     label={""}
-                                    key={'food head'+field.key+ind}
+                                    key={'food head' + field.key + ind}
                                     rules={[{ required: true }]}
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip><div className="text-lg"> โรคที่ {ind + 1}</div>
+                                        <div className="text-lg"> โรคที่ {ind + 1}</div> <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>
                                     </div>
 
                                 </Form.Item>
@@ -915,7 +914,7 @@ const ModalEdit = () => {
                                     labelCol={{ span: 5 }}
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>แหล่งอ้างอิงที่ {ind + 1}
+                                        แหล่งอ้างอิงที่ {ind + 1} <Tooltip title={"ลบหัวข้อที่ " + (ind + 1)}><Button_Delete className="text-gray-800" fx={() => remove(field.name)} /></Tooltip>
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -1112,8 +1111,8 @@ const ModalManageType = () => {
                 </div>
             </Form>
             <Divider />
-            {!!type && <Table dataSource={type} columns={columns} 
-            pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
+            {!!type && <Table dataSource={type} columns={columns}
+                pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100'] }}
             />}
         </Modal>
 
@@ -1141,8 +1140,8 @@ const ModalView = () => {
             <Form.Item label="ชื่ออาหารภาษาอังกฤษ"><span className='text-lg whitespace-pre-line'>{modalView?.name_en}</span></Form.Item>
             <Form.Item label="พลังงาน"><span className='text-lg whitespace-pre-line'>{modalView?.calories} แคลอรี่</span></Form.Item>
             <Form.Item label="คำอธิบาย"><span className='text-md whitespace-pre-line'>{modalView?.detail}</span></Form.Item>
-            <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView?.proceduce}</span></Form.Item>
             <Form.Item label="ส่วนผสม"><span className='text-md whitespace-pre-line'>{modalView?.ingredient}</span></Form.Item>
+            <Form.Item label="วิธีการทำ"><span className='text-md whitespace-pre-line'>{modalView?.proceduce}</span></Form.Item>
             <Form.Item label="วิดีโอ"><div className="w-64 h-64 sm:w-96 sm:h-96"><ReactPlayer width="100%" url={modalView?.video} /></div></Form.Item>
             <Form.Item label={`โรคที่แนะนำ`}>{modalView?.FoodNcds.map(({ suggess, ncds, detail }, ind) => <>
                 {suggess && <> <span key={ncds.name_th + ind} className='text-md whitespace-pre-line text-green-700'>{ncds.name_th}({ncds.name_en})</span><br /><span className='text-md '>{detail}</span><br /></>}

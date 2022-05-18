@@ -81,11 +81,11 @@ export default function Index(props) {
                         
                             <p className='food-content-body'>{data.detail}</p>
                             <hr className="my-6"/>
-                            <p className="food-content-header">วิธีการทำ</p>
-                            <p className='food-content-body'>{data.proceduce}</p>
-                            <hr className="my-6"/>
                             <p className="food-content-header">ส่วนผสม</p>
                             <p className='food-content-body'>{data.ingredient}</p>
+                            <hr className="my-6"/>
+                            <p className="food-content-header">วิธีการทำ</p>
+                            <p className='food-content-body'>{data.proceduce}</p>
 
                         </div>
                         <hr className="my-5"/>

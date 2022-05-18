@@ -368,7 +368,7 @@ const ModalAdd = () => {
                                     labelCol={{ span: 0 }}
                                     label={null}
                                 >
-                                    <div className="flex justify-center items-center gap-2 text-lg"><Button_Delete fx={() => remove(ind)} /> ช่วงคะแนนที่ {ind + 1} </div>
+                                    <div className="flex justify-center items-center gap-2 text-lg"> ช่วงคะแนนที่ {ind + 1} <Button_Delete fx={() => remove(ind)} /></div>
                                 </Form.Item>
                                 <Form.Item
                                     labelCol={{ span: 5 }}

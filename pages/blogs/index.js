@@ -33,7 +33,7 @@ export default function Index() {
                 <div className="my-5 ">
                     <CusInput only="blogs" data={_data} setData={setData} store={store} setStore={setStore} loading={loading} setLoading={setLoading} />
                 </div>
-                <div className='grid grid-cols-1 lg:mx-5 sm:grid-cols-2 xl:grid-cols-4  gap-10 h-full'>
+                <div className='grid grid-cols-1 lg:mx-5 sm:grid-cols-2 xl:grid-cols-3  gap-16 h-full'>
                     {_data.map(({
                         id,
                         name_th,

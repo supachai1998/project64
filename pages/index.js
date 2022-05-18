@@ -56,7 +56,7 @@ export default function Index() {
             {/* <hr /> */}
             {/* <h1 className="ml-10 text-blue-900 text-2xl lg:text-4xl underline mb-6">อาหารและบทความ</h1> */}
             <CusInput data={data} setData={setData} loading={loading} setLoading={setLoading} input={input} setInput={setInput} />
-            <MultiCard loading={loading} data={data} setData={setData}  title={"ผลการค้นหา "+input} />
+            <MultiCard loading={loading} data={data} setData={setData}  title={input} />
           </>}
         </div>
         {/* {loading && <div className="absolute top-0 left-0 z-10"><Spin size="large" /></div>} */}

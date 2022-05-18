@@ -71,9 +71,9 @@ export default function Index(props) {
             <ContentHeader headerData={headerData} url_yt={NCDS.video} />
             <span className="flex justify-end w-full">ยอดเข้าชม {NCDS?.views} ครั้ง</span>
             <div className=''>
-                <BestFood title="อาหารแนะนำ"/>
-                <BestFood title="อาหารไม่แนะนำ"/>
-                <BestBlog title="บทความแนะนำ"/>
+                <BestFood title="อาหารแนะนำ" subTitle={NCDS.name_th}/>
+                <BestFood title="อาหารไม่แนะนำ" subTitle={NCDS.name_th}/>
+                <BestBlog title="บทความแนะนำ" subTitle={NCDS.name_th}/>
             </div>
         </div>
     )

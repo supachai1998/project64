@@ -15,6 +15,7 @@ import moment from 'moment'
 import 'moment/locale/th'
 moment.locale('th')
 ChartJS.register(ArcElement, Too, Legend);
+ChartJS.defaults.font.size = 16;
 // END Report
 
 
@@ -77,6 +78,7 @@ export default function Index() {
             title: 'ชื่อหัวข้อย่อย',
             dataIndex: 'subBlog',
             key: 'subBlog',
+            width: "10%",
             render: val => <>{val.map((v, ind) => <span className="text-1-line" key={ind}  >{ind + 1}. {v.name}</span >)}</>
         },
         {
@@ -183,7 +185,7 @@ export default function Index() {
                 <TableForm />
             </Context.Provider>
             <div className='hidden' ref={componentRef}>
-                <Table size='small' title={() => <span className="text-lg">บทความ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={blogs} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
+                <Table size='small' bordered title={() => <span className="text-lg">บทความ {inputRef.current?.value}</span>} tableLayout='auto' pagination={false} dataSource={blogs} columns={columns} footer={() => <div className="flex justify-end"><span>พิมพ์ : {moment().format("LLLL")}</span></div>} />
             </div>
         </div>
     )
@@ -206,7 +208,7 @@ const TableForm = () => {
             key: 'type',
             filters: [{ text: 'โรคไม่ติดต่อ', value: "NCDS", }, { text: 'อาหาร', value: "FOOD", }, { text: 'อาหารและโรค', value: "ALL", }],
             onFilter: (value, record) => record.type === value,
-            sorter: (a, b) => a.type === b.type,
+            // sorter: (a, b) => a.type === b.type,
             render: val => <Paragraph className='mt-3' >
                 {val === "NCDS" ? "โรคไม่ติดต่อ" : val === "FOOD" ? "อาหาร" || val === "ALL" : "อาหารและโรค"}
             </Paragraph>
@@ -231,7 +233,7 @@ const TableForm = () => {
             title: 'ผลโหวต',
             dataIndex: 'avg_vote',
             key: 'avg_vote',
-            sorter: (a, b) => a.avg_vote.length - b.avg_vote.length,
+            // sorter: (a, b) => a.avg_vote.length - b.avg_vote.length,
             render: (val) => <Tooltip title={`${val >= 0 ? val : 0}/5`}><Paragraph align="center" ellipsis={ellipsis}>{val >= 0 ? val : 0}</Paragraph></Tooltip>
         },
         {
@@ -640,7 +642,7 @@ const ModalAdd = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
-                                            <Button_Delete className="text-gray-800" fx={() => remove(field.name)} /><div > หัวข้อย่อยที่ {ind + 1}</div>
+                                            <div > หัวข้อย่อยที่ {ind + 1}</div> <Button_Delete className="text-gray-800" fx={() => remove(field.name)} />
                                         </div>
                                     </>
                                 </Form.Item>
@@ -723,7 +725,7 @@ const ModalAdd = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Button_Delete className="text-gray-800" fx={() => remove(field.name)} /> แหล่งอ้างอิงที่ {ind + 1}
+                                        แหล่งอ้างอิงที่ {ind + 1} <Button_Delete className="text-gray-800" fx={() => remove(field.name)} /> 
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}
@@ -1006,12 +1008,12 @@ const ModalEdit = () => {
                                 >
                                     <> {ind !== 0 && <Divider />}
                                         <div className="flex gap-3 items-center text-lg  justify-center pt-2 mb-4">
+                                            {`หัวข้อย่อยที่ ${ind + 1}`}
                                             <Button_Delete className="text-gray-800" fx={() => {
                                                 setFileListSubBlogs(prev => prev.filter((v, i) => i !== field.name));
                                                 // console.log(form.getFieldValue("subBlog")[field.name]); 
                                                 remove(field.name);  
                                                 }} />
-                                            {`หัวข้อย่อยที่ ${ind + 1}`}
                                         </div>
                                     </>
                                 </Form.Item>
@@ -1108,7 +1110,7 @@ const ModalEdit = () => {
                                 <Form.Item
                                     {...field}
                                     label={<div className="flex gap-3 items-center">
-                                        <Button_Delete className="text-gray-800" fx={() => { remove(field.name); }} />ลบอ้างอิงที่ {ind + 1}
+                                        ลบอ้างอิงที่ {ind + 1} <Button_Delete className="text-gray-800" fx={() => { remove(field.name); }} />
                                     </div>}
                                     name={[field.name, 'url']}
                                     fieldKey={[field.fieldKey, 'url']}

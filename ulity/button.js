@@ -1,11 +1,13 @@
 import { UploadOutlined, DeleteOutlined,ArrowsAltOutlined, ShrinkOutlined,MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 export const Button_Delete = ({ fx, title , className="text-white" }) => {
-    return (<><button className="flex gap-1 items-center text-red-500 hover:text-red-400 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+    return (<>
+    {title && <span className={className}>{title}</span>}
+    <button className="flex gap-1 items-center text-red-500 hover:text-red-400 hover:text-lg  hover:shadow-md p-2 rounded-lg hover:uppercase ease-anima btn-sm"
+    
         onClick={fx}
         type="button">
         <DeleteOutlined />
-        {title && <span className={className}>{title}</span>}
     </button>
     </>)
 }
