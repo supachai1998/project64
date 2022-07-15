@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": " next dev",
-    "build": "cross-env NODE_OPTIONS='--openssl-legacy-provider' next build",
+    // "build": "cross-env NODE_OPTIONS='--openssl-legacy-provider' next build",
+    "build": "next build",
     "start": "node server.js",
     "server": "yarn build&&yarn start",
     "lint": "next lint",
