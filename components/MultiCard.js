@@ -69,7 +69,7 @@ export default function MultiCard({ loading, data,setData, title }) {
             </>
         </Owl_Carousel>}
         {count_blog > 0 &&<Owl_Carousel
-            title={"ผลการค้นหา"}
+            title={"ผลการค้นหาบทความ"}
             subTitle={title}
             info_top={<div className='flex gap-1 my-1 sm:text-md text-xs justify-end items-center'>พบ {count_blog} รายการ </div>}
             info_down={`อ่านทั้งหมด`}

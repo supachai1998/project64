@@ -605,7 +605,7 @@ const ModalEdit = () => {
 const showConfirmDel = async (val, reload) => {
 
     confirm({
-        title: <>คุณต้องการจะลบบทความ</>,
+        title: <>คุณต้องการจะลบโรคไม่ติดต่อเรื้อรัง</>,
         content: <p>{val.name_th}({val.name_en})</p>,
         okText: "ตกลง",
         cancelText: "ยกเลิก",
@@ -715,7 +715,7 @@ const TableForm = () => {
             for (const rows of selectRows) {
                 const a = await new Promise((res, rej) => {
                     confirm({
-                        title: `คุณต้องการจะลบบทความ`,
+                        title: `คุณต้องการจะลบโรคไม่ติดต่อเรื้อรัง`,
                         content: <div>
                             <p>{rows.name_th}({rows.name_en})</p>
                             <p>คำอธิบาย : {rows.imply}</p>

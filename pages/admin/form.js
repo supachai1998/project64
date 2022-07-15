@@ -76,7 +76,7 @@ export default function Index() {
     ];
 
     const reqForm = async () => await fetch("/api/getForm")
-        .then(res => res.status === 200 ? res.json() : notification.error({ message: "ไม่สามารถดึงข้อมูลการประเมินผล" }))
+        .then(res => res.status === 200 ? res.json() : notification.error({ message: "ไม่สามารถดึงข้อมูลแบบประเมิน" }))
         .then(data => data)
         .catch(err => notification.error({ message: "Error", description: err.message }))
 
@@ -127,7 +127,7 @@ export default function Index() {
                             <span className="text-green-500">CSV</span>
                         </CSVLink>
                     </Button>
-                    <Button onClick={() => setModalAdd(true)}>เพิ่มการประเมินผล</Button>
+                    <Button onClick={() => setModalAdd(true)}>เพิ่มแบบประเมิน</Button>
                 </div>
             </div>
             <ContextForm.Provider value={{
@@ -191,7 +191,7 @@ const TableForm = () => {
             key: '',
             width: "20%",
             render: (text, val, index) => <div className="flex flex-wrap gap-2">
-                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(_formGroupBy.findIndex(({ id }) => id === val.id))}>การประเมินผล</button>
+                <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalViewSubForm(_formGroupBy.findIndex(({ id }) => id === val.id))}>แบบประเมิน</button>
                 <button className=" bg-gray-100 hover:bg-gray-200" onClick={() => setModalResultForm(val)}>ผลประเมิน</button>
                 {/* <button className=" bg-red-300 hover:bg-red-400" onClick={() => showConfirmDel(_form[index].data, reload)}>ลบ</button> */}
             </div>,
@@ -219,7 +219,7 @@ const TableForm = () => {
         pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '50', '100']}}
             title={() => <div className="flex justify-between items-center gap-2">
                 <div className='flex items-center gap-2'>
-                    ตารางการประเมินผล
+                    ตารางแบบประเมิน
                     <Tooltip title={"ดึงข้อมูลใหม่"}>
                         <button type="button" onClick={() => reload()} ><svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg></button></Tooltip>
                 </div>
@@ -335,7 +335,7 @@ const TableFormSub = () => {
             render: val => <Tooltip><Paragraph align="center" ellipsis={ellipsis}>{val.map(({ choice }) => choice.length).reduce((a, b) => a + b)}</Paragraph></Tooltip>
         },
         {
-            title: <div className="text-left" >จัดการประเมินผล</div>,
+            title: <div className="text-left" >จัดแบบประเมิน</div>,
             dataIndex: '',
             key: '',
 
@@ -443,7 +443,7 @@ const TableFormSub = () => {
             rowSelection={{ ...rowSelection }}
             title={() => <div className="flex items-center justify-between gap-2">
                 <div className='flex items-center gap-2'>
-                    ตารางการประเมินผล {_formGroupBy[modalViewSubForm]?.name_th}
+                    ตารางแบบประเมิน {_formGroupBy[modalViewSubForm]?.name_th}
                     <Tooltip title={"ดึงข้อมูลใหม่"}><button type="button" onClick={() => reload()} >
                         <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${loading && "animate-spin text-indigo-600"} hover:text-indigo-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -474,7 +474,7 @@ const ModalViewSubForm = () => {
     } = useContext(ContextForm)
     useEffect(() => { }, [_formGroupBy])
     if (!!!_formGroupBy[modalViewSubForm]) return null
-    return <Modal title={`การประเมินผล ${_formGroupBy[modalViewSubForm]?.name_th}`}
+    return <Modal title={`แบบประเมิน ${_formGroupBy[modalViewSubForm]?.name_th}`}
         visible={!!_formGroupBy[modalViewSubForm]}
         okText={null}
         cancelText={<>ยกเลิก</>}
@@ -541,7 +541,7 @@ const ModalAdd = () => {
                     setModalAdd(false)
                 } else {
                     const json = await res.json()
-                    notification.error({ message: `ไม่สามารถเพิ่มการประเมินผล`, description: json.statusText })
+                    notification.error({ message: `ไม่สามารถเพิ่มแบบประเมิน`, description: json.statusText })
                 }
             })
         await reload()
@@ -550,7 +550,7 @@ const ModalAdd = () => {
         setModalAdd(false)
     }
 
-    return <Modal title={"เพิ่มข้อมูลการประเมินผล"}
+    return <Modal title={"เพิ่มข้อมูลแบบประเมิน"}
         visible={modalAdd}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -584,7 +584,7 @@ const ModalAdd = () => {
                     {!!ncds && ncds.map(({ name_th, name_en, id }, ind) => <Option key={ind} value={id}>{name_th}</Option>)}
                 </Select>
             </Form.Item>
-            <Form.List name="form" rules={[{ required: true, message: "คุณลืมเพิ่มตอนการประเมินผล" }]}>
+            <Form.List name="form" rules={[{ required: true, message: "คุณลืมเพิ่มตอนแบบประเมิน" }]}>
                 {(fields, { add, remove }, { errors }) => (
                     <>
                         {!!fields && fields.map((field, ind) => (
@@ -602,7 +602,7 @@ const ModalAdd = () => {
                                 >
                                     {ind !== 0 && <hr />}
                                     <div className="flex gap-3 items-center  justify-center py-2">
-                                        <div className="text-lg text-blue-500">ตอนการประเมินผลที่ {ind + 1}</div> <Tooltip title={"ลบตอนที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>
+                                        <div className="text-lg text-blue-500">ตอนแบบประเมินที่ {ind + 1}</div> <Tooltip title={"ลบตอนที่ " + (ind + 1)}><Button_Delete fx={() => remove(field.name)} /></Tooltip>
                                     </div>
                                 </Form.Item>
                                 <Form.Item
@@ -752,7 +752,7 @@ const ModalAdd = () => {
                                 onClick={() => add()}
                                 type="button">
                                 <PlusOutlined />
-                                <span className="text-blue-900">เพิ่มตอนการประเมินผล</span>
+                                <span className="text-blue-900">เพิ่มตอนแบบประเมิน</span>
                             </button>
                         </div>
 
@@ -785,7 +785,7 @@ const ModalEdit = () => {
     }, [modalEdit])
     const onOk = async (val) => {
         if (!val.subForm) {
-            notification.error({ message: "กรุณาเพิ่มตอนการประเมินผล" })
+            notification.error({ message: "กรุณาเพิ่มตอนแบบประเมิน" })
             return
         } else if (!val.subForm.map(({ choice }) => choice).every(arr => Array.isArray(arr) && arr.length > 0)) {
             notification.error({ message: "กรุณาเพิ่มคำถาม" })
@@ -813,7 +813,7 @@ const ModalEdit = () => {
     const onReset = () => {
         form.setFieldsValue();
     }
-    return <Modal title={"แก้ไขข้อมูลการประเมินผล"}
+    return <Modal title={"แก้ไขข้อมูลแบบประเมิน"}
         visible={modalEdit}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -1036,7 +1036,7 @@ const ModalAddSubForm = () => {
         setModalAddSubForm(false)
     }
 
-    return <Modal title={"เพิ่มตอนการประเมินผล"}
+    return <Modal title={"เพิ่มตอนแบบประเมิน"}
         visible={modalAddSubForm}
         okText={<>ตกลง</>}
         cancelText={<>ยกเลิก</>}
@@ -1225,7 +1225,7 @@ const ModalAddSubForm = () => {
 const showConfirmDel = async (val, reload) => {
     let del = true
     confirm({
-        title: <>คุณต้องการจะลบการประเมินผล</>,
+        title: <>คุณต้องการจะลบแบบประเมิน</>,
         content: <ul>
             <li> ชื่อตอน : {val.title} </li><br />
             {val.subForm.map(({ name, choice }, ind) =>
@@ -1260,7 +1260,7 @@ const showConfirmDel = async (val, reload) => {
 }
 const deleteAll = async (vals, reload, setModalViewSubForm) => {
     confirm({
-        title: <>คุณต้องการจะลบการประเมินผล</>,
+        title: <>คุณต้องการจะลบแบบประเมิน</>,
         content: <ul>
             {vals.map(val => {
                 return <li key={val.id}>ชื่อ : {val.title}<br />

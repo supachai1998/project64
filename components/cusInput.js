@@ -325,7 +325,7 @@ const CustomUpload = ({ setInput, loading, setLoading, disabled }) => {
         .then(response => response.json())
         .then(({ type, name, confident, error }) => {
           setLoading(false)
-          if (error) { notification.error({ message: error?.message }) }
+          if (error) { notification.error({ message: error?.message || error }) }
           else {
             switch (type) {
               case 'ไม่ใช่อาหาร':
@@ -341,7 +341,7 @@ const CustomUpload = ({ setInput, loading, setLoading, disabled }) => {
 
           }
         })
-        .catch(error => { setLoading(false); console.error(error); notification.error({ message: "ไม่สามารประมวลผลได้}" }) });
+        .catch(error => { setLoading(false); console.error(error); notification.error({ message: "ไม่สามารประมวลผลได้" }) });
 
     })()
   }
