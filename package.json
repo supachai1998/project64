@@ -12,7 +12,8 @@
     "db": "yarn prisma studio --port 5566",
     "mock": "C:/pscale/pscale.exe connect senior main --port 3366",
     "gitpush": "set /p comment='>> ' &&git add .&&git commit -m echo %comment%&&git push&&git push heroku main ",
-    "analysis": "cross-env ANALYZE=true next build"
+    "analysis": "cross-env ANALYZE=true next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
     "@emotion/react": "^11.4.1",
