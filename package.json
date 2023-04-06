@@ -12,8 +12,7 @@
     "db": "yarn prisma studio --port 5566",
     "mock": "C:/pscale/pscale.exe connect senior main --port 3366",
     "gitpush": "set /p comment='>> ' &&git add .&&git commit -m echo %comment%&&git push&&git push heroku main ",
-    "analysis": "cross-env ANALYZE=true next build",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "analysis": "cross-env ANALYZE=true next build"
   },
   "dependencies": {
     "@emotion/react": "^11.4.1",
@@ -65,6 +64,6 @@
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "postcss": "^8.3.6",
-    "prisma": "^3.13.0"
+    "prisma": "^4.12.0"
   }
 }
