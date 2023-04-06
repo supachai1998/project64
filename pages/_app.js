@@ -56,11 +56,13 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       .then(async res => res.ok && res.json())
       .then(data => data)
       .catch(err => notification.error({ message: err.message }))
-    const f = n.filter(({ id }) => q_f.find(v => v === id))
-    const data = await fetch(`/api/getTypeFood?order=des`).then(res => res.ok && res.json())
-    Array.isArray(data) && setFoodType(data)
-    setNCDS(n)
-    setForm(f)
+    if (!!n ){
+      const f = n.filter(({ id }) => q_f.find(v => v === id))
+      const data = await fetch(`/api/getTypeFood?order=des`).then(res => res.ok && res.json())
+      Array.isArray(data) && setFoodType(data)
+      setNCDS(n)
+      setForm(f)
+    }
   }
 
 
