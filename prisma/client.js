@@ -1,6 +1,17 @@
 import { PrismaClient } from '@prisma/client'
-export const prisma =global.prisma ||new PrismaClient({log: ['info', 'warn', 'error'],})
 
+// Avoid instantiating too many instances of Prisma in development
+// https://www.prisma.io/docs/support/help-articles/nextjs-prisma-client-dev-practices#problem
+let prisma
 
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient()
+} else {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient()
+  }
+  prisma = global.prisma
+}
 
-if (process.env.NODE_ENV !== 'production') global.prisma = prisma
+export default prisma
+
